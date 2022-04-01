@@ -1,4 +1,4 @@
-{输入n,r  ; 从前n个自然数中取r个数作组合}
+{杈撳叆n,r  ; 浠庡墠n涓嚜鐒舵暟涓彇r涓暟浣滅粍鍚坿
 program combination
 type  
     s=array [1..20] of integer;
@@ -23,8 +23,8 @@ begin
    endwh
 end
 begin
-read(n); {n为组合的界限}
-read(r); {r为组合数}
+read(n); {n涓虹粍鍚堢殑鐣岄檺}
+read(r); {r涓虹粍鍚堟暟}
 com(1,r)
 end.
           
