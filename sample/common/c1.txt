@@ -1,5 +1,5 @@
-{数组测试}
-{结果应为:0,1,2,3,4,5}
+{鏁扮粍娴嬭瘯}
+{缁撴灉搴斾负:0,1,2,3,4,5}
 program sd
 type  i=integer;
       sarray=array [0..5] of integer;
