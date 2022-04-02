@@ -18,5 +18,14 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RD.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LL1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
