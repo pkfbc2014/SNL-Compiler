@@ -1,7 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// 主程序，读入样例程序文件进行分析
+
+#include "head.h"
 
 int main()
 {
@@ -14,7 +13,7 @@ int main()
         exit(0); // 结束进程
     }
 
-    //handle(fp); // 进行词法分析
+    //handle(fp); // 词法分析
 
     fclose(fp);
 	return 0;

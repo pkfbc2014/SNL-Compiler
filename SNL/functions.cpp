@@ -19,4 +19,3 @@ void output_follow() //输出follow集到本地
 {
 
 }
-

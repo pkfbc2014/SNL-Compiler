@@ -144,6 +144,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RD.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="head.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
