@@ -1,5 +1,7 @@
 // 放置一些公共函数，比如求first集、follow集等
 
+#include "head.h"
+
 void cal_first() // 计算first集
 {
 
