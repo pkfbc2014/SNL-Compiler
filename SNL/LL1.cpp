@@ -1,4 +1,4 @@
-// LL1分析法主程序
+// LL1分析法
 
 void LL1_analysis()
 {
