@@ -1,5 +1,5 @@
 // 主程序，读入样例程序文件进行分析
-
+#include "SemanticAnalysis.h"
 #include "head.h"
 
 char Non_symbol[67][20]; // 67个非终结符
@@ -52,7 +52,7 @@ int main()
     //function1(fp); // 词法分析
     //LL1_analysis(); // 语法分析 - LL1
     //RD_analysis(); //语法分析 - 递归下降
-    //function2(); //语义分析
+    //semantic_analysis(); //语义分析
     
 	return 0;
 } 
