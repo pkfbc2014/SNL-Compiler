@@ -45,8 +45,9 @@ int main()
         exit(0); // 结束进程
     }
 
-    fclose(fp);
+    //......
 
+    fclose(fp);
 
     //function1(fp); // 词法分析
     //LL1_analysis(); // 语法分析 - LL1
