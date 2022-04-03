@@ -3,5 +3,3 @@
 
 2. 参考程序中的非终结符和保留字都用的switch语句保存，代码冗长，放到本地了，每次直接从本地读取到数组里，数组下标对应的就是序号——PKF
 
-
-ceshishisfdfgsdgsdfgsdasdf
