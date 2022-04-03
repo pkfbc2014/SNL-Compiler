@@ -1,7 +1,11 @@
 #pragma once
-#ifndef SEMANTIC_ANALYSIS_H
-#define SEMANTIC_ANALYSIS_H
+#ifndef _SEMANTICANALYSIS_H
+#define _SEMANTICANALYSIS_H
 
+
+
+
+void semantic_analysis(); //ÓïÒå·ÖÎö
 
 
 #endif
