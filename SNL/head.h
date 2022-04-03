@@ -11,3 +11,6 @@ void output_follow(); //输出follow集到本地
 
 void LL1_analysis(); //LL1分析法
 void RD_analysis(); //递归下降分析法
+
+char Non_symbol[67][20]; // 67个非终结符
+char Reserved_word[42][20]; // 42个保留字和其他符号
