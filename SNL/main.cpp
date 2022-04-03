@@ -19,6 +19,7 @@ int main()
     int i = 0;
     while (fgets(Non_symbol[i], 20, fp) != NULL)
     {
+        Non_symbol[i][strlen(Non_symbol[i]) - 1] = '\0'; // 去掉结尾换行符
         i++;
     }
     fclose(fp);
@@ -29,9 +30,10 @@ int main()
         printf("cannot open the Reserved_word file!\n"); // 文件打开失败
         exit(0); // 结束进程
     }
-    int i = 0;
+    i = 0;
     while (fgets(Reserved_word[i], 20, fp) != NULL)
     {
+        Reserved_word[i][strlen(Reserved_word[i]) - 1] = '\0'; // 去掉结尾换行符
         i++;
     }
     fclose(fp);
