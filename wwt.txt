@@ -1,0 +1,6 @@
+声明：
+1.以后除测试代码外，都不会更改除了"SemanticAnalysis.cpp"和"SemanticAnalysis.h"之外的源文件。
+2.测试代码时可能会更改"main.cpp"中main函数。
+
+日志：
+2020/4/3 整理材料，理清思路
