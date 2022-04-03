@@ -45,10 +45,13 @@ int main()
         exit(0); // 结束进程
     }
 
+    fclose(fp);
+
+
     //function1(fp); // 词法分析
     //LL1_analysis(); // 语法分析 - LL1
     //RD_analysis(); //语法分析 - 递归下降
     //function2(); //语义分析
-    fclose(fp);
+    
 	return 0;
 } 
