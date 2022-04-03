@@ -143,9 +143,11 @@
     <ClCompile Include="LL1.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RD.cpp" />
+    <ClCompile Include="SemanticAnalysis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="head.h" />
+    <ClInclude Include="SemanticAnalysis.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
