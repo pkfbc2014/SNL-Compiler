@@ -3,26 +3,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-enum state{START=1};//½«¶Ô¿Õ°××´Ì¬µÄ´¦Àí·ÅÈë
-
-int test()
+//ç±»å‹å£°æ˜
+enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR };//DFA×´
+enum LexType{ID=1,RESERVED,INTC,SINGLE,DOUBLE,COM_LEFT,COM_RIGHT,CHAR,SUBSCRIPT};//å•è¯åˆ†ç±»çš„æšä¸¾ç±»å‹ï¼šæ ‡è¯†ç¬¦ï¼Œä¿ç•™å­—ï¼Œæ— ç¬¦å·æ•´æ•°ï¼Œå•å­—ç¬¦åˆ†ç•Œç¬¦ï¼ŒåŒå­—ç¬¦åˆ†ç•Œç¬¦,æ³¨é‡Šå¤´ç¬¦ï¼Œæ³¨é‡Šç»“æŸç¬¦ï¼Œå­—ç¬¦èµ·å§‹ç¬¦å’Œç»“æŸç¬¦ï¼Œæ•°ç»„ä¸‹æ ‡ç•Œé™ç¬¦
+struct node//é“¾è¡¨ç»“ç‚¹å®šä¹‰
 {
-    FILE* fp;
-    char ch;//È¡×Ö·ûºó·ÅÕâÀï
-    if ((fp = fopen("c1.txt", "r+")) == NULL)
-        //ÎÄ¼ş´ò¿ª£¬È¡Ò»¸ö×Ö·û/×Ö½Ú
-    {
-        printf("\nCannot open file strike any key exit!");
-        getchar();//×èÈû¹¦ÄÜ£¬¹ÒÆğ
-        exit(1);
-    }
-    //int fgetc(FILE *stream)´ÓÖ¸¶¨µÄÎÄ¼şÖĞ¶ÁÒ»¸ö×Ö·û
-    ch = fgetc(fp);//´ÓÎÄ¼şÀïÈ¡Ò»¸ö×Ö½Ú/×Ö·û£¬È¡³ö×Ö·ûºó·ÅÕâÀï
-    while (ch != EOF)//ÅĞ¶ÏÓĞÃ»ÓĞµ½ÎÄ¼şµÄÄ©Î²£¬EOFÎÄ¼ş½áÊø±êÖ¾
-    {
-        putchar(ch);//´ÓÎÄ¼şÈ¡µÄ×Ö·ûÏÔÊ¾µ½ÏÔÊ¾Æ÷ÉÏ
-        ch = fgetc(fp);//´ÓÖ¸¶¨µÄÎÄ¼şÖĞ¶ÁÒ»¸ö×Ö·û
-    }
-    fclose(fp);
+	int Lineshow;//å•è¯æ‰€åœ¨è¡Œæ•°
+	LexType Lex;
+	char* Sem;//å•è¯è¯­ä¹‰ä¿¡æ¯
+	node* pre;
+	node* next;
+};
+
+
+//å˜é‡å®šä¹‰
+state a = START;
+
+FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");
+char ch;//å–å­—ç¬¦åæ”¾è¿™é‡Œ
+
+//å‡½æ•°å£°æ˜
+int getNextChar();//ä»æºæ–‡ä»¶ä¸­è¯»å–ä¸€ä¸ªå­—ç¬¦
+int ungetNextChar();//å°†æ–‡ä»¶ç°æœ‰æŒ‡é’ˆå‘å‰ç§»åŠ¨ä¸€ä¸ªå­—ç¬¦å¤§å°   ....!!!!åº”å¢å¼ºé²æ£’æ€§
+int getTokenList();
+int reservedLookup();
+int ChainToFile();
+//å‡½æ•°å®ç°
+int getNextChar() {
+	return fgetc(fp);
+}
+int ungetNextChar() {
+	fseek(fp, -(long)sizeof(char), SEEK_CUR);
+	return 0;
 }
