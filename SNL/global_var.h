@@ -10,13 +10,13 @@ const int ProductNum = 104; // 产生式数量
 typedef struct first
 {
 	int num; // 该非终结符的first集中元素个数
-	char* ptr[20]; // 指向各个终结符
+	const char* ptr[20]; // 指向各个终结符
 }first;
 
 typedef struct follow
 {
 	int num; // 该非终结符的follow集中元素个数
-	char* ptr[20]; // 指向各个终结符
+	const char* ptr[20]; // 指向各个终结符
 }follow;
 
 typedef struct production // 产生式类型

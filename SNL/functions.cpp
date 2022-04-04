@@ -46,13 +46,25 @@ void cal_first(char* s) // 计算first集
 				// 1.rightj是终结符，直接加入first集
 				if (getNonIndex(rightj) == -1)
 				{
-					first[i][]
+					firsts[i].ptr[firsts[i].num] = Productions[i].right[j];
+					firsts[i].num++;
+					break;
 				}
 
+				// 2.rightj是非终结符，则递归求解
+				cal_first(rightj);
+				int rightIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
+				for (int k = 0; k < firsts[rightIndex].num; k++)
+				{
+					if (*firsts[k].ptr == "$")
+						isEmpty = 1;
+					else
+						
+				}
 			}
 		}
 	}
-
+	return;
 }
 
 void cal_follow() // 计算follow集
