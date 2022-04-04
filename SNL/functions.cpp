@@ -1,6 +1,10 @@
-// 放置一些公共函数，比如求first集、follow集等
+// 一些公共函数，比如求first集、follow集等
 
-#include "head.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "func_statement.h"
+#include "global_var.h"
 
 void cal_first() // 计算first集
 {

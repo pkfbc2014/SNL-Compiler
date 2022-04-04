@@ -1,7 +1,12 @@
 // 主程序，读入样例程序文件进行分析
+
+#include "func_statement.h"
+#include "global_var.h"
 #include "SemanticAnalysis.h"
-#include "head.h"
 #include "LexicalAnalysis.h"//词法分析
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main()
 {
