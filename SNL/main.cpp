@@ -4,7 +4,7 @@
 
 char Non_symbol[67][20]; // 67个非终结符
 char Reserved_word[42][20]; // 42个保留字和其他符号
-
+int a;
 int main()
 {
 	FILE* fp;
