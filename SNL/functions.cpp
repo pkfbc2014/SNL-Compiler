@@ -56,10 +56,12 @@ void cal_first(char* s) // 计算first集
 				int rightIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
 				for (int k = 0; k < firsts[rightIndex].num; k++)
 				{
-					if (*firsts[k].ptr == "$")
+					if (*firsts[k].ptr == "$") // 
 						isEmpty = 1;
 					else
-						
+					{
+
+					}
 				}
 			}
 		}
