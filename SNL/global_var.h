@@ -3,6 +3,11 @@
 
 //一些全局变量
 
+const int NonNum = 67; // 非终结符数量
+const int ReserveNum = 42; //保留字数量
+const int ProductNum = 104; // 产生式数量
+
+
 typedef struct production // 产生式类型
 {
 	const char left[20]; // 产生式左部
@@ -10,7 +15,7 @@ typedef struct production // 产生式类型
 }production;
 
 // 67个非终结符
-const char* Non_symbol[67] = {
+const char* Non_symbol[NonNum] = {
 	"Program","ProgramHead","ProgramName","DeclarePart","TypeDec","TypeDeclaration",
 	"TypeDecList","TypeDecMore","TypeId","TypeName","BaseType",
 	"StructureType","ArrayType","Low","Top","RecType",
@@ -27,7 +32,7 @@ const char* Non_symbol[67] = {
 }; 
 
 // 42个保留字和其他符号
-const char* Reserved_word[42] = {
+const char* Reserved_word[ReserveNum] = {
 	"ENDFILE","ERROR",
 	"PROGRAM","PROCEDURE","TYPE","VAR","IF",
 	"THEN","ELSE","FI","WHILE","DO","ENDWH",
@@ -42,7 +47,7 @@ const char* Reserved_word[42] = {
 };
 
 // SNL的104条产生式
-production Productions[104] = {
+production Productions[ProductNum] = {
 	{"Program",{"ProgramHead","DeclarePart","ProgramBody","DOT","0"}},
 	{"ProgramHead",{"PROGRAM","ProgramName","0"}},
 	{"ProgramName",{"ID","0"}},
