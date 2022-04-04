@@ -38,10 +38,10 @@ void cal_first(char* s) // 计算first集
 	{
 		if (strcmp(Productions[i].left, s) == 0) // 产生式左部匹配上
 		{
-			for (int j = 0; Productions[i].right[j] != "0"; j++) // 产生式右部以"0"作为结束符
+			for (int j = 0; strcmp(Productions[i].right[j],"0") != 0; j++) // 产生式右部以"0"作为结束符
 			{
 				char rightj[20];
-				strcpy(rightj, Productions[i].right[j]);// 取右部第j个符号
+				strcpy(rightj, Productions[i].right[j]);// 取右部第j个符号（非终结符和终结符）
 
 				// 1.rightj是终结符，直接加入first集
 				if (getNonIndex(rightj) == -1)
@@ -52,17 +52,32 @@ void cal_first(char* s) // 计算first集
 				}
 
 				// 2.rightj是非终结符，则递归求解
-				cal_first(rightj);
-				int rightIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
-				for (int k = 0; k < firsts[rightIndex].num; k++)
+				cal_first(rightj); // 继续算rightj的first集
+				int rightjIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
+				for (int k = 0; k < firsts[rightjIndex].num; k++) // 将first(rightj)中的非$加入first(s)
 				{
-					if (*firsts[k].ptr == "$") // 
+					if (strcmp(firsts[rightjIndex].ptr[k], "$") == 0) // first(rightj)中是否有空产生式
 						isEmpty = 1;
 					else
 					{
-
+						firsts[index].ptr[firsts[index].num] = firsts[rightjIndex].ptr[k];
+						firsts[index].num++;
 					}
 				}
+				if (isEmpty == 0) // rightj不能为$，迭代结束
+					break;
+				else 
+				{
+					countEmpty += isEmpty;
+					isEmpty = 0;
+				}
+			}
+			for (int j = 0; strcmp(Productions[i].right[j], "0") != 0; j++) // 统计产生式右部长度
+				lenRight++;
+			if (countEmpty == lenRight) // 即右部的所有符号都能推导或就是$，则将$加入到first(s)中
+			{
+				firsts[index].ptr[firsts[index].num] = "$";
+				firsts[index].num++;
 			}
 		}
 	}
