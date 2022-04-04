@@ -1,15 +1,67 @@
-Program:  PROGRAM,PROGRAM,ID,INTC,$,
-TypeDecList:  TYPE,EQ,$,ID,ID,CHAR,
-Low:  ID,INTEGER,CHAR,ID,ID,ARRAY,INTC,INTC,RECORD,ID,ID,$,
-ProcDec:  ID,$,COMMA,$,VAR,VAR,
-Param:  $,
-FidMore:  ID,$,COMMA,$,SEMI,PROCEDURE,$,ID,ID,$,
+Program:  PROGRAM,
+ProgramHead:  PROGRAM,
+ProgramName:  ID,
+DeclarePart:  INTC,RECORD,
+TypeDec:  $,
+TypeDeclaration:  
+TypeDecList:  TYPE,
+TypeDecMore:  EQ,TYPE,
+TypeId:  $,
+TypeName:  ID,CHAR,
+BaseType:  ID,
+StructureType:  CHAR,
+ArrayType:  
+Low:  ID,
+Top:  INTEGER,
+RecType:  CHAR,
+FieldDecList:  ID,
+FieldDecMore:  ID,
+IdList:  ARRAY,
+IdMore:  INTC,
+VarDec:  INTC,RECORD,
+VarDeclaration:  RECORD,
+VarDecList:  ID,CHAR,
+VarDecMore:  ID,CHAR,
+VarIdList:  $,
+VarIdMore:  
+ProcDec:  ID,
+ProcDeclaration:  $,
+ProcDecMore:  COMMA,
+ProcName:  $,
+ParamList:  VAR,ID,CHAR,
+ParamDecList:  VAR,ID,CHAR,
+ParamMore:  
+Param:  $,ID,CHAR,
+FormList:  
+FidMore:  ID,
+ProcDecPart:  $,INTC,RECORD,
+ProcBody:  COMMA,$,
+ProgramBody:  $,
+StmList:  SEMI,PROCEDURE,
+StmMore:  PROCEDURE,
+Stm:  $,$,SEMI,$,
+AssCall:  ID,VAR,
+AssignmentRest:  ID,
+ConditionalStm:  $,
+LoopStm:  
 InputStm:  
-Invar:  $,SEMI,
-CallStmRest:  VAR,ID,$,COMMA,
-Exp:  SEMI,BEGIN,SEMI,$,SEMI,
+Invar:  $,
+OutputStm:  SEMI,
+ReturnStm:  
+CallStmRest:  VAR,
+ActParamList:  ID,SEMI,
+ActParamMore:  $,
+RelExp:  COMMA,SEMI,
+OtherRelE:  
+Exp:  SEMI,
+OtherTerm:  BEGIN,ID,
+Term:  SEMI,
+OtherFactor:  $,
+Factor:  SEMI,
+Variable:  
 VariMore:  
 FieldVar:  
 FieldVarMore:  
 CmpOp:  
 AddOp:  ID,
+MultOp:  

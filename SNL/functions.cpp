@@ -133,14 +133,10 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 	for (int i = 0; i < NonNum; i++)
 	{
-		fputs(Non_symbol[i], fp);
-		fputs(":  ", fp);
-		for (int j = 0; j < firsts[i].num; i++)
-		{
-			fputs(firsts[i].ptr[j], fp);
-			fputs(",", fp);
-		}
-		fputs("\n", fp);
+		fprintf(fp, "%s:  ", Non_symbol[i]);
+		for (int j = 0; j < firsts[i].num; j++)
+			fprintf(fp, "%s,", firsts[i].ptr[j]);
+		fprintf(fp, "\n");
 	}
 	fclose(fp);
 
