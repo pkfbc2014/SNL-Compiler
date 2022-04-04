@@ -1,8 +1,6 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+//一些函数的声明
 
 void cal_first(); // 计算first集
 void cal_follow(); // 计算follow集

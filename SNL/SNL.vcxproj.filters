@@ -32,10 +32,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="head.h">
+    <ClInclude Include="global_var.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SemanticAnalysis.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="func_statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
