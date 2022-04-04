@@ -1,26 +1,15 @@
-Program:
-S[&xÌùo,S[&xÌùo,èúo,S[&xÌùo,S[&xÌùo,
-TypeDecList:
-,,èúo,S[&xÌùo,S[&xÌùo,S[&xÌùo,
-Low:
-èúo,S[&xÌùo,S[&xÌùo,S[&xÌùo,S[&xÌùo,,èúo,èúo,,S[&xÌùo,S[&xÌùo,èúo,
-ProcDec:
-èúo,èúo,èúo,èúo,S[&xÌùo,S[&xÌùo,S[&xÌùo,èúo,S[&xÌùo,S[&xÌùo,èúo,èúo,èúo,èúo,S[&xÌùo,èúo,èúo,èúo,èúo,
-InputStm:
-
-Invar:
-èúo,èúo,
-CallStmRest:
-,èúo,èúo,èúo,
-Exp:
-èúo,S[&xÌùo,èúo,èúo,èúo,
-VariMore:
-
-FieldVar:
-
-FieldVarMore:
-
-CmpOp:
-
-AddOp:
-S[&xÌùo,
+Program:  PROGRAM,PROGRAM,ID,INTC,$,
+TypeDecList:  TYPE,EQ,$,ID,ID,CHAR,
+Low:  ID,INTEGER,CHAR,ID,ID,ARRAY,INTC,INTC,RECORD,ID,ID,$,
+ProcDec:  ID,$,COMMA,$,VAR,VAR,
+Param:  $,
+FidMore:  ID,$,COMMA,$,SEMI,PROCEDURE,$,ID,ID,$,
+InputStm:  
+Invar:  $,SEMI,
+CallStmRest:  VAR,ID,$,COMMA,
+Exp:  SEMI,BEGIN,SEMI,$,SEMI,
+VariMore:  
+FieldVar:  
+FieldVarMore:  
+CmpOp:  
+AddOp:  ID,

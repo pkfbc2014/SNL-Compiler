@@ -45,9 +45,13 @@ void cal_first(char* s) // 计算first集
 				{
 					if (firsts[i].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
 					{
-						firsts[i].ptr[firsts[i].num] = rightj;
-						firsts[i].num++;
+						firsts[i].ptr[firsts[i].num] = Productions[i].right[j];
+
+						//firsts[i].ptr[firsts[i].num] = rightj;
+						//注：不可以写成这样，因为rightj不是const的，等函数结束后就会被释放，虽然rightj与Productions[i].right[j]值相同，但得指向类型相同的，即静态变量
+
 						firsts[i].flag[getReIndex(rightj)] = true;
+						firsts[i].num++;
 						break;
 					}
 					else //已经被加入过first集，直接break
@@ -63,8 +67,14 @@ void cal_first(char* s) // 计算first集
 						isEmpty = 1;
 					else
 					{
-						firsts[index].ptr[firsts[index].num] = firsts[rightjIndex].ptr[k];
-						firsts[index].num++;
+						char temp[20]; 
+						strcpy(temp, firsts[rightjIndex].ptr[k]); // 解除静态绑定
+						if (firsts[index].flag[getReIndex(temp)] == false) // temp未被加入过first集
+						{
+							firsts[index].ptr[firsts[index].num] = firsts[rightjIndex].ptr[k];
+							firsts[index].flag[getReIndex(temp)] = true;
+							firsts[index].num++;
+						}
 					}
 				}
 				if (isEmpty == 0) // rightj不能为$，迭代结束
@@ -108,12 +118,12 @@ void out_fitstfollow() //输出first集和follow集到本地
 		cal_first(temp);
 	}
 
-	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
+	/*for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
 	{
 		char temp[20];
 		strcpy(temp, Non_symbol[i]); // 解除静态绑定
 		cal_follow(temp);
-	}
+	}*/
 
 	FILE* fp;
 	if ((fp = fopen("first.txt", "w")) == NULL)
@@ -124,7 +134,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	for (int i = 0; i < NonNum; i++)
 	{
 		fputs(Non_symbol[i], fp);
-		fputs(":\n", fp);
+		fputs(":  ", fp);
 		for (int j = 0; j < firsts[i].num; i++)
 		{
 			fputs(firsts[i].ptr[j], fp);
@@ -134,7 +144,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 	fclose(fp);
 
-	if ((fp = fopen("follow.txt", "w")) == NULL)
+	/*if ((fp = fopen("follow.txt", "w")) == NULL)
 	{
 		printf("cannot open the follow assemble file\n");
 		return;
@@ -142,7 +152,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	for (int i = 0; i < NonNum; i++)
 	{
 		fputs(Non_symbol[i], fp);
-		fputs(":\n", fp);
+		fputs(":  ", fp);
 		for (int j = 0; j < follows[i].num; i++)
 		{
 			fputs(follows[i].ptr[j], fp);
@@ -151,4 +161,5 @@ void out_fitstfollow() //输出first集和follow集到本地
 		fputs("\n", fp);
 	}
 	fclose(fp);
+	*/
 }

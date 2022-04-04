@@ -51,7 +51,7 @@ const char* Reserved_word[ReserveNum] = {
 	"THEN","ELSE","FI","WHILE","DO","ENDWH",
 	"BEGIN","END1","READ","WRITE","ARRAY","OF",
 	"RECORD","RETURN1",
-	"INTEGER","CHAR1",
+	"INTEGER","CHAR",
 	"ID","INTC","CHARC",
 	"ASSIGN","EQ","LT","PLUS","MINUS",
 	"TIMES","OVER","LPAREN","RPAREN","DOT",
