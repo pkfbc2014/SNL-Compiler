@@ -1,9 +1,11 @@
 // 主程序，读入样例程序文件进行分析
 #include "SemanticAnalysis.h"
 #include "head.h"
+#include "LexicalAnalysis.h"//词法分析
 
 char Non_symbol[67][20]; // 67个非终结符
 char Reserved_word[42][20]; // 42个保留字和其他符号
+
 int main()
 {
 	FILE* fp;
