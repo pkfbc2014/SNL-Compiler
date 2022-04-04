@@ -4,7 +4,7 @@
 ## 词法分析
 
 ## 语法分析
-![语法树图示](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/语法树图示.png "语法树图示" =600x)
+![语法树图示](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/语法树图示.png "语法树图示")
 ## 语义分析
 
 ## 实例
