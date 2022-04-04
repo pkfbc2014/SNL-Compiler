@@ -13,6 +13,14 @@ int getNonIndex(char* s) // 返回非终结符s在非终结符集合中的下标
 	return -1;
 }
 
+int getReIndex(char* s) // 返回终结符s在终结符集合中的下标
+{
+	for (int i = 0; i < ReserveNum; i++)
+		if (strcmp(s, Reserved_word[i]) == 0)
+			return i;
+	return -1;
+}
+
 void cal_first() // 计算first集
 {
 
