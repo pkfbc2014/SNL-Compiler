@@ -1,4 +1,5 @@
 // 一些公共函数，比如求first集、follow集等
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +7,7 @@
 #include "global_var.h"
 
 first firsts[NonNum];
-follow follows[ReserveNum];
+follow follows[NonNum];
 
 int getNonIndex(char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
@@ -26,10 +27,6 @@ int getReIndex(char* s) // 返回终结符s在终结符集合中的下标
 
 void cal_first(char* s) // 计算first集
 {
-	for (int i = 0; i < NonNum; i++) // 初始化个数为0
-	{
-		firsts[i].num = 0;
-	}
 	int countEmpty = 0;
 	int isEmpty = 0;
 	int lenRight = 0; // 产生式右部长度
@@ -40,15 +37,21 @@ void cal_first(char* s) // 计算first集
 		{
 			for (int j = 0; strcmp(Productions[i].right[j],"0") != 0; j++) // 产生式右部以"0"作为结束符
 			{
-				char rightj[20];
-				strcpy(rightj, Productions[i].right[j]);// 取右部第j个符号（非终结符和终结符）
+				char rightj[20]; // 用于解除静态绑定
+				strcpy(rightj, Productions[i].right[j]);// 取右部第j个符号（非终结符或终结符）
 
 				// 1.rightj是终结符，直接加入first集
 				if (getNonIndex(rightj) == -1)
 				{
-					firsts[i].ptr[firsts[i].num] = Productions[i].right[j];
-					firsts[i].num++;
-					break;
+					if (firsts[i].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
+					{
+						firsts[i].ptr[firsts[i].num] = rightj;
+						firsts[i].num++;
+						firsts[i].flag[getReIndex(rightj)] = true;
+						break;
+					}
+					else //已经被加入过first集，直接break
+						break;
 				}
 
 				// 2.rightj是非终结符，则递归求解
@@ -81,19 +84,71 @@ void cal_first(char* s) // 计算first集
 			}
 		}
 	}
-	return;
 }
 
-void cal_follow() // 计算follow集
+void cal_follow(char* s) // 计算follow集
 {
-	for (int i = 0; i < ReserveNum; i++) // 初始化个数为0
-	{
-		follows[i].num = 0;
-	}
-
+	
 }
 
 void out_fitstfollow() //输出first集和follow集到本地
 {
+	for (int i = 0; i < NonNum; i++) // 初始化
+	{
+		firsts[i].num = 0;
+		memset(firsts[i].flag, false, sizeof(firsts[i].flag));
+		follows[i].num = 0;
+		memset(follows[i].flag, false, sizeof(follows[i].flag));
+	}
 
+	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的first集
+	{
+		char temp[20];
+		strcpy(temp, Non_symbol[i]); // 解除静态绑定
+		cal_first(temp);
+	}
+
+	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
+	{
+		char temp[20];
+		strcpy(temp, Non_symbol[i]); // 解除静态绑定
+		cal_follow(temp);
+	}
+
+	FILE* fp;
+	if ((fp = fopen("first.txt", "w")) == NULL)
+	{
+		printf("cannot open the first assemble file\n");
+		return;
+	}
+	for (int i = 0; i < NonNum; i++)
+	{
+		fputs(Non_symbol[i], fp);
+		fputs(":\n", fp);
+		for (int j = 0; j < firsts[i].num; i++)
+		{
+			fputs(firsts[i].ptr[j], fp);
+			fputs(",", fp);
+		}
+		fputs("\n", fp);
+	}
+	fclose(fp);
+
+	if ((fp = fopen("follow.txt", "w")) == NULL)
+	{
+		printf("cannot open the follow assemble file\n");
+		return;
+	}
+	for (int i = 0; i < NonNum; i++)
+	{
+		fputs(Non_symbol[i], fp);
+		fputs(":\n", fp);
+		for (int j = 0; j < follows[i].num; i++)
+		{
+			fputs(follows[i].ptr[j], fp);
+			fputs(",", fp);
+		}
+		fputs("\n", fp);
+	}
+	fclose(fp);
 }

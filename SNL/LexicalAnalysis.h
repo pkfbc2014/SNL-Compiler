@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //类型声明
-enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR };//DFA״
+enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR };//DFA
 enum LexType{ID=1,RESERVED,INTC,SINGLE,DOUBLE,COM_LEFT,COM_RIGHT,CHAR,SUBSCRIPT};//单词分类的枚举类型：标识符，保留字，无符号整数，单字符分界符，双字符分界符,注释头符，注释结束符，字符起始符和结束符，数组下标界限符
 struct node//链表结点定义
 {

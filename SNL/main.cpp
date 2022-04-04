@@ -4,24 +4,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include "func_statement.h"
-#include "global_var.h"
-#include "SemanticAnalysis.h"
-#include "LexicalAnalysis.h"//词法分析
+//#include "global_var.h"
+//#include "SemanticAnalysis.h"
+//#include "LexicalAnalysis.h"//词法分析
 
 int main()
 {
-	FILE* fp;
-    char input_filename[20] = {"test.txt"}; // 输入文件为test.txt
+	//FILE* fp;
+ //   char input_filename[20] = {"test.txt"}; // 输入文件为test.txt
 
-    if ((fp = fopen(input_filename, "r")) == NULL) // 读入test文件
-    {
-        printf("cannot open the file!\n"); // 文件打开失败
-        exit(0); // 结束进程
-    }
+ //   if ((fp = fopen(input_filename, "r")) == NULL) // 读入test文件
+ //   {
+ //       printf("cannot open the file!\n"); // 文件打开失败
+ //       exit(0); // 结束进程
+ //   }
+
+    out_fitstfollow();
 
     //......
 
-    fclose(fp);
+    // fclose(fp);
 
     //function1(fp); // 词法分析
     //LL1_analysis(); // 语法分析 - LL1
