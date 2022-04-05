@@ -6,6 +6,7 @@
 const int NonNum = 67; // 非终结符数量
 const int ReserveNum = 43; //保留字数量
 const int ProductNum = 104; // 产生式数量
+const int maxloop = 40; // 求follow集的最大循环次数
 
 typedef struct first
 {
@@ -44,7 +45,7 @@ const char* Non_symbol[NonNum] = {
 	"FieldVarMore","CmpOp","AddOp","MultOp"
 }; 
 
-// 4个保留字和其他符号
+// 43个保留字和其他符号
 const char* Reserved_word[ReserveNum] = {
 	"ENDFILE","ERROR",
 	"PROGRAM","PROCEDURE","TYPE","VAR","IF",
