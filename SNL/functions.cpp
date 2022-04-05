@@ -8,7 +8,7 @@
 
 first firsts[NonNum];
 follow follows[NonNum];
-int LL1table[ProductNum][ReserveNum] = { 0 }; // LL1分析预测表
+int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
 int getNonIndex(const char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
@@ -250,6 +250,9 @@ void out_fitstfollow() //输出first集和follow集到本地
 
 void cal_predict() // 计算predict集 - LL1文法
 {
+	for (int i = 0; i < NonNum; i++) // 初始化LL1预测分析表为-1
+		for (int j = 0; j < ReserveNum; j++)
+			LL1table[i][j] = -1;
 	for (int i = 0; i < ProductNum; i++)
 	{
 		int leftindex = getNonIndex(Productions[i].left); // 左部在非终结符集合中的下标
@@ -268,13 +271,13 @@ void cal_predict() // 计算predict集 - LL1文法
 			else  // 右部是非终结符
 			{
 				int index = getNonIndex(Productions[i].right[j]);
-				for (int k = 0; strcmp(firsts[index].ptr[k], "$") != 0; k++)
+				for (int k = 0; k < firsts[index].num; k++)
 					LL1table[leftindex][getReIndex(firsts[index].ptr[k])] = i;
 				bool haveEmpty = false; // first(index)里有没有$
 				for (int k = 0; k < firsts[index].num; k++)
 					if (strcmp(firsts[index].ptr[k], "$") == 0)
 						haveEmpty = true;
-				if (haveEmpty == true)
+				if (haveEmpty == true) // first(right[j])中有$，继续看α中的下一个符号
 					countEmpty++;
 				else
 					break;
@@ -294,5 +297,22 @@ void cal_predict() // 计算predict集 - LL1文法
 
 void out_predict() //输出LL1预测分析表到本地
 {
-
+	FILE* fp;
+	if ((fp = fopen("predict.txt", "w")) == NULL)
+	{
+		printf("cannot open the predict assemble file\n");
+		return;
+	}
+	for (int i = 0; i < ReserveNum; i++)
+	{
+		fprintf(fp, "%s\t", Reserved_word[i]);
+	}
+	fprintf(fp, "\n");
+	for (int i = 0; i < NonNum; i++)
+	{
+		for (int j = 0; j < ReserveNum; j++)
+			fprintf(fp, "%d\t", LL1table[i][j]);
+		fprintf(fp, "%s\n", Non_symbol[i]);
+	}
+	fclose(fp);
 }
