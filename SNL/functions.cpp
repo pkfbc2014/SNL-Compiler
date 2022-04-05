@@ -267,13 +267,32 @@ void cal_predict() // 计算predict集 - LL1文法
 			}
 			else  // 右部是非终结符
 			{
-
+				int index = getNonIndex(Productions[i].right[j]);
+				for (int k = 0; strcmp(firsts[index].ptr[k], "$") != 0; k++)
+					LL1table[leftindex][getReIndex(firsts[index].ptr[k])] = i;
+				bool haveEmpty = false; // first(index)里有没有$
+				for (int k = 0; k < firsts[index].num; k++)
+					if (strcmp(firsts[index].ptr[k], "$") == 0)
+						haveEmpty = true;
+				if (haveEmpty == true)
+					countEmpty++;
+				else
+					break;
 			}
 		}
-		// 2.若α能推出$，则predict(A→α)=first(α)∪follow(A)
-		if (countEmpty == )
+		// 2.若α能推出$，则predict(A→α)={first(α)-$}∪follow(A)
+		int lenRight = 0;
+		for (int j = 0; strcmp(Productions[i].right[j], "0") != 0; j++) // 统计产生式右部长度
+			lenRight++;
+		if (countEmpty == lenRight)
 		{
-
+			for (int j = 0; j < follows[leftindex].num; j++)
+				LL1table[leftindex][getReIndex(follows[leftindex].ptr[j])] = i;
 		}
 	}
+}
+
+void out_predict() //输出LL1预测分析表到本地
+{
+
 }
