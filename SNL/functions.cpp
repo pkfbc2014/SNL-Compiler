@@ -169,10 +169,10 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 					int index_A = getNonIndex(Productions[i].left); // 非终结符A在非终结符集合中的下标
 					for (int k = 0; k < follows[index_A].num; k++)
 					{
-						if (follows[index].flag[*follows[index_A].ptr[k]] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
+						if (follows[index].flag[getReIndex(follows[index_A].ptr[k])] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
 						{
 							follows[index].ptr[follows[index].num] = follows[index_A].ptr[k];
-							follows[index].flag[*follows[index_A].ptr[k]] = true;
+							follows[index].flag[getReIndex(follows[index_A].ptr[k])] = true;
 							follows[index].num++;
 						}
 					}
@@ -185,10 +185,10 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 				int index_A = getNonIndex(Productions[i].left); // 非终结符A在非终结符集合中的下标
 				for (int k = 0; k < follows[index_A].num; k++)
 				{
-					if (follows[index].flag[*follows[index_A].ptr[k]] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
+					if (follows[index].flag[getReIndex(follows[index_A].ptr[k])] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
 					{
 						follows[index].ptr[follows[index].num] = follows[index_A].ptr[k];
-						follows[index].flag[*follows[index_A].ptr[k]] = true;
+						follows[index].flag[getReIndex(follows[index_A].ptr[k])] = true;
 						follows[index].num++;
 					}
 				}
@@ -239,14 +239,10 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 	for (int i = 0; i < NonNum; i++)
 	{
-		fputs(Non_symbol[i], fp);
-		fputs(":  ", fp);
-		for (int j = 0; j < follows[i].num; i++)
-		{
-			fputs(follows[i].ptr[j], fp);
-			fputs(",", fp);
-		}
-		fputs("\n", fp);
+		fprintf(fp, "%s:  ", Non_symbol[i]);
+		for (int j = 0; j < follows[i].num; j++)
+			fprintf(fp, "%s,", follows[i].ptr[j]);
+		fprintf(fp, "\n");
 	}
 	fclose(fp);
 	
