@@ -46,9 +46,9 @@ void cal_first(char* s) // 计算first集
 					int NonIndex = getNonIndex(Productions[i].left); // 获取当前产生式左部在非终结符集合中的下标
 					if (firsts[NonIndex].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
 					{
-						firsts[NonIndex].ptr[firsts[i].num] = Productions[i].right[j];
+						firsts[NonIndex].ptr[firsts[NonIndex].num] = Productions[i].right[j];
 
-						//firsts[NonIndex].ptr[firsts[i].num] = rightj;
+						//firsts[NonIndex].ptr[firsts[NonIndex].num] = rightj;
 						//注：不可以写成这样，因为rightj不是const的，等函数结束后就会被释放，虽然rightj与Productions[i].right[j]值相同，但得指向类型相同的，即静态变量
 
 						firsts[NonIndex].flag[getReIndex(rightj)] = true;					
