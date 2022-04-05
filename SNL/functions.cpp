@@ -8,6 +8,7 @@
 
 first firsts[NonNum];
 follow follows[NonNum];
+int LL1table[ProductNum][ReserveNum] = { 0 }; // LL1分析预测表
 
 int getNonIndex(const char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
@@ -245,5 +246,34 @@ void out_fitstfollow() //输出first集和follow集到本地
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
-	
+}
+
+void cal_predict() // 计算predict集 - LL1文法
+{
+	for (int i = 0; i < ProductNum; i++)
+	{
+		int leftindex = getNonIndex(Productions[i].left); // 左部在非终结符集合中的下标
+		int countEmpty = 0;
+		// 1.若α不能推出$，则predict(A→α)=first(α)
+		for (int j = 0; strcmp(Productions[i].right[j], "0") != 0; j++)
+		{
+			if (getNonIndex(Productions[i].right[j]) == -1) // 右部是终结符（包括空）
+			{
+				if (strcmp(Productions[i].right[j], "$") != 0) // 这个终结符不是$
+					LL1table[leftindex][getReIndex(Productions[i].right[j])] = i;
+				else
+					countEmpty++;
+				break;
+			}
+			else  // 右部是非终结符
+			{
+
+			}
+		}
+		// 2.若α能推出$，则predict(A→α)=first(α)∪follow(A)
+		if (countEmpty == )
+		{
+
+		}
+	}
 }

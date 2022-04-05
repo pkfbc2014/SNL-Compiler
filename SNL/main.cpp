@@ -19,9 +19,9 @@ int main()
  //       exit(0); // ½áÊø½ø³Ì
  //   }
 
-    out_fitstfollow();
+    // out_fitstfollow();
 
-    //......
+    // ......
 
     // fclose(fp);
 
