@@ -2,7 +2,7 @@ Program:  PROGRAM,
 ProgramHead:  PROGRAM,
 ProgramName:  ID,
 DeclarePart:  INTC,RECORD,
-TypeDec:  $,
+TypeDec:  $,$,$,
 TypeDeclaration:  
 TypeDecList:  TYPE,
 TypeDecMore:  EQ,TYPE,
@@ -27,7 +27,7 @@ VarIdMore:
 ProcDec:  ID,
 ProcDeclaration:  $,
 ProcDecMore:  COMMA,
-ProcName:  $,
+ProcName:  $,$,$,
 ParamList:  VAR,ID,CHAR,
 ParamDecList:  VAR,ID,CHAR,
 ParamMore:  
@@ -39,13 +39,13 @@ ProcBody:  COMMA,$,
 ProgramBody:  $,
 StmList:  SEMI,PROCEDURE,
 StmMore:  PROCEDURE,
-Stm:  $,$,SEMI,$,
+Stm:  $,SEMI,
 AssCall:  ID,VAR,
 AssignmentRest:  ID,
 ConditionalStm:  $,
 LoopStm:  
 InputStm:  
-Invar:  $,
+Invar:  $,$,$,
 OutputStm:  SEMI,
 ReturnStm:  
 CallStmRest:  VAR,
@@ -56,7 +56,7 @@ OtherRelE:
 Exp:  SEMI,
 OtherTerm:  BEGIN,ID,
 Term:  SEMI,
-OtherFactor:  $,
+OtherFactor:  $,$,
 Factor:  SEMI,
 Variable:  
 VariMore:  

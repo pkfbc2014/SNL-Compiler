@@ -4,7 +4,7 @@
 //一些全局变量
 
 const int NonNum = 67; // 非终结符数量
-const int ReserveNum = 42; //保留字数量
+const int ReserveNum = 43; //保留字数量
 const int ProductNum = 104; // 产生式数量
 
 typedef struct first
@@ -44,7 +44,7 @@ const char* Non_symbol[NonNum] = {
 	"FieldVarMore","CmpOp","AddOp","MultOp"
 }; 
 
-// 42个保留字和其他符号
+// 4个保留字和其他符号
 const char* Reserved_word[ReserveNum] = {
 	"ENDFILE","ERROR",
 	"PROGRAM","PROCEDURE","TYPE","VAR","IF",
@@ -56,7 +56,7 @@ const char* Reserved_word[ReserveNum] = {
 	"ASSIGN","EQ","LT","PLUS","MINUS",
 	"TIMES","OVER","LPAREN","RPAREN","DOT",
 	"COLON","SEMI","COMMA","LMIDPAREN","RMIDPAREN",
-	"UNDERANGE"
+	"UNDERANGE","$"
 };
 
 // SNL的104条产生式

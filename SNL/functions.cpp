@@ -9,7 +9,7 @@
 first firsts[NonNum];
 follow follows[NonNum];
 
-int getNonIndex(char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
+int getNonIndex(const char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
 	for (int i = 0; i < NonNum; i++)
 		if (strcmp(s, Non_symbol[i]) == 0)
@@ -17,7 +17,7 @@ int getNonIndex(char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终
 	return -1;
 }
 
-int getReIndex(char* s) // 返回终结符s在终结符集合中的下标
+int getReIndex(const char* s) // 返回终结符s在终结符集合中的下标
 {
 	for (int i = 0; i < ReserveNum; i++)
 		if (strcmp(s, Reserved_word[i]) == 0)
@@ -43,15 +43,16 @@ void cal_first(char* s) // 计算first集
 				// 1.rightj是终结符，直接加入first集
 				if (getNonIndex(rightj) == -1)
 				{
-					if (firsts[i].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
+					int NonIndex = getNonIndex(Productions[i].left); // 获取当前产生式左部在非终结符集合中的下标
+					if (firsts[NonIndex].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
 					{
-						firsts[i].ptr[firsts[i].num] = Productions[i].right[j];
+						firsts[NonIndex].ptr[firsts[i].num] = Productions[i].right[j];
 
-						//firsts[i].ptr[firsts[i].num] = rightj;
+						//firsts[NonIndex].ptr[firsts[i].num] = rightj;
 						//注：不可以写成这样，因为rightj不是const的，等函数结束后就会被释放，虽然rightj与Productions[i].right[j]值相同，但得指向类型相同的，即静态变量
 
-						firsts[i].flag[getReIndex(rightj)] = true;
-						firsts[i].num++;
+						firsts[NonIndex].flag[getReIndex(rightj)] = true;					
+						firsts[NonIndex].num++;
 						break;
 					}
 					else //已经被加入过first集，直接break
@@ -61,7 +62,7 @@ void cal_first(char* s) // 计算first集
 				// 2.rightj是非终结符，则递归求解
 				cal_first(rightj); // 继续算rightj的first集
 				int rightjIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
-				for (int k = 0; k < firsts[rightjIndex].num; k++) // 将first(rightj)中的非$加入first(s)
+				for (int k = 0; k < firsts[rightjIndex].num; k++) // 将first(rightj)中的非$终结符加入first(s)
 				{
 					if (strcmp(firsts[rightjIndex].ptr[k], "$") == 0) // first(rightj)中是否有空产生式
 						isEmpty = 1;
@@ -89,8 +90,12 @@ void cal_first(char* s) // 计算first集
 				lenRight++;
 			if (countEmpty == lenRight) // 即右部的所有符号都能推导或就是$，则将$加入到first(s)中
 			{
-				firsts[index].ptr[firsts[index].num] = "$";
-				firsts[index].num++;
+				if (firsts[index].flag[getReIndex("$")] == false) // $未被加入过first集
+				{
+					firsts[index].ptr[firsts[index].num] = "$";
+					firsts[index].flag[getReIndex("$")] = true;
+					firsts[index].num++;
+				}
 			}
 		}
 	}
