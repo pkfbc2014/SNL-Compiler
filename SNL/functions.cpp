@@ -25,11 +25,11 @@ int getReIndex(const char* s) // 返回终结符s在终结符集合中的下标
 	return -1;
 }
 
-void cal_first(char* s) // 计算first集
+void cal_first(const char* s) // 计算first集
 {
 	int countEmpty = 0;
 	int isEmpty = 0;
-	int lenRight = 0; // 产生式右部长度
+	int lenRight = 0; // 产生式右部长度（右部符号个数）
 	int index = getNonIndex(s); // 非终结符s在集合中的下标
 	for (int i = 0; i < ProductNum; i++) // 遍历每一条产生式
 	{
@@ -37,21 +37,14 @@ void cal_first(char* s) // 计算first集
 		{
 			for (int j = 0; strcmp(Productions[i].right[j],"0") != 0; j++) // 产生式右部以"0"作为结束符
 			{
-				char rightj[20]; // 用于解除静态绑定
-				strcpy(rightj, Productions[i].right[j]);// 取右部第j个符号（非终结符或终结符）
-
-				// 1.rightj是终结符，直接加入first集
-				if (getNonIndex(rightj) == -1)
+				// 1.right[j]是终结符，直接加入first集
+				if (getNonIndex(Productions[i].right[j]) == -1)
 				{
 					int NonIndex = getNonIndex(Productions[i].left); // 获取当前产生式左部在非终结符集合中的下标
-					if (firsts[NonIndex].flag[getReIndex(rightj)] == false) // rightj未被加入过first集
+					if (firsts[NonIndex].flag[getReIndex(Productions[i].right[j])] == false) // right[j]未被加入过first集
 					{
 						firsts[NonIndex].ptr[firsts[NonIndex].num] = Productions[i].right[j];
-
-						//firsts[NonIndex].ptr[firsts[NonIndex].num] = rightj;
-						//注：不可以写成这样，因为rightj不是const的，等函数结束后就会被释放，虽然rightj与Productions[i].right[j]值相同，但得指向类型相同的，即静态变量
-
-						firsts[NonIndex].flag[getReIndex(rightj)] = true;					
+						firsts[NonIndex].flag[getReIndex(Productions[i].right[j])] = true;
 						firsts[NonIndex].num++;
 						break;
 					}
@@ -59,26 +52,24 @@ void cal_first(char* s) // 计算first集
 						break;
 				}
 
-				// 2.rightj是非终结符，则递归求解
-				cal_first(rightj); // 继续算rightj的first集
-				int rightjIndex = getNonIndex(rightj); // 获得非终结符rightj在集合中的下标
-				for (int k = 0; k < firsts[rightjIndex].num; k++) // 将first(rightj)中的非$终结符加入first(s)
+				// 2.right[j]是非终结符，则递归求解
+				cal_first(Productions[i].right[j]); // 继续算right[j]的first集
+				int rightjIndex = getNonIndex(Productions[i].right[j]); // 获得非终结符right[j]在集合中的下标
+				for (int k = 0; k < firsts[rightjIndex].num; k++) // 将first(right[j])中的非$终结符加入first(s)
 				{
-					if (strcmp(firsts[rightjIndex].ptr[k], "$") == 0) // first(rightj)中是否有空产生式
+					if (strcmp(firsts[rightjIndex].ptr[k], "$") == 0) // first(right[j])中是否有空产生式
 						isEmpty = 1;
 					else
 					{
-						char temp[20]; 
-						strcpy(temp, firsts[rightjIndex].ptr[k]); // 解除静态绑定
-						if (firsts[index].flag[getReIndex(temp)] == false) // temp未被加入过first集
+						if (firsts[index].flag[getReIndex(firsts[rightjIndex].ptr[k])] == false) // temp未被加入过first集
 						{
 							firsts[index].ptr[firsts[index].num] = firsts[rightjIndex].ptr[k];
-							firsts[index].flag[getReIndex(temp)] = true;
+							firsts[index].flag[getReIndex(firsts[rightjIndex].ptr[k])] = true;
 							firsts[index].num++;
 						}
 					}
 				}
-				if (isEmpty == 0) // rightj不能为$，迭代结束
+				if (isEmpty == 0) // right[j]不能为$，迭代结束
 					break;
 				else 
 				{
@@ -101,7 +92,7 @@ void cal_first(char* s) // 计算first集
 	}
 }
 
-void cal_follow(char* s) // 计算follow集
+void cal_follow(const char* s) // 计算follow集
 {
 	
 }
@@ -117,18 +108,10 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 
 	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的first集
-	{
-		char temp[20];
-		strcpy(temp, Non_symbol[i]); // 解除静态绑定
-		cal_first(temp);
-	}
+		cal_first(Non_symbol[i]);
 
 	/*for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
-	{
-		char temp[20];
-		strcpy(temp, Non_symbol[i]); // 解除静态绑定
-		cal_follow(temp);
-	}*/
+		cal_follow(Non_symbol[i]);*/
 
 	FILE* fp;
 	if ((fp = fopen("first.txt", "w")) == NULL)
