@@ -104,13 +104,13 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 		int lenRight = 0; // 产生式右部长度（右部符号个数）
 		int tempindex = -1;
 
-		for (int j = 0; strcmp(Productions[i].right[j], "s") != 0; j++) // 统计产生式右部长度
+		for (int j = 0; strcmp(Productions[i].right[j], "0") != 0; j++) // 统计产生式右部长度
 			lenRight++;
 
 		int s_index[20] = { 0 }; // 记录s在产生式右部出现的所有位置
 		int s_index_num = 0; // 上述数组的尾巴下标（方便索引）
 
-		for (int j = 0; strcmp(Productions[i].right[j], "s") != 0; j++)
+		for (int j = 0; strcmp(Productions[i].right[j], "0") != 0; j++)
 		{
 			if (strcmp(Productions[i].right[j], s) == 0) // 右部有s，记录在产生式右部的下标
 			{
@@ -122,7 +122,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 		// 1.存在一个产生式A→αBβ，那么first(β)中除$外的所有符号都在follow(B)中
 		for (int j = 0; j < s_index_num; j++)
 		{
-			tempindex = s_index[i];
+			tempindex = s_index[j];
 
 			if (tempindex != -1 && tempindex < (lenRight - 1))
 			{
