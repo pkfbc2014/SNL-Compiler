@@ -102,7 +102,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 	for (int i = 0; i < ProductNum; i++)
 	{
 		int lenRight = 0; // 产生式右部长度（右部符号个数）
-		int tempindex = -1; // ???????
+		int tempindex = -1;
 
 		for (int j = 0; strcmp(Productions[i].right[j], "s") != 0; j++) // 统计产生式右部长度
 			lenRight++;
@@ -126,7 +126,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 
 			if (tempindex != -1 && tempindex < (lenRight - 1))
 			{
-				bool hasEmpty = true; // ????
+				bool hasEmpty = true; // 式β中是否包含$
 				while ((tempindex < lenRight - 1) && hasEmpty)
 				{
 					tempindex += 1;
@@ -144,7 +144,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 					}
 					else // β是非终结符
 					{
-						hasEmpty = 0;
+						hasEmpty = false;
 						int betaindex = getNonIndex(beta); // beta在非终结符集合中的下标
 						for (int k = 0; k < firsts[betaindex].num; k++) // 将first(β)中所有除了$的符号加入到follow(B)中
 						{
@@ -166,19 +166,34 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 				if (hasEmpty && strcmp(Productions[i].left, s) != 0)
 				{
 					cal_follow(Productions[i].left, flag);
-					int index_2 = getNonIndex(Productions[i].left);
-					for (int k = 0; k < follows[index_2].num; k++)
+					int index_A = getNonIndex(Productions[i].left); // 非终结符A在非终结符集合中的下标
+					for (int k = 0; k < follows[index_A].num; k++)
 					{
-						if (follows[index].flag[follows[index_2].ptr[k]] == false)
+						if (follows[index].flag[*follows[index_A].ptr[k]] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
 						{
-
+							follows[index].ptr[follows[index].num] = follows[index_A].ptr[k];
+							follows[index].flag[*follows[index_A].ptr[k]] = true;
+							follows[index].num++;
 						}
-						follows[index].ptr
+					}
+				}
+			}
+			// 3.存在一个产生式A→αB，那么follow(A)中的所有符号都在follow(B)中
+			else if (tempindex != -1 && tempindex == lenRight - 1 && strcmp(Productions[i].left, s) != 0)
+			{
+				cal_follow(Productions[i].left, flag);
+				int index_A = getNonIndex(Productions[i].left); // 非终结符A在非终结符集合中的下标
+				for (int k = 0; k < follows[index_A].num; k++)
+				{
+					if (follows[index].flag[*follows[index_A].ptr[k]] == false) // 即将加入follow(B)的终结符follows[index_A].ptr[k]此前未加入过
+					{
+						follows[index].ptr[follows[index].num] = follows[index_A].ptr[k];
+						follows[index].flag[*follows[index_A].ptr[k]] = true;
+						follows[index].num++;
 					}
 				}
 			}
 		}
-
 	}
 }
 
@@ -217,7 +232,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 	fclose(fp);
 
-	/*if ((fp = fopen("follow.txt", "w")) == NULL)
+	if ((fp = fopen("follow.txt", "w")) == NULL)
 	{
 		printf("cannot open the follow assemble file\n");
 		return;
@@ -234,5 +249,5 @@ void out_fitstfollow() //输出first集和follow集到本地
 		fputs("\n", fp);
 	}
 	fclose(fp);
-	*/
+	
 }
