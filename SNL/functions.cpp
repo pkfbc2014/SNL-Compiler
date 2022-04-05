@@ -119,6 +119,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 			}
 		}
 
+		// 1.存在一个产生式A→αBβ，那么first(β)中除$外的所有符号都在follow(B)中
 		for (int j = 0; j < s_index_num; j++)
 		{
 			tempindex = s_index[i];
@@ -129,7 +130,51 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 				while ((tempindex < lenRight - 1) && hasEmpty)
 				{
 					tempindex += 1;
-					const char* temp = Productions[i].right[tempindex];
+					const char* beta = Productions[i].right[tempindex];
+					if (getNonIndex(beta) == -1) // β是终结符
+					{
+						if (follows[index].flag[getReIndex(beta)] == false) // β未被加入过follow集
+						{
+							follows[index].ptr[follows[index].num] = beta;
+							follows[index].flag[getReIndex(beta)] = true;
+							follows[index].num++;
+						}
+						hasEmpty = false;
+						break;
+					}
+					else // β是非终结符
+					{
+						hasEmpty = 0;
+						int betaindex = getNonIndex(beta); // beta在非终结符集合中的下标
+						for (int k = 0; k < firsts[betaindex].num; k++) // 将first(β)中所有除了$的符号加入到follow(B)中
+						{
+							if (strcmp(firsts[betaindex].ptr[k], "$") == 0)
+								hasEmpty = true;
+							else
+							{
+								if (follows[index].flag[getReIndex(firsts[betaindex].ptr[k])] == false) // 这个终结符未加入过follow集
+								{
+									follows[index].ptr[follows[index].num] = firsts[betaindex].ptr[k];
+									follows[index].flag[getReIndex(firsts[betaindex].ptr[k])] = true;
+									follows[index].num++;
+								}
+							}
+						}
+					}
+				}
+				// 2.存在一个产生式A→αBβ，且first(β)包含$，那么follow(A)中的所有符号都在follow(B)中
+				if (hasEmpty && strcmp(Productions[i].left, s) != 0)
+				{
+					cal_follow(Productions[i].left, flag);
+					int index_2 = getNonIndex(Productions[i].left);
+					for (int k = 0; k < follows[index_2].num; k++)
+					{
+						if (follows[index].flag[follows[index_2].ptr[k]] == false)
+						{
+
+						}
+						follows[index].ptr
+					}
 				}
 			}
 		}
