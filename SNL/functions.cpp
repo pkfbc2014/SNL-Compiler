@@ -92,9 +92,49 @@ void cal_first(const char* s) // 计算first集
 	}
 }
 
-void cal_follow(const char* s) // 计算follow集
+void cal_follow(const char* s, bool* flag) // 计算follow集
 {
-	
+	int index = getNonIndex(s); // 非终结符s在集合中的下标
+	if (flag[index] == false) // 标记这个非终结符已经被找过
+		flag[index] = true;
+	else
+		return;
+	for (int i = 0; i < ProductNum; i++)
+	{
+		int lenRight = 0; // 产生式右部长度（右部符号个数）
+		int tempindex = -1; // ???????
+
+		for (int j = 0; strcmp(Productions[i].right[j], "s") != 0; j++) // 统计产生式右部长度
+			lenRight++;
+
+		int s_index[20] = { 0 }; // 记录s在产生式右部出现的所有位置
+		int s_index_num = 0; // 上述数组的尾巴下标（方便索引）
+
+		for (int j = 0; strcmp(Productions[i].right[j], "s") != 0; j++)
+		{
+			if (strcmp(Productions[i].right[j], s) == 0) // 右部有s，记录在产生式右部的下标
+			{
+				s_index[s_index_num] = j;
+				s_index_num++;
+			}
+		}
+
+		for (int j = 0; j < s_index_num; j++)
+		{
+			tempindex = s_index[i];
+
+			if (tempindex != -1 && tempindex < (lenRight - 1))
+			{
+				bool hasEmpty = true; // ????
+				while ((tempindex < lenRight - 1) && hasEmpty)
+				{
+					tempindex += 1;
+					const char* temp = Productions[i].right[tempindex];
+				}
+			}
+		}
+
+	}
 }
 
 void out_fitstfollow() //输出first集和follow集到本地
@@ -110,8 +150,12 @@ void out_fitstfollow() //输出first集和follow集到本地
 	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的first集
 		cal_first(Non_symbol[i]);
 
-	/*for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
-		cal_follow(Non_symbol[i]);*/
+	for (int i = 0; i < NonNum; i++) // 计算所有非终结符的follow集
+	{
+		bool flag[NonNum];
+		memset(flag, false, sizeof(flag));
+		cal_follow(Non_symbol[i], flag);
+	}
 
 	FILE* fp;
 	if ((fp = fopen("first.txt", "w")) == NULL)
