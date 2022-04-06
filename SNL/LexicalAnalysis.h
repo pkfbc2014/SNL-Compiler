@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 //类型声明
-enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR };//DFA
+enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR};//DFA状态
+enum error{NORMAL=1,INASSIGN_ERROR,INRANGE_ERROR,INCHAR_ERROR,ERROR};//错误类型分别对应无错误,赋值错误，程序结束错误,字符错误，读入无法识别错误
 enum LexType{ID=1,RESERVED,INTC,SINGLE,DOUBLE,COM_LEFT,COM_RIGHT,CHAR,SUBSCRIPT};//单词分类的枚举类型：标识符，保留字，无符号整数，单字符分界符，双字符分界符,注释头符，注释结束符，字符起始符和结束符，数组下标界限符
 struct node//链表结点定义
 {
@@ -18,14 +19,15 @@ struct node//链表结点定义
 
 //变量定义
 state a = START;
-
 FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");
+error error0 = NORMAL;//词法错误
 char ch;//取字符后放这里
 
 //函数声明
 char getNextChar();//从源文件中读取一个字符
 int ungetNextChar();//将文件现有指针向前移动一个字符大小   ....!!!!应增强鲁棒性
 int init_node(node* ptr);
+int classify(char ch);
 node* getTokenList();
 int reservedLookup();
 int ChainToFile();

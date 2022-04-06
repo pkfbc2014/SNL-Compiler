@@ -18,13 +18,7 @@
     <ClCompile Include="RD.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="LL1.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="functions.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="test_LexicalAnalysis.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +29,11 @@
     <ClInclude Include="func_statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="treenode.h">
+=======
+    <ClInclude Include="LexicalAnalysis.h">
+>>>>>>> Stashed changes
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

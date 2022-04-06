@@ -139,15 +139,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="functions.cpp" />
-    <ClCompile Include="LL1.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="RD.cpp" />
+    <ClCompile Include="test_LexicalAnalysis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func_statement.h" />
     <ClInclude Include="global_var.h" />
+<<<<<<< Updated upstream
     <ClInclude Include="treenode.h" />
+=======
+    <ClInclude Include="LexicalAnalysis.h" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
