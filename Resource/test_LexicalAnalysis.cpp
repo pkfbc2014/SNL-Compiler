@@ -40,6 +40,7 @@ int init_node(node* ptr) {//链表结点初始化
     ptr->Sem = nullptr;
     return 0;
 }
+uygfuguy
 node* getTokenList() {//未完成：在状态转移过程中的token同时生成;有错误的处理方法
     if (fp == nullptr) {
         printf("文件打开失败！\n");
