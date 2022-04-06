@@ -33,7 +33,6 @@ int classify(char ch) {
         return 7;//字符状态
     return 8;
 }
-int i;
 int init_node(node* ptr) {//链表结点初始化
     ptr->Lex = ID;//初始化为标识符
     ptr->next = ptr->pre = nullptr;
