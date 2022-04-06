@@ -143,14 +143,10 @@
     <ClCompile Include="LL1.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RD.cpp" />
-    <ClCompile Include="SemanticAnalysis.cpp" />
-    <ClCompile Include="test_LexicalAnalysis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func_statement.h" />
     <ClInclude Include="global_var.h" />
-    <ClInclude Include="LexicalAnalysis.h" />
-    <ClInclude Include="SemanticAnalysis.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

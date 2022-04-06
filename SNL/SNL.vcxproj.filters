@@ -27,24 +27,12 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SemanticAnalysis.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="test_LexicalAnalysis.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global_var.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="func_statement.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="LexicalAnalysis.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SemanticAnalysis.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
