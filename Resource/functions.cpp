@@ -314,5 +314,5 @@ void out_predict() //输出LL1预测分析表到本地
 		fprintf(fp, "%s\n", Non_symbol[i]);
 	}
 	fclose(fp);
-	test
+	hahaa
 }
