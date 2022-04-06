@@ -23,16 +23,9 @@ FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");
 char ch;//取字符后放这里
 
 //函数声明
-int getNextChar();//从源文件中读取一个字符
+char getNextChar();//从源文件中读取一个字符
 int ungetNextChar();//将文件现有指针向前移动一个字符大小   ....!!!!应增强鲁棒性
-int getTokenList();
+int init_node(node* ptr);
+node* getTokenList();
 int reservedLookup();
 int ChainToFile();
-//函数实现
-int getNextChar() {
-	return fgetc(fp);
-}
-int ungetNextChar() {
-	fseek(fp, -(long)sizeof(char), SEEK_CUR);
-	return 0;
-}
