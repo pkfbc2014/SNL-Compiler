@@ -8,7 +8,6 @@
 
 first firsts[NonNum];
 follow follows[NonNum];
-int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
 int getNonIndex(const char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
