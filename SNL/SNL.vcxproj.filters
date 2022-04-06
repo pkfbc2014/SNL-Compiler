@@ -29,11 +29,7 @@
     <ClInclude Include="func_statement.h">
       <Filter>头文件</Filter>
     </ClInclude>
-<<<<<<< Updated upstream
     <ClInclude Include="treenode.h">
-=======
-    <ClInclude Include="LexicalAnalysis.h">
->>>>>>> Stashed changes
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
