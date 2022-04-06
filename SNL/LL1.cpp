@@ -6,8 +6,7 @@
 #include "func_statement.h"
 #include "global_var.h"
 
-
-void LL1_analysis()
+void LL1_analysis() // LL1分析法
 {
 	cal_predict(); // 计算predict集并构造LL1预测分析表
 	out_predict(); // 输出LL1预测分析表到本地

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void RD_analysis()
+void RD_analysis() // µİ¹éÏÂ½µ·¨
 {
 
 }
