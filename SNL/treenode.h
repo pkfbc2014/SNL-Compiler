@@ -65,7 +65,7 @@ typedef struct treenode
 	int nodekind; // %索引值% {记录语法树节点类型}
 	kindmember kind; // {记录语法树节点的具体类型，为共用结构体}
 	int idnum; // {记录一个节点中的标志符个数}
-	char** name; // {字符串数组，数组成员是节点红的标志符的名字}
+	char** name; // {字符串数组，数组成员是节点中的标志符的名字}
 	int table; // {指针数组，数组成员是节点的各个标志符在符号表中的入口} ？？？？？？
 	int type_name; // {记录类型名，当节点为声明类型，且类型是由类型标志符表示时有效} ？？？？？？
 	attrmember attr; // {记录语法树节点其他属性}
