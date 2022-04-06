@@ -133,8 +133,3 @@ int main() {
 
 	return 0;
 }
-
-void funfun()
-{
-    return 0;
-}
