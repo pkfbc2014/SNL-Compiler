@@ -134,7 +134,7 @@ int main() {
 	return 0;
 }
 
-
-
-
-dasdiaoihfohiasfoiaoi·¢´ôºì·ð¡¾i
+void funfun()
+{
+    return 0;
+}
