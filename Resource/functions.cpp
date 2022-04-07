@@ -218,7 +218,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 
 	FILE* fp;
-	if ((fp = fopen("first.txt", "w")) == NULL)
+	if ((fp = fopen("Data\\first.txt", "w")) == NULL)
 	{
 		printf("cannot open the first assemble file\n");
 		return;
@@ -232,7 +232,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	}
 	fclose(fp);
 
-	if ((fp = fopen("follow.txt", "w")) == NULL)
+	if ((fp = fopen("Data\\follow.txt", "w")) == NULL)
 	{
 		printf("cannot open the follow assemble file\n");
 		return;
@@ -297,7 +297,7 @@ void cal_predict() // 计算predict集 - LL1文法
 void out_predict() //输出LL1预测分析表到本地
 {
 	FILE* fp;
-	if ((fp = fopen("predict.txt", "w")) == NULL)
+	if ((fp = fopen("Data\\predict.txt", "w")) == NULL)
 	{
 		printf("cannot open the predict assemble file\n");
 		return;
@@ -314,5 +314,4 @@ void out_predict() //输出LL1预测分析表到本地
 		fprintf(fp, "%s\n", Non_symbol[i]);
 	}
 	fclose(fp);
-	hahaa
 }
