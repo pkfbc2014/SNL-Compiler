@@ -1,19 +1,22 @@
 #pragma once
 //AttributeIR 中的 kind, 用"char"声明
-#define typeKind '0'
-#define varKind '1'
-#define procKind '2'
+#define TYPEKIND '0'
+#define VARKIND '1'
+#define PROCKIND '2'
 
 //Typekind，类型的种类, 用"char"声明
-#define intTy '0'
-#define charTy '1'
-#define arrayTy '2'
-#define recordTy '3'
-#define boolTy '4'
+#define INTTY '0'
+#define CHARTY '1'
+#define ARRAYTY '2'
+#define RECORDTY '3'
+#define BOOLTY '4'
 
 //AccessKind, 使用"char"声明
-#define dir '0'
-#define indir '1'
+#define DIR '0'
+#define INDIR '1'
+
+//初试偏移initOff,固定为7
+#define INITOFF 7
 
 struct fieldChain{
     char idname[10];//变量名
