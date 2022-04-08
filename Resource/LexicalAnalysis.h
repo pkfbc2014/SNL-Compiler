@@ -11,7 +11,7 @@ struct node//链表结点定义
 {
 	int Lineshow;//单词所在行数
 	LexType Lex;
-	char* Sem;//单词语义信息
+	char Sem[100]={'\0'};//单词语义信息
 	node* pre;
 	node* next;
 };
