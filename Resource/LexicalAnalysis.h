@@ -27,7 +27,6 @@ typedef enum//词法类型定义
 
 static struct word //保留字表，便于查阅
 {
-	
 	char Sem[100];   //语义信息
 	LexType tok; //词法信息
 }reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
