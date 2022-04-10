@@ -5,10 +5,11 @@
 #include <string.h>
 #include "RD_head.h"
 
-void RD_analysis(token* tokenhead) // 递归下降分析法，接收token序列头
+void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
-	nowtoken = tokenhead;
-
+	nowtoken = tokenhead; // 指向token序列的头
+	
+	// ......
 
 }
 
@@ -21,7 +22,7 @@ void initnode(treenode* temp) // 初始化节点
 	temp->childnum = 0;
 }
 
-treenode* ReadmatchToken(LexType tok)
+treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 {
 	if (tok == nowtoken->Lex) // 终结符匹配上了
 	{
@@ -43,17 +44,16 @@ treenode* ReadmatchToken(LexType tok)
 	}
 }
 
-void addChild(treenode* root, treenode* child)
+void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
 {
 	root->child[root->childnum] = child;
 	root->childnum++;
 }
 
-void printerror() // 语法分析错误信息输出
+void printerror(char* message) // 语法分析错误信息输出
 {
-
+	printf("%s\n", message);
 }
-
 
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
@@ -71,6 +71,7 @@ treenode* program()
 		return newnode;
 	}
 }
+
 treenode* programHead()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -85,6 +86,7 @@ treenode* programHead()
 		return newnode;
 	}
 }
+
 treenode* declarePart()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -100,6 +102,7 @@ treenode* declarePart()
 		return newnode;
 	}
 }
+
 treenode* programBody()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -115,6 +118,7 @@ treenode* programBody()
 		return newnode;
 	}
 }
+
 treenode* typeDecPart()
 {
 	treenode* newnode = NULL;
@@ -132,6 +136,7 @@ treenode* typeDecPart()
 	}
 	return newnode;
 }
+
 treenode* varDecPart()
 {
 	treenode* newnode = NULL;
@@ -149,6 +154,7 @@ treenode* varDecPart()
 	}
 	return newnode;
 }
+
 treenode* procDecpart()
 {
 	treenode* newnode = NULL;
@@ -166,6 +172,7 @@ treenode* procDecpart()
 	}
 	return newnode;
 }
+
 treenode* typeDec()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -180,6 +187,7 @@ treenode* typeDec()
 		return newnode;
 	}
 }
+
 treenode* typeDecList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -197,6 +205,7 @@ treenode* typeDecList()
 		return newnode;
 	}
 }
+
 treenode* typeID()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -210,6 +219,7 @@ treenode* typeID()
 		return newnode;
 	}
 }
+
 treenode* typeDef()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -236,6 +246,7 @@ treenode* typeDef()
 		}
 	}
 }
+
 treenode* typeDecMore()
 {
 	treenode* newnode = NULL;
@@ -253,6 +264,7 @@ treenode* typeDecMore()
 	}
 	return newnode;
 }
+
 treenode* baseType()
 {
 	treenode* newnode = NULL;
@@ -284,6 +296,7 @@ treenode* baseType()
 	}
 	return newnode;
 }
+
 treenode* structureType()
 {
 	treenode* newnode = NULL;
@@ -315,6 +328,7 @@ treenode* structureType()
 	}
 	return newnode;
 }
+
 treenode* arrayType()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -335,6 +349,7 @@ treenode* arrayType()
 	}
 	return newnode;
 }
+
 treenode* recType()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -350,6 +365,7 @@ treenode* recType()
 	}
 	return newnode;
 }
+
 treenode* fieldDecList()
 {
 	treenode* newnode = NULL;
@@ -387,6 +403,7 @@ treenode* fieldDecList()
 	}
 	return newnode;
 }
+
 treenode* IDList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -401,6 +418,7 @@ treenode* IDList()
 	}
 	return newnode;
 }
+
 treenode* fieldDecMore()
 {
 	treenode* newnode = NULL;
@@ -419,6 +437,7 @@ treenode* fieldDecMore()
 	}
 	return newnode;
 }
+
 treenode* IDMore()
 {
 	treenode* newnode = NULL;
@@ -438,6 +457,7 @@ treenode* IDMore()
 	}
 	return newnode;
 }
+
 treenode* varDec()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -452,6 +472,7 @@ treenode* varDec()
 	}
 	return newnode;
 }
+
 treenode* varDecList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -468,6 +489,7 @@ treenode* varDecList()
 	}
 	return newnode;
 }
+
 treenode* varIDList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -482,6 +504,7 @@ treenode* varIDList()
 	}
 	return newnode;
 }
+
 treenode* varDecMore()
 {
 	treenode* newnode = NULL;
@@ -500,6 +523,7 @@ treenode* varDecMore()
 	}
 	return newnode;
 }
+
 treenode* varIDMore()
 {
 	treenode* newnode = NULL;
@@ -519,6 +543,7 @@ treenode* varIDMore()
 	}
 	return newnode;
 }
+
 treenode* procDec()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -540,6 +565,7 @@ treenode* procDec()
 	}
 	return newnode;
 }
+
 treenode* paramList()
 {
 	treenode* newnode = NULL;
@@ -558,6 +584,7 @@ treenode* paramList()
 	}
 	return newnode;
 }
+
 treenode* procDecPart()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -571,6 +598,7 @@ treenode* procDecPart()
 	}
 	return newnode;
 }
+
 treenode* procBody()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -584,6 +612,7 @@ treenode* procBody()
 	}
 	return newnode;
 }
+
 treenode* paramDecList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -598,6 +627,7 @@ treenode* paramDecList()
 	}
 	return newnode;
 }
+
 treenode* param()
 {
 	treenode* newnode = NULL;
@@ -632,6 +662,7 @@ treenode* param()
 	}
 	return newnode;
 }
+
 treenode* paramMore()
 {
 	treenode* newnode = NULL;
@@ -651,6 +682,7 @@ treenode* paramMore()
 	}
 	return newnode;
 }
+
 treenode* formList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -665,6 +697,7 @@ treenode* formList()
 	}
 	return newnode;
 }
+
 treenode* fidMore()
 {
 	treenode* newnode = NULL;
@@ -684,6 +717,7 @@ treenode* fidMore()
 	}
 	return newnode;
 }
+
 treenode* stmList()
 {
 	treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -698,95 +732,458 @@ treenode* stmList()
 	}
 	return newnode;
 }
+
 treenode* stm()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "Stm");
+		if (nowtoken->Lex == IF)
+		{
+			addChild(newnode, conditionalStm());
+			return newnode;
+		}
+		else if (nowtoken->Lex == WHILE)
+		{
+			addChild(newnode, loopStm());
+			return newnode;
+		}
+		else if (nowtoken->Lex == READ)
+		{
+			addChild(newnode, inputStm());
+			return newnode;
+		}
+		else if (nowtoken->Lex == WRITE)
+		{
+			addChild(newnode, outputStm());
+			return newnode;
+		}
+		else if (nowtoken->Lex == RETURN)
+		{
+			addChild(newnode, returnStm());
+			return newnode;
+		}
+		else if (nowtoken->Lex == ID)
+		{
+			addChild(newnode, ReadmatchToken(ID));
+			addChild(newnode, assCall());
+			return newnode;
+		}
+	}
+	return NULL;
 }
+
 treenode* stmMore()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == SEMI)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "StmMore");
+			addChild(newnode, ReadmatchToken(SEMI));
+			addChild(newnode, stmList());
+			return newnode;
+		}
+	}
+	return newnode;
 }
-treenode* conditionalStm()
+
+treenode* conditionalStm() // ??
 {
 
 }
-treenode* loopStm()
+
+treenode* loopStm() // ??
 {
 
 }
+
 treenode* inputStm()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "InputStm");
+		addChild(newnode, ReadmatchToken(READ));
+		addChild(newnode, ReadmatchToken(LPAREN));
+		addChild(newnode, ReadmatchToken(ID));
+		addChild(newnode, ReadmatchToken(RPAREN));
+	}
+	return newnode;
 }
+
 treenode* outputStm()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "OutputStm");
+		addChild(newnode, ReadmatchToken(WRITE));
+		addChild(newnode, ReadmatchToken(LPAREN));
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(RPAREN));
+	}
+	return newnode;
 }
+
 treenode* returnStm()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "ReturnStm");
+		addChild(newnode, ReadmatchToken(RETURN));
+	}
+	return newnode;
 }
+
 treenode* assCall()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == LMIDPAREN ||nowtoken->Lex == DOT ||nowtoken->Lex == ASSIGN)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "AssCall");
+			addChild(newnode, assignmentRest());
+			return newnode;
+		}
+	}
+	else if (nowtoken->Lex == LPAREN)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "AssCall");
+			addChild(newnode, callStmRest());
+			return newnode;
+		}
+	}
+	return newnode;
 }
+
 treenode* assignmentRest()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "AssignmentRest");
+		if (nowtoken->Lex == LMIDPAREN || nowtoken->Lex == DOT)
+			addChild(newnode, variMore());
+		addChild(newnode, ReadmatchToken(COLON));
+		addChild(newnode, exp());
+	}
+	return newnode;
 }
+
 treenode* callStmRest()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "CallStmRest");
+		addChild(newnode, ReadmatchToken(LPAREN));
+		addChild(newnode, actparamList());
+		addChild(newnode, ReadmatchToken(RPAREN));
+		return newnode;
+	}
 }
+
 treenode* variMore()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == LMIDPAREN)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "VariMore");
+			addChild(newnode, ReadmatchToken(LMIDPAREN));
+			addChild(newnode, exp());
+			addChild(newnode, ReadmatchToken(RMIDPAREN));
+		}
+	}
+	else if (nowtoken->Lex == DOT)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "VariMore");
+			addChild(newnode, ReadmatchToken(DOT));
+			addChild(newnode, fieldVar());
+		}
+	}
+	return newnode;
 }
+
 treenode* exp()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "Exp");
+		addChild(newnode, term());
+		addChild(newnode, otherTerm());
+		return newnode;
+	}
 }
+
 treenode* actparamList()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == LPAREN || nowtoken->Lex == INTC || nowtoken->Lex == ID)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		initnode(newnode);
+		strcpy(newnode->str, "ActParamList");
+		addChild(newnode, exp());
+		addChild(newnode, actparamMore());
+	}
+	return newnode;
 }
+
 treenode* actparamMore()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == COMMA)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		initnode(newnode);
+		strcpy(newnode->str, "ActParamMore");
+		addChild(newnode, ReadmatchToken(COMMA));
+		addChild(newnode, actparamList());
+	}
+	return newnode;
 }
+
 treenode* term()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "Term");
+		addChild(newnode, factor());
+		addChild(newnode, otherFactor());
+		return newnode;
+	}
 }
+
 treenode* otherTerm()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == PLUS || nowtoken->Lex == MINUS)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		initnode(newnode);
+		strcpy(newnode->str, "OtherTerm");
+		addChild(newnode, addOp());
+		addChild(newnode, exp());
+	}
+	return newnode;
 }
-treenode* addOp()
+
+treenode* addOp() // 回头看
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == PLUS)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "AddOp");
+			addChild(newnode, ReadmatchToken(PLUS));
+			return newnode;
+		}	
+	}
+	else if (nowtoken->Lex == MINUS)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "AddOp");
+			addChild(newnode, ReadmatchToken(MINUS));
+			return newnode;
+		}
+	}
+	return newnode;
 }
+
 treenode* factor()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "Factor");
+	}
+	if (nowtoken->Lex == INTC)
+	{
+		addChild(newnode, ReadmatchToken(INTC));
+		return newnode;
+	}
+	else if (nowtoken->Lex == LPAREN)
+	{
+		addChild(newnode, ReadmatchToken(LPAREN));
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(RPAREN));
+		return newnode;
+	}
+	else if (nowtoken->Lex == ID)
+	{
+		addChild(newnode, variable());
+		return newnode;
+	}
+	return NULL;
 }
+
 treenode* otherFactor()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == TIMES || nowtoken->Lex == OVER)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "OtherFactor");
+			addChild(newnode, multOp());
+			addChild(newnode, term());
+		}
+	}
+	return newnode;
 }
+
 treenode* multOp()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == TIMES)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "MultOp");
+			addChild(newnode, ReadmatchToken(TIMES));
+			return newnode;
+		}
+	}
+	else if (nowtoken->Lex == OVER)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "MultOp");
+			addChild(newnode, ReadmatchToken(OVER));
+			return newnode;
+		}
+	}
+	return newnode;
 }
+
 treenode* variable()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "Variable");
+		addChild(newnode, ReadmatchToken(ID));
+		addChild(newnode, variMore());
+		return newnode;
+	}
 }
+
 treenode* fieldVar()
 {
-
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "FieldVar");
+		addChild(newnode, ReadmatchToken(ID));
+		addChild(newnode, fieldVarMore());
+		return newnode;
+	}
 }
+
 treenode* fieldVarMore()
 {
-
+	treenode* newnode = NULL;
+	if (nowtoken->Lex == LMIDPAREN)
+	{
+		newnode = (treenode*)malloc(sizeof(treenode));
+		if (newnode == NULL)
+			return NULL;
+		else
+		{
+			initnode(newnode);
+			strcpy(newnode->str, "FieldVarMore");
+			addChild(newnode, ReadmatchToken(LMIDPAREN));
+			addChild(newnode, exp());
+			addChild(newnode, ReadmatchToken(RMIDPAREN));
+		}
+	}
+	return newnode;
 }
