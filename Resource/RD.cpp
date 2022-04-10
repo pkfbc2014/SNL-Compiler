@@ -22,6 +22,7 @@ void initnode(treenode* temp) // 初始化节点
 
 treenode* ReadmatchToken(LexType tok)
 {
+
 	if (currentToken->wd.tok == tok)
 	{
 		TreeNode* t = new TreeNode(currentToken->wd.str);
