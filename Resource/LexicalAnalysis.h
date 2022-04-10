@@ -12,10 +12,10 @@ typedef enum//词法类型定义
 	//保留字
 	PROGRAM, PROCEDURE, TYPE, VAR, IF,
 	THEN, ELSE, FI, WHILE, DO, ENDWH,
-	BEGIN, END1, READ, WRITE, ARRAY, OF,
-	RECORD, RETURN1,	
+	BEGIN, END, READ, WRITE, ARRAY, OF,
+	RECORD, RETURN,	
 	//类型
-	INTEGER, CHAR1,
+	INTEGER, CHAR,
 	//多字符单词符号
 	ID, INTC, CHARC,
 	//特殊符号
@@ -29,10 +29,10 @@ static struct word {//保留字表，便于查阅
 	char Sem[100];   //语义信息
 	LexType tok; //词法信息
 }reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
-	{"procedure",PROCEDURE},{"begin",BEGIN},{"end",END1},{"array",ARRAY},
+	{"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
 	{"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
 	{"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
-	{"return",RETURN1},{"integer",INTEGER},{"char",CHAR1} };	//保留字
+	{"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//保留字
 
 struct token//链表结点定义
 {
