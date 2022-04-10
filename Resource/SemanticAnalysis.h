@@ -5,9 +5,12 @@
 #include <stdlib.h>
 #include <vector>
 #include <string>
-#include <fstream>
+#include <fstream> 
 
 using namespace std;
+
+//标识符名称长度
+#define IDLENGTH 10
 
 //AttributeIR 中的 kind, 用"char"声明
 #define TYPEKIND '0'
@@ -29,10 +32,13 @@ using namespace std;
 #define INITOFF 7
 
 //语义分析导出文件的路径
-#define ERROR_FILE "C:\\Users\\86177\\Desktop\\编译原理课设\\source_test\\file\\error_file.txt"
+#define ERROR_FILE "C:\\Users\\86177\\Desktop\\编译原理课设\\VS_test\\file\\error_file.txt"
+
+//语义错误信息
+#define SemanticERROR1 "标识符重复声明错误"
 
 struct fieldChain{
-    char idname[10];//变量名
+    char idname[IDLENGTH];//变量名
     char unitType;//域中成员的类型，使用宏定义，Typekind(intTy: '0', charTy: '1', arrayTy: '2', recordTy: '3', boolTy: '4')
     int offset;//在记录中的偏移
     struct fieldChain *next;
@@ -56,7 +62,7 @@ struct TypeIR{
 };
 
 
-struct AttributeIR{
+typedef struct attributeIR{
     struct TypeIR *idtype;//指向标识符的类型内部表示，共有5种(intTy, charTy, arrayTy, recordTy, boolTy)
     char kind;//标识符的种类，共有3种(typeKind, varKind, procKind),的kind，使用宏定义，typeKind:'0', varKind:'1', procKind:'2'
     union{
@@ -73,27 +79,29 @@ struct AttributeIR{
             int size;
         }ProcAttr;//过程名标识符的属性
     }More; //标识符的不同类型有不同的属性
-};
+}AttributeIR;
 
 typedef struct symbtable{
-    char idname[10];
-    struct AttributeIR attrIR;
-    struct symbtable * next;
+    char idname[IDLENGTH];
+    AttributeIR attrIR;
 }SymbTable;//SNL符号表数据结构声明
 
-//函数声明区
+/***************函数声明区****************/
 
+/******文件输入输出相关操作******/
 void PrintFile(string message, string file_path);//字符串打印到相应文件中
 
-void CreateTable(vector< vector<SymbTable> > &scope, vector<bool> &exit_region, int &level);//创建符号表
+/******符号表操作******/
+void CreateTable(vector< vector<SymbTable> > &scope, vector<bool> &exit_region, int &ValidTableCount);//创建一个符号表，并插入scope栈
 
-void DestroyTable(int &level, vector<bool> &exit_region);//废除符号表
-
+void DestroyTable(vector<bool>& exit_region, int &ValidTableCount);//废除最新的一个有效符号表
 
 bool SearchSingleTable(char *id, vector< vector<SymbTable> > scope, int level);//查找标识符是否存在与对应表中
 
-
 bool FindEntry(char *id, bool flag, vector< vector<SymbTable> > scope, vector<bool> exit_region);//flag == false:在当前符号表中查找； flag == true:在整个scope栈中查找
+
+bool Enter(char* id, AttributeIR Attrib, vector< vector<SymbTable> >& scope, vector<bool> exit_region);//登记标识符和其属性到符号表
+
 
 
 void semantic_analysis(); //语义分析
