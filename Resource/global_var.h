@@ -46,7 +46,7 @@ const char* Non_symbol[NonNum] = {
 	"FieldVarMore","CmpOp","AddOp","MultOp"
 }; 
 
-// 43个保留字和其他符号
+// 43个保留字和其他符号（终结符）
 const char* Reserved_word[ReserveNum] = {
 	"ENDFILE","ERROR",
 	"PROGRAM","PROCEDURE","TYPE","VAR","IF",

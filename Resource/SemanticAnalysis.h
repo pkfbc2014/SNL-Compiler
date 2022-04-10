@@ -1,4 +1,14 @@
 #pragma once
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <string>
+#include <fstream>
+
+using namespace std;
+
 //AttributeIR 中的 kind, 用"char"声明
 #define TYPEKIND '0'
 #define VARKIND '1'
@@ -17,6 +27,9 @@
 
 //初试偏移initOff,固定为7
 #define INITOFF 7
+
+//语义分析导出文件的路径
+#define ERROR_FILE "C:\\Users\\86177\\Desktop\\编译原理课设\\source_test\\file\\error_file.txt"
 
 struct fieldChain{
     char idname[10];//变量名
@@ -68,4 +81,21 @@ typedef struct symbtable{
     struct symbtable * next;
 }SymbTable;//SNL符号表数据结构声明
 
+//函数声明区
+
+void PrintFile(string message, string file_path);//字符串打印到相应文件中
+
+void CreateTable(vector< vector<SymbTable> > &scope, vector<bool> &exit_region, int &level);//创建符号表
+
+void DestroyTable(int &level, vector<bool> &exit_region);//废除符号表
+
+
+bool SearchSingleTable(char *id, vector< vector<SymbTable> > scope, int level);//查找标识符是否存在与对应表中
+
+
+bool FindEntry(char *id, bool flag, vector< vector<SymbTable> > scope, vector<bool> exit_region);//flag == false:在当前符号表中查找； flag == true:在整个scope栈中查找
+
+
 void semantic_analysis(); //语义分析
+
+
