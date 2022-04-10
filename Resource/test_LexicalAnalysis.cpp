@@ -104,7 +104,7 @@ token* getTokenList() {//Œ¥ÕÍ≥…£∫‘⁄◊¥Ã¨◊™“∆π˝≥Ã÷–µƒtokenÕ¨ ±…˙≥…;”–¥ÌŒÛµƒ¥¶¿Ì∑Ω∑
     //Œ¥ÃÌº”∂¡–¬◊÷∑˚µƒ—≠ª∑
     //ÃÌº”≥ˆø⁄:∂¡ÕÍ’˚∏ˆ≥Ã–ÚŒƒº˛µƒ≥ˆø⁄->INRANGE_ERROR
     //
-
+    //while(error0==NORMAL&&)
     switch (state0) {//¥¶¿Ì¬ﬂº≠£∫œ»ø¥◊¥Ã¨£¨‘Ÿø¥ ‰»Î
     case START:
         num = 0; receiver[0] = '\0';
@@ -280,5 +280,6 @@ int main() {
     //char abc[100] = { 'a','b','c','d','\0' };
     //strcpy(ab, abc);
     //printf("%s", ab);
+    
 	return 0;
 }
