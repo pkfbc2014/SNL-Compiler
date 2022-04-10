@@ -5,7 +5,7 @@
 #include <string.h>
 #include "RD_head.h"
 
-void RD_analysis(node* tokenhead) // 递归下降分析法，接收token序列头
+void RD_analysis(token* tokenhead) // 递归下降分析法，接收token序列头
 {
 	nowtoken = tokenhead;
 
@@ -20,19 +20,20 @@ void initnode(treenode* temp) // 初始化节点
 	temp->childnum = 0;
 }
 
-void movetoken() // token序列指针后移
+treenode* ReadmatchToken(LexType tok)
 {
-	nowtoken = nowtoken->next;
-}
-
-bool match() // 匹配token
-{
-	if ()
+	if (currentToken->wd.tok == tok)
 	{
-		return 1; // 匹配成功
+		TreeNode* t = new TreeNode(currentToken->wd.str);
+		t->tk = currentToken;
+		nowtoken = nowtoken->next; // token指针后移
+		return t;
 	}
 	else
-		return 0; //匹配失败，转回原函数并停机，输出错误信息
+	{
+		nowtoken = nowtoken->next; // token指针后移
+		return NULL;
+	}
 }
 
 void printerror() // 语法分析错误信息输出
@@ -45,11 +46,31 @@ void printerror() // 语法分析错误信息输出
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
 {
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	initnode(newnode);
+	strcpy(newnode->str, Non_symbol[0]);
 
+	newnode->child[newnode->childnum] = programHead();
+	newnode->childnum++;
+	newnode->child[newnode->childnum] = declarePart();
+	newnode->childnum++;
+	newnode->child[newnode->childnum] = programBody();
+	newnode->childnum++;
+
+	return newnode;
 }
 treenode* programHead()
 {
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	initnode(newnode);
+	strcpy(newnode->str, Non_symbol[1]);
 
+	newnode->child[newnode->childnum] = match()
+	newnode->childnum++;
+	newnode->child[newnode->childnum] = declarePart();
+	newnode->childnum++;
+
+	return newnode;
 }
 treenode* declarePart()
 {
