@@ -8,9 +8,8 @@
 void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken = tokenhead; // 指向token序列的头
-	
-	// ......
 
+	treenode* RD_treeROOT = program();
 }
 
 void initnode(treenode* temp) // 初始化节点
