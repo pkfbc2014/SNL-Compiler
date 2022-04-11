@@ -7,6 +7,8 @@
 const int maxlen = 20; // 一个字符的最大长度
 token* nowtoken; // 当前指向的token节点
 
+treenode* RD_treeROOT = NULL; // 递归下降法语法分析数根节点
+
 void RD_analysis(token* tokenhead); // 递归下降分析法，接收token序列头
 
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
