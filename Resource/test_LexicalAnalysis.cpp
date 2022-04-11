@@ -10,21 +10,21 @@
 #include "global_var.h"//Ê¹ÓÃ±£Áô×Ö±í
 char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     char ch = fgetc(fp);
-    while (ch == ' ' || ch == '\n'||ch=='\t') {
-       ch = fgetc(fp);
-    }
+    //while (ch == ' ' || ch == '\n'||ch=='\t') {
+    //   ch = fgetc(fp);
+    //}
     return ch;
 }
 int ungetNextChar() {
     fseek(fp, -(long)sizeof(char), SEEK_CUR);
     return 0;
 }
-int classify(char ch) {//ÎÞ¿Õ°×
+int classify(char ch) {//
     if ((ch > '@' && ch < '[') || (ch > '`' && ch < '{'))
         return 1;//×ÖÄ¸
     if (ch >= '0' && ch <= '9')
         return 2;//Êý×Ö
-    if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '(' || ch == ')' || ch == ';' || ch == '[' || ch == ']' || ch == '=' || ch == '<' || ch == EOF)
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '(' || ch == ')' || ch == ';' || ch == '[' || ch == ']' || ch == '=' || ch == '<' ||ch==',')
         return 3;//µ¥·Ö½ç·û
     if (ch == ':')
         return 4;//Ë«·Ö½ç·û£¬½ÓÊÕÎª£º
@@ -34,7 +34,14 @@ int classify(char ch) {//ÎÞ¿Õ°×
         return 6;//Êý×éÏÂ±ê
     if (ch == '\'')
         return 7;//×Ö·û×´Ì¬
-    return 8;
+    //ÒÔÏÂÎª²âÊÔ²¿·Ö
+    if (ch == ' ' ||ch == '\t')//×Ö·ûÎª¿Õ°×
+        return 8;
+    if (ch == '\n')
+        return 9;
+    if (ch == EOF)
+        return 10;
+    return 11;
 }
 LexType classify1(char ch) {
     if (ch == '+') {
@@ -81,8 +88,16 @@ int init_node(token* ptr) {//Á´±í½áµã³õÊ¼»¯
     ptr->Lineshow = -1;
     return 0;
 }
+LexType classify2(char* ptr) {//ID·ÖÀàº¯Êý
+    for (int i = 0; i < 21; i++) {
+        if (strcmp(reservedWords[i].Sem, ptr) == 0) {
+            return reservedWords[i].tok;
+        }
+    }
+    return ID;
+}
 
-
+//Î´´¦Àí:Ìí¼Ó¿Õ×Ö·ûµÄtoken´¦Àí?¿Î±¾ÖÐ´¦Àí²¢ÎÞ¿Õtoken
 token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·¨
     if (fp == nullptr) {
         printf("ÎÄ¼þ´ò¿ªÊ§°Ü£¡\n");
@@ -103,139 +118,187 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
 
     //Î´Ìí¼Ó¶ÁÐÂ×Ö·ûµÄÑ­»·
     //Ìí¼Ó³ö¿Ú:¶ÁÍêÕû¸ö³ÌÐòÎÄ¼þµÄ³ö¿Ú->INRANGE_ERROR
-    //
-    //while(error0==NORMAL&&)
-    switch (state0) {//´¦ÀíÂß¼­£ºÏÈ¿´×´Ì¬£¬ÔÙ¿´ÊäÈë
-    case START:
-        num = 0; receiver[0] = '\0';
-        switch (classify(ch)) {
-        case 1:
-            state0 = INID; receiver[num++] = ch; break;
-        case 2:
-            state0 = INNUM; receiver[num++] = ch; break;
-        case 3:
-            state0 = DONE; receiver[num++] = ch; break;
-        case 4:
-            receiver[num++] = ch;
-            ch = getNextChar();
-            if (ch == '=') {
-                state0 = INASSIGN; 
+    //Î´Ìí¼ÓÐÐÊýµÄÊ¶±ð
+    while (error0 == NORMAL) {//Î´·¢Éú´íÎóÇÒÎ´Ê¶±ðµ½³ÌÐò½áÊø
+        switch (state0) {//´¦ÀíÂß¼­£ºÏÈ¿´×´Ì¬£¬ÔÙ¿´ÊäÈë
+        case START:
+            num = 0; receiver[0] = '\0';
+            switch (classify(ch)) {
+            case 1:
+                state0 = INID; receiver[num++] = ch; break;
+            case 2:
+                state0 = INNUM; receiver[num++] = ch; break;
+            case 3:
+                state0 = DONE; receiver[num++] = ch; break;
+            case 4:
                 receiver[num++] = ch;
+                ch = getNextChar();
+                if (ch == '=') {
+                    state0 = INASSIGN;
+                    receiver[num++] = ch;
+                    break;
+                }
+                else {
+                    state0 = START;  error0 = INASSIGN_ERROR; break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖÐ':'ºóËù¸ú²¢·Ç'='
+                }
+            case 5:state0 = INCOMMENT; receiver[num++] = ch; break;//×¢ÊÍ×´Ì¬
+            case 6:
+                receiver[num++] = ch;
+                ch = getNextChar();
+                if (ch == '.') {
+                    state0 = INRANGE; receiver[num++] = ch; break;//Êý×éÏÂ±ê½çÏÞ×´Ì¬
+                }
+                else {
+                    current->Lex = ENDFILE; current->Lineshow = Line; current->next = NULL;
+                    state0 = START; error0 = INRANGE_ERROR;  break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖÐ':'ºóËù¸ú²¢·Ç'='
+                }
+            case 7://ÎÞÐèÂ¼Èë
+                state0 = INCHAR; break;
+            case 8://¿Õ°×ÈÏÎªÊÇÉÏÒ»¸öÊäÈë×´Ì¬µÄ½ØÖ¹,¿Õ¸ñ¿ÕÐÐ»»ÐÐµÈ¶¼ÔÚ´Ë´¦Àí£¬ÆäÓà×´Ì¬µÄÊäÈë¿Õ¸ñÒ²ÍË»Øµ½´Ë´¦´¦Àí
+                ch = getNextChar();
                 break;
+            case 9://»»ÐÐ
+                ch = getNextChar();
+                Line++;
+                break;
+            case 10://Õý³£Ê¶±ðµ½ÎÄ¼þ½áÊø·û
+                current->Lex = ENDFILE; current->next = NULL;
+                current->Lineshow = Line;
+                error0 = INRANGE_ERROR;
+                break;
+            default://ÊäÈëÎÞ·¨Ê¶±ð
+                error0 = ERROR1; receiver[num++] = ch; break;
             }
-            else {
-                state0 = START;  error0 = INASSIGN_ERROR; break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖÐ':'ºóËù¸ú²¢·Ç'='
+            break;
+        case INID://ID×´Ì¬¿ÉÒÔÊ¶±ð³öID£¬±£Áô×ÖºÍÀàÐÍ
+            ch = getNextChar();
+            while (classify(ch) == 1 || classify(ch) == 2)
+            {
+                receiver[num++] = ch;
+                ch = getNextChar();
             }
-        case 5:state0 = INCOMMENT;receiver[num++] = ch; break;//×¢ÊÍ×´Ì¬
-        case 6:
-            receiver[num++] = ch;
-            ch = getNextChar();
-            if (ch == '.') {
-                state0 = INRANGE; receiver[num++] = ch; break;//Êý×éÏÂ±ê½çÏÞ×´Ì¬
-            }
-            else {
-                state0 = START; error0 = INRANGE_ERROR;  break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖÐ':'ºóËù¸ú²¢·Ç'='
-            }
-        case 7://ÎÞÐèÂ¼Èë
-            state0 = INCHAR; break;
-        default://ÊäÈëÎÞ·¨Ê¶±ð
-            error0 = ERROR1; receiver[num++] = ch; break;
-        }
-        break;
-    case INID:
-        ch = getNextChar();
-        while (classify(ch) == 1 || classify(ch) == 2)
-        {
-            receiver[num++] = ch;
-            ch = getNextChar();
-        }
-        receiver[num] = '\0';
-        //token½ÚµãÄÚÈÝ¹¹½¨
-        strcpy(current->Sem,receiver);
-        current->Lex = ID;
-        current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
-        next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-        printf("Ê¶±ð±êÊ¶·û£º%s\n", receiver);
-        //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
-        ungetNextChar();
-        state0 = START;
-        break;
-    case INNUM:
-        ch = getNextChar();
-        while (classify(ch) == 2) {
-            receiver[num++] = ch;
-            ch = getNextChar();
-        }
-        receiver[num] = '\0';
-        //token½ÚµãÄÚÈÝ¹¹½¨
-        strcpy(current->Sem, receiver);
-        current->Lex = INTC;
-        current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
-        next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-        printf("Ê¶±ðÊý×Ö£º%s\n", receiver);
-        //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
-        ungetNextChar();
-        state0 = START;
-        break;
-    case INASSIGN:
-        current->Lex = ASSIGN;
-        current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
-        next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-        printf("Ê¶±ð·ûºÅ£º :=\n");
-        state0 = START;
-        break;
-    case INCOMMENT://°üº¬·ûºÅÔÚÄÚ£¬²»Éú³Étoken
-        ch = getNextChar();
-        while (ch != '}')
-            ch = getNextChar();
-        printf("Ê¶±ð²¢ÒÑÌø¹ý×¢ÊÍ");//²»Ó°ÏìÏÂÒ»ÂÖtokenÉú³É
-        state0 = START;
-        break;
-    case INRANGE:
-        current->Lex = UNDERANGE;
-        current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
-        next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-        printf("Ê¶±ð·ûºÅ£º..£¨Êý×éÏÂ±ê)\n");
-        state0 = START;
-        break;
-    case INCHAR:
-        ch = getNextChar();
-        if (classify(ch) == 1 || classify(ch) == 2) {
-            state0 = DONE;
-            //¹¹½¨token
-            current->Lex = CHARC;
-            receiver[num++] = ch;
             receiver[num] = '\0';
-            strcpy(current->Sem, receiver);
-            current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
-            next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-            printf("Ê¶±ð×Ö·û£º..£¨Êý×éÏÂ±ê)\n");
-        }
-        else {
-            state0 = START;
-            error0 = INCHAR_ERROR;
-        }
-        break;
-    case DONE:
-        if (classify(ch) == 1 || classify(ch) == 2) {//µ¥×Ö·ûÊ¶±ð
-            ch = getNextChar();
-            if (ch == '\'')
-                state0 = START;
-            else {
-                error0 = INCHAR_ERROR;
-                state0 = START;
+            //token½ÚµãÄÚÈÝ¹¹½¨
+            current->Lex = classify2(receiver); 
+            if (current->Lex == ID) {//ID²ÅÓÐÓïÒåÐÅÏ¢
+                strcpy(current->Sem, receiver);
             }
-        }
-        else {//µ¥·Ö½ç·û
-            current->Lex = classify1(ch);
+            current->Lineshow = Line;
             current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+            if (current->Lex == ID) {
+                printf("Ê¶±ðµ½ID±êÊ¶·û:%s\n", receiver);
+            }
+            else {
+                printf("Ê¶±ðµ½ID·Ç±êÊ¶·û:%s\n", receiver);
+            }
+            //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
+            ungetNextChar();
             state0 = START;
-            printf("Ê¶±ðµ¥·Ö½ç·û£º%c£¨Êý×éÏÂ±ê)\n",ch);
-        }
+            break;
+        case INNUM:
+            ch = getNextChar();
+            while (classify(ch) == 2) {
+                receiver[num++] = ch;
+                ch = getNextChar();
+            }
+            receiver[num] = '\0';
+            //token½ÚµãÄÚÈÝ¹¹½¨
+            strcpy(current->Sem, receiver);
+            current->Lex = INTC; current->Lineshow = Line;
+            current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
+            next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+            printf("Ê¶±ðÊý×Ö£º%s\n", receiver);
+            //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
+            ungetNextChar();
+            state0 = START;
+            break;
+        case INASSIGN:
+            current->Lex = ASSIGN; current->Lineshow = Line;
+            current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
+            next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+            printf("Ê¶±ð·ûºÅ£º :=\n");
+            state0 = START;
+            break;
+        case INCOMMENT://°üº¬·ûºÅÔÚÄÚ£¬²»Éú³Étoken
+            ch = getNextChar();
+            while (ch != '}')
+                ch = getNextChar();
+            printf("Ê¶±ð²¢ÒÑÌø¹ý×¢ÊÍ");//²»Ó°ÏìÏÂÒ»ÂÖtokenÉú³É
+            state0 = START;
+            break;
+        case INRANGE:
+            current->Lex = UNDERANGE; current->Lineshow = Line;
+            current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
+            next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+            printf("Ê¶±ð·ûºÅ£º..£¨Êý×éÏÂ±ê)\n");
+            state0 = START;
+            break;
+        case INCHAR:
+            ch = getNextChar();
+            if (classify(ch) == 1 || classify(ch) == 2) {
+                state0 = DONE;
+                //¹¹½¨token
+                current->Lex = CHARC; current->Lineshow = Line;
+                receiver[num++] = ch;
+                receiver[num] = '\0';
+                strcpy(current->Sem, receiver);
+                current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
+                next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+                printf("Ê¶±ð×Ö·û£º%c\n",ch);
+            }
+            else {
+                state0 = START;
+                error0 = INCHAR_ERROR;
+            }
+            break;
+        case DONE:
+            if (classify(ch) == 1 || classify(ch) == 2) {//µ¥×Ö·ûÊ¶±ð
+                ch = getNextChar();
+                if (ch == '\'')
+                    state0 = START;
+                else {
+                    error0 = INCHAR_ERROR;
+                    state0 = START;
+                }
+            }
+            else {//µ¥·Ö½ç·û
+                current->Lex = classify1(ch); current->Lineshow = Line;
+                current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
+                next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
+                state0 = START;
+                printf("Ê¶±ðµ¥·Ö½ç·û£º%c\n", ch);
+                ch = getNextChar();
+            }
+            break;
+        default:
+            break;
+        } 
+    }
+    switch (error0) {
+    case NORMAL:
+        printf("NORMAL:tokenÐòÁÐÎ´Ê¶±ðµ½ÎÄ¼þ½áÊø·û");
+        return head;
+        break;
+    case INASSIGN_ERROR:
+        printf("INASSIGN_ERROR:¸³Öµ·ûºÅÊéÐ´´íÎó");
+        return head;
+        break;
+    case INRANGE_ERROR:
+        printf("INRANGE_ERROR:tokenÊ¶±ð³ÌÐòÕý³£Ê¶±ðµ½ÎÄ¼þ½áÊø·û½áÊø");
+        return head;
+        break;
+    case INCHAR_ERROR:
+        printf("INCHAR_ERROR:×Ö·ûÊéÐ´³ö´í");
+        return head;
+        break;
+    case ERROR1:
+        printf("ERROR1:¶ÁÈëÎÞ·¨Ê¶±ðµÄ×Ö·û,×Ö·ûÎª:%c",ch);
+        return head;
         break;
     default:
-        break;
+        printf("tokenÊ¶±ð³ÌÐòÒì³£ÍË³ö");
+        return head;
     }
     return head;
 }
@@ -280,6 +343,13 @@ int main() {
     //char abc[100] = { 'a','b','c','d','\0' };
     //strcpy(ab, abc);
     //printf("%s", ab);
-    
+    token* head = getTokenList();
+    if (error0 == INRANGE_ERROR) {//tokenÊ¶±ðÕý³£µÄ´¦Àí
+        printf("\nÐÐÊý\t´Ê·¨ÐÅÏ¢\tÓïÒåÐÅÏ¢\t");
+ /*       while (head->Lex != ENDFILE) {
+            printf("%-10d\n")
+        }*/
+    }
+
 	return 0;
 }
