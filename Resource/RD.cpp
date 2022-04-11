@@ -110,7 +110,7 @@ treenode* programBody()
 	else
 	{
 		initnode(newnode);
-		strcpy(newnode->str, "DeclarePart");
+		strcpy(newnode->str, "ProgramBody");
 		addChild(newnode,ReadmatchToken(BEGIN));
 		addChild(newnode,stmList());
 		addChild(newnode,ReadmatchToken(END1));
@@ -1038,7 +1038,7 @@ treenode* addOp() // »ØÍ·¿´
 			strcpy(newnode->str, "AddOp");
 			addChild(newnode, ReadmatchToken(PLUS));
 			return newnode;
-		}	
+		}
 	}
 	else if (nowtoken->Lex == MINUS)
 	{
