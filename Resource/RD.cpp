@@ -8,9 +8,8 @@
 void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken = tokenhead; // 指向token序列的头
-	
-	// ......
 
+	treenode* RD_treeROOT = program();
 }
 
 void initnode(treenode* temp) // 初始化节点
@@ -111,7 +110,7 @@ treenode* programBody()
 	else
 	{
 		initnode(newnode);
-		strcpy(newnode->str, "DeclarePart");
+		strcpy(newnode->str, "ProgramBody");
 		addChild(newnode,ReadmatchToken(BEGIN));
 		addChild(newnode,stmList());
 		addChild(newnode,ReadmatchToken(END1));
@@ -1039,7 +1038,7 @@ treenode* addOp() // 回头看
 			strcpy(newnode->str, "AddOp");
 			addChild(newnode, ReadmatchToken(PLUS));
 			return newnode;
-		}	
+		}
 	}
 	else if (nowtoken->Lex == MINUS)
 	{
