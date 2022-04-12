@@ -77,6 +77,9 @@ LexType classify1(char ch) {
     else if (ch == '<') {
         return LT;
     }
+    else if (ch == ',') {
+        return COMMA;
+    }
     else if (ch == EOF) {
         return ENDFILE;
     }
@@ -96,7 +99,15 @@ LexType classify2(char* ptr) {//ID·ÖÀàº¯Êý
     }
     return ID;
 }
-
+int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ÐÅÏ¢
+    for (int i = 0; i < 42; i++) {
+        if (Words[i].tok==a) {
+            printf("%s\t", Words[i].Sem);
+            fprintf(w_fp, "%s\t", Words[i].Sem);
+            return 0;
+        }
+    }
+}
 //Î´´¦Àí:Ìí¼Ó¿Õ×Ö·ûµÄtoken´¦Àí?¿Î±¾ÖÐ´¦Àí²¢ÎÞ¿Õtoken
 token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·¨
     if (fp == nullptr) {
@@ -170,7 +181,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
                 error0 = ERROR1; receiver[num++] = ch; break;
             }
             break;
-        case INID://ID×´Ì¬¿ÉÒÔÊ¶±ð³öID£¬±£Áô×ÖºÍÀàÐÍ
+        case INID://ID×´Ì¬¿ÉÒÔÊ¶±ð³ö±£Áô×ÖºÍÀàÐÍ
             ch = getNextChar();
             while (classify(ch) == 1 || classify(ch) == 2)
             {
@@ -184,16 +195,16 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
                 strcpy(current->Sem, receiver);
             }
             current->Lineshow = Line;
+            //if (current->Lex == ID) {
+            //    printf("Ê¶±ðµ½ID±êÊ¶·û:%s\n", receiver);
+            //}
+            //else {
+            //    printf("Ê¶±ðµ½ID·Ç±êÊ¶·û:%s\n", receiver);
+            //} 
             current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-            if (current->Lex == ID) {
-                printf("Ê¶±ðµ½ID±êÊ¶·û:%s\n", receiver);
-            }
-            else {
-                printf("Ê¶±ðµ½ID·Ç±êÊ¶·û:%s\n", receiver);
-            }
             //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
-            ungetNextChar();
+            //ungetNextChar();//´Ë´¦ÓÐÎÊÌâ
             state0 = START;
             break;
         case INNUM:
@@ -208,30 +219,31 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
             current->Lex = INTC; current->Lineshow = Line;
             current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-            printf("Ê¶±ðÊý×Ö£º%s\n", receiver);
+            //printf("Ê¶±ðÊý×Ö£º%s\n", receiver);
             //±êÊ¶·ûÊ¶±ð£¬Token½¨Á¢
-            ungetNextChar();
             state0 = START;
             break;
         case INASSIGN:
             current->Lex = ASSIGN; current->Lineshow = Line;
             current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-            printf("Ê¶±ð·ûºÅ£º :=\n");
+            //printf("Ê¶±ð·ûºÅ£º :=\n");
+            ch = getNextChar();
             state0 = START;
             break;
         case INCOMMENT://°üº¬·ûºÅÔÚÄÚ£¬²»Éú³Étoken
             ch = getNextChar();
             while (ch != '}')
                 ch = getNextChar();
-            printf("Ê¶±ð²¢ÒÑÌø¹ý×¢ÊÍ");//²»Ó°ÏìÏÂÒ»ÂÖtokenÉú³É
+            //printf("Ê¶±ð²¢ÒÑÌø¹ý×¢ÊÍ");//²»Ó°ÏìÏÂÒ»ÂÖtokenÉú³É
             state0 = START;
             break;
         case INRANGE:
             current->Lex = UNDERANGE; current->Lineshow = Line;
             current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-            printf("Ê¶±ð·ûºÅ£º..£¨Êý×éÏÂ±ê)\n");
+            //printf("Ê¶±ð·ûºÅ£º..£¨Êý×éÏÂ±ê)\n");
+            ch = getNextChar();
             state0 = START;
             break;
         case INCHAR:
@@ -245,7 +257,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
                 strcpy(current->Sem, receiver);
                 current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
                 next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
-                printf("Ê¶±ð×Ö·û£º%c\n",ch);
+                //printf("Ê¶±ð×Ö·û£º%c\n",ch);
             }
             else {
                 state0 = START;
@@ -267,7 +279,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
                 current = next; next = next->next;//ÐÂcurrentµÄÖ¸ÕëÐÅÏ¢ÊÇÍêÕûµÄ
                 next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëÐÅÏ¢
                 state0 = START;
-                printf("Ê¶±ðµ¥·Ö½ç·û£º%c\n", ch);
+                //printf("Ê¶±ðµ¥·Ö½ç·û£º%c\n", ch);
                 ch = getNextChar();
             }
             break;
@@ -277,79 +289,57 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
     }
     switch (error0) {
     case NORMAL:
-        printf("NORMAL:tokenÐòÁÐÎ´Ê¶±ðµ½ÎÄ¼þ½áÊø·û");
+        printf("NORMAL:tokenÐòÁÐÎ´Ê¶±ðµ½ÎÄ¼þ½áÊø·û\n");
         return head;
         break;
     case INASSIGN_ERROR:
-        printf("INASSIGN_ERROR:¸³Öµ·ûºÅÊéÐ´´íÎó");
+        printf("INASSIGN_ERROR:¸³Öµ·ûºÅÊéÐ´´íÎó\n");
         return head;
         break;
     case INRANGE_ERROR:
-        printf("INRANGE_ERROR:tokenÊ¶±ð³ÌÐòÕý³£Ê¶±ðµ½ÎÄ¼þ½áÊø·û½áÊø");
+        printf("INRANGE_ERROR:tokenÊ¶±ð³ÌÐòÕý³£Ê¶±ðµ½ÎÄ¼þ½áÊø·û½áÊø\n");
         return head;
         break;
     case INCHAR_ERROR:
-        printf("INCHAR_ERROR:×Ö·ûÊéÐ´³ö´í");
+        printf("INCHAR_ERROR:×Ö·ûÊéÐ´³ö´í\n");
         return head;
         break;
     case ERROR1:
-        printf("ERROR1:¶ÁÈëÎÞ·¨Ê¶±ðµÄ×Ö·û,×Ö·ûÎª:%c",ch);
+        printf("ERROR1:¶ÁÈëÎÞ·¨Ê¶±ðµÄ×Ö·û,×Ö·ûÎª:%c\n",ch);
         return head;
         break;
     default:
-        printf("tokenÊ¶±ð³ÌÐòÒì³£ÍË³ö");
+        printf("tokenÊ¶±ð³ÌÐòÒì³£ÍË³ö\n");
         return head;
     }
     return head;
 }
 int main() {
-    //FILE* fp;
-    //char ch;//È¡×Ö·ûºó·ÅÕâÀï
-    //printf("µ÷ÊÔ´Ê·¨·ÖÎöÄÚÈÝ£º\n");
-    //if ((fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+")) == NULL)
-    //    //ÎÄ¼þ´ò¿ª£¬È¡Ò»¸ö×Ö·û/×Ö½Ú
-    //{
-    //    printf("\nCannot open file strike any key exit!");
-    //    getchar();//×èÈû¹¦ÄÜ£¬¹ÒÆð
-    //    exit(1);
-    //}
-
-    //int fgetc(FILE * stream);´ÓÖ¸¶¨µÄÎÄ¼þÖÐ¶ÁÒ»¸ö×Ö·û
-    //ch = fgetc(fp);//´ÓÎÄ¼þÀïÈ¡Ò»¸ö×Ö½Ú/×Ö·û£¬È¡³ö×Ö·ûºó·ÅÕâÀï
-    //while (ch != EOF)//ÅÐ¶ÏÓÐÃ»ÓÐµ½ÎÄ¼þµÄÄ©Î²£¬EOFÎÄ¼þ½áÊø±êÖ¾
-    //{
-    //    putchar(ch);//´ÓÎÄ¼þÈ¡µÄ×Ö·ûÏÔÊ¾µ½ÏÔÊ¾Æ÷ÉÏ
-    //    ch = fgetc(fp);//´ÓÖ¸¶¨µÄÎÄ¼þÖÐ¶ÁÒ»¸ö×Ö·û
-    //}
-    //fclose(fp);
-    //printf("\nµ÷ÊÔ½áÊø\n");
-
-
-    /*char test = getNextChar();
-    while (test != EOF) {
-        if (test == ' ') {
-            printf("\n/´Ë´¦ÓÐ¿Õ¸ñ/\n");
-        }
-            if (test == '\n') {
-            printf("\n/´Ë´¦ÓÐ»»ÐÐ/\n");
-        }
-            if (test == '\t') {
-                printf("\n´Ë´¦ÓÐTab/\n");
-            }
-        printf("%c", test);
-        test = getNextChar();
-    }*/
-    //char ab[100] = { '\0' };
-    //char abc[100] = { 'a','b','c','d','\0' };
-    //strcpy(ab, abc);
-    //printf("%s", ab);
     token* head = getTokenList();
+    //½«tokenÐÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼þÖÐ
     if (error0 == INRANGE_ERROR) {//tokenÊ¶±ðÕý³£µÄ´¦Àí
         printf("\nÐÐÊý\t´Ê·¨ÐÅÏ¢\tÓïÒåÐÅÏ¢\t");
- /*       while (head->Lex != ENDFILE) {
-            printf("%-10d\n")
-        }*/
+        fprintf(w_fp, "\nÐÐÊý\t´Ê·¨ÐÅÏ¢\t\tÓïÒåÐÅÏ¢\t");
+        while (head->Lex != ENDFILE) {
+            printf("\n%d\t", head->Lineshow);
+            fprintf(w_fp,"\n%d\t", head->Lineshow);
+            print_Lex(head->Lex);
+            if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+            {
+                printf("\t%s\t", head->Sem);
+                fprintf(w_fp,"\t%s\t", head->Sem);
+            }
+            head = head->next;
+        }
+        printf("\n%d\t", head->Lineshow);
+        fprintf(w_fp, "\n%d\t", head->Lineshow);
+        print_Lex(head->Lex);
+        if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+        {
+            printf("\t%s\t", head->Sem);
+            fprintf(w_fp, "\t%s\t", head->Sem);
+        }
+        head = head->next;
     }
-
 	return 0;
 }

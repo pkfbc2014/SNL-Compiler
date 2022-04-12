@@ -17,6 +17,7 @@ typedef enum//词法类型定义
 	RECORD, RETURN,
 	//类型
 	INTEGER, CHAR,
+
 	//多字符单词符号
 	ID, INTC, CHARC,
 
@@ -37,6 +38,15 @@ static struct word //保留字表，便于查阅
 	{"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
 	{"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//保留字
 
+static struct word2 //词法信息表,含有定义的所有词法类型
+{
+	LexType tok; //词法信息
+	char Sem[100]; //词法信息
+}Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDFILE"}, {ERROR,"ERROR"},{ID,"ID"},{INTC,"INTC"},{CHARC,"CHARC"},{ASSIGN,"ASSIGN"},
+	{PROCEDURE,"PROCEDURE"},{BEGIN,"BEGIN"},{END,"END"},{ARRAY,"ARRAY"},{EQ,"EQ"},{LT,"LT"},{PLUS,"PLUS"},{MINUS,"MINUS"},{TIMES,"TIMES"},{OVER,"OVER"},
+	{OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
+	{WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
+	{RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"}};	//保留字
 struct token//链表结点定义
 {
 	int Lineshow;//单词所在行数
@@ -49,7 +59,8 @@ struct token//链表结点定义
 
 //变量定义
 state a = START;
-FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");
+FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");//代码文件
+FILE* w_fp = fopen("C:\\Users\\11279\\Desktop\\token.txt", "w+");//token文件
 error error0 = NORMAL;//词法错误
 char ch;//取字符后放这里
 int Line = 1;//token所在的行数
@@ -61,6 +72,7 @@ int init_node(token* ptr);
 int classify(char ch);//自动机所需的对输入字符的分类函数
 LexType classify1(char ch);//单分界符的分类函数
 LexType classify2(char* ptr);//ID的分类函数
+int print_Lex(LexType a);//打印输出词法信息
 token* getTokenList();
 int reservedLookup();
 int ChainToFile();
