@@ -9,6 +9,41 @@ const int ProductNum = 104; // 产生式数量
 const int maxloop = 40; // 求follow集的最大循环次数
 int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
+FILE* fp = NULL;//代码文件
+FILE* w_fp = NULL;//token文件
+
+typedef enum//词法类型定义
+{	//簿记单词符
+	ENDFILE, ERROR,
+
+	//保留字,保留字和类型属于标识符范畴，标识符（ID）状态课识别出保留字，类型，和ID
+	PROGRAM, PROCEDURE, TYPE, VAR, IF,
+	THEN, ELSE, FI, WHILE, DO, ENDWH,
+	BEGIN, END, READ, WRITE, ARRAY, OF,
+	RECORD, RETURN,
+	//类型
+	INTEGER, CHAR,
+
+	//多字符单词符号
+	ID, INTC, CHARC,
+
+	//特殊符号
+	ASSIGN, EQ, LT, PLUS, MINUS,
+	TIMES, OVER, LPAREN, RPAREN, DOT,
+	COLON, SEMI, COMMA, LMIDPAREN, RMIDPAREN,
+	UNDERANGE//数组下标
+}LexType;
+
+struct token//链表结点定义
+{
+	int Lineshow;//单词所在行数
+	LexType Lex;
+	char Sem[100] = { '\0' };//单词语义信息
+	token* pre;
+	token* next;
+};
+
+
 typedef struct first
 {
 	int num; // 该非终结符的first集中元素个数

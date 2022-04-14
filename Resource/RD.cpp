@@ -1,5 +1,5 @@
 // µÝ¹éÏÂ½µ·ÖÎö·¨
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -113,7 +113,7 @@ treenode* programBody()
 		strcpy(newnode->str, "ProgramBody");
 		addChild(newnode,ReadmatchToken(BEGIN));
 		addChild(newnode,stmList());
-		addChild(newnode,ReadmatchToken(END1));
+		addChild(newnode,ReadmatchToken(END));
 		return newnode;
 	}
 }
@@ -796,15 +796,15 @@ treenode* stmMore()
 	return newnode;
 }
 
-treenode* conditionalStm() // ??
-{
+//treenode* conditionalStm() // ??
+//{
+//
+//}
 
-}
-
-treenode* loopStm() // ??
-{
-
-}
+//treenode* loopStm() // ??
+//{
+//
+//}
 
 treenode* inputStm()
 {

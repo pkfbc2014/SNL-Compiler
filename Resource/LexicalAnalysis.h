@@ -1,32 +1,10 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "global_var.h"
 //类型声明
 enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR};//DFA状态
 enum error{NORMAL=1,INASSIGN_ERROR,INRANGE_ERROR,INCHAR_ERROR,ERROR1};//错误类型分别对应无错误,赋值错误，程序结束错误,字符错误，读入无法识别错误
-typedef enum//词法类型定义
-{	//簿记单词符
-	ENDFILE, ERROR,
 
-	//保留字,保留字和类型属于标识符范畴，标识符（ID）状态课识别出保留字，类型，和ID
-	PROGRAM, PROCEDURE, TYPE, VAR, IF,
-	THEN, ELSE, FI, WHILE, DO, ENDWH,
-	BEGIN, END, READ, WRITE, ARRAY, OF,
-	RECORD, RETURN,
-	//类型
-	INTEGER, CHAR,
-
-	//多字符单词符号
-	ID, INTC, CHARC,
-
-	//特殊符号
-	ASSIGN, EQ, LT, PLUS, MINUS,
-	TIMES, OVER, LPAREN, RPAREN, DOT,
-	COLON, SEMI, COMMA, LMIDPAREN, RMIDPAREN,
-	UNDERANGE//数组下标
-}LexType;
 
 static struct word //保留字表，便于查阅
 {
@@ -47,20 +25,10 @@ static struct word2 //词法信息表,含有定义的所有词法类型
 	{OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
 	{WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
 	{RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"}};	//保留字
-struct token//链表结点定义
-{
-	int Lineshow;//单词所在行数
-	LexType Lex;
-	char Sem[100]={'\0'};//单词语义信息
-	token* pre;
-	token* next;
-};
 
 
 //变量定义
 state a = START;
-FILE* fp = fopen("C:\\Users\\11279\\Desktop\\code.txt", "r+");//代码文件
-FILE* w_fp = fopen("C:\\Users\\11279\\Desktop\\token.txt", "w+");//token文件
 error error0 = NORMAL;//词法错误
 char ch;//取字符后放这里
 int Line = 1;//token所在的行数

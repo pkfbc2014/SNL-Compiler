@@ -6,8 +6,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"LexicalAnalysis.h"
-#include "global_var.h"//Ê¹ÓÃ±£Áô×Ö±í
+#include "LexicalAnalysis.h"
+
+
 char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     char ch = fgetc(fp);
     //while (ch == ' ' || ch == '\n'||ch=='\t') {
@@ -15,7 +16,8 @@ char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     //}
     return ch;
 }
-int ungetNextChar() {
+int ungetNextChar() 
+{
     fseek(fp, -(long)sizeof(char), SEEK_CUR);
     return 0;
 }
@@ -314,32 +316,32 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
     }
     return head;
 }
-int main() {
-    token* head = getTokenList();
-    //½«tokenÐÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼þÖÐ
-    if (error0 == INRANGE_ERROR) {//tokenÊ¶±ðÕý³£µÄ´¦Àí
-        printf("\nÐÐÊý\t´Ê·¨ÐÅÏ¢\tÓïÒåÐÅÏ¢\t");
-        fprintf(w_fp, "\nÐÐÊý\t´Ê·¨ÐÅÏ¢\t\tÓïÒåÐÅÏ¢\t");
-        while (head->Lex != ENDFILE) {
-            printf("\n%d\t", head->Lineshow);
-            fprintf(w_fp,"\n%d\t", head->Lineshow);
-            print_Lex(head->Lex);
-            if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
-            {
-                printf("\t%s\t", head->Sem);
-                fprintf(w_fp,"\t%s\t", head->Sem);
-            }
-            head = head->next;
-        }
-        printf("\n%d\t", head->Lineshow);
-        fprintf(w_fp, "\n%d\t", head->Lineshow);
-        print_Lex(head->Lex);
-        if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
-        {
-            printf("\t%s\t", head->Sem);
-            fprintf(w_fp, "\t%s\t", head->Sem);
-        }
-        head = head->next;
-    }
-	return 0;
-}
+//int main() {
+//    token* head = getTokenList();
+//    //½«tokenÐÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼þÖÐ
+//    if (error0 == INRANGE_ERROR) {//tokenÊ¶±ðÕý³£µÄ´¦Àí
+//        printf("\nÐÐÊý\t´Ê·¨ÐÅÏ¢\tÓïÒåÐÅÏ¢\t");
+//        fprintf(w_fp, "\nÐÐÊý\t´Ê·¨ÐÅÏ¢\t\tÓïÒåÐÅÏ¢\t");
+//        while (head->Lex != ENDFILE) {
+//            printf("\n%d\t", head->Lineshow);
+//            fprintf(w_fp,"\n%d\t", head->Lineshow);
+//            print_Lex(head->Lex);
+//            if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+//            {
+//                printf("\t%s\t", head->Sem);
+//                fprintf(w_fp,"\t%s\t", head->Sem);
+//            }
+//            head = head->next;
+//        }
+//        printf("\n%d\t", head->Lineshow);
+//        fprintf(w_fp, "\n%d\t", head->Lineshow);
+//        print_Lex(head->Lex);
+//        if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+//        {
+//            printf("\t%s\t", head->Sem);
+//            fprintf(w_fp, "\t%s\t", head->Sem);
+//        }
+//        head = head->next;
+//    }
+//	return 0;
+//}

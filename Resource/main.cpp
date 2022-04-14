@@ -1,9 +1,10 @@
 // 主程序，读入样例程序文件进行分析
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "func_statement.h"
+#include "LL1_Head.h"
 //#include "global_var.h"
 //#include "SemanticAnalysis.h"
 //#include "LexicalAnalysis.h"//词法分析
