@@ -1,6 +1,6 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
-
+#include <cstdio>
 //一些全局变量
 
 const int NonNum = 67; // 非终结符数量

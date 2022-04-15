@@ -8,6 +8,24 @@
 #include<string.h>
 #include "LexicalAnalysis.h"
 
+reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
+    {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
+    {"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
+    {"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
+    {"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//保留字
+
+Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDFILE"}, {ERROR,"ERROR"},{ID,"ID"},{INTC,"INTC"},{CHARC,"CHARC"},{ASSIGN,"ASSIGN"},
+    {PROCEDURE,"PROCEDURE"},{BEGIN,"BEGIN"},{END,"END"},{ARRAY,"ARRAY"},{EQ,"EQ"},{LT,"LT"},{PLUS,"PLUS"},{MINUS,"MINUS"},{TIMES,"TIMES"},{OVER,"OVER"},
+    {OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
+    {WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
+    {RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"} };	//保留字
+
+
+//变量定义
+a = START;
+error0 = NORMAL;//词法错误
+Line = 0;
+
 
 char getNextChar() {//取得下个非 空 字 符
     char ch = fgetc(fp);

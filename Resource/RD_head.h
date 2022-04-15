@@ -1,6 +1,6 @@
 #pragma once
 
-#include "global_var.h"
+
 #include "treenode_var.h"
 
 token* nowtoken; // 当前指向的token节点

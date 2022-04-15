@@ -10,28 +10,20 @@ static struct word //保留字表，便于查阅
 {
 	char Sem[100];   //语义信息
 	LexType tok; //词法信息
-}reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
-	{"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
-	{"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
-	{"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
-	{"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//保留字
+}reservedWords[21];	//保留字
 
 static struct word2 //词法信息表,含有定义的所有词法类型
 {
 	LexType tok; //词法信息
 	char Sem[100]; //词法信息
-}Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDFILE"}, {ERROR,"ERROR"},{ID,"ID"},{INTC,"INTC"},{CHARC,"CHARC"},{ASSIGN,"ASSIGN"},
-	{PROCEDURE,"PROCEDURE"},{BEGIN,"BEGIN"},{END,"END"},{ARRAY,"ARRAY"},{EQ,"EQ"},{LT,"LT"},{PLUS,"PLUS"},{MINUS,"MINUS"},{TIMES,"TIMES"},{OVER,"OVER"},
-	{OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
-	{WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
-	{RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"}};	//保留字
+}Words[42];	//保留字
 
 
 //变量定义
-state a = START;
-error error0 = NORMAL;//词法错误
+state a;
+error error0;//词法错误
 char ch;//取字符后放这里
-int Line = 1;//token所在的行数
+int Line;//token所在的行数
 
 //函数声明
 char getNextChar();//从源文件中读取一个字符
