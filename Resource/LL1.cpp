@@ -6,6 +6,21 @@
 #include "func_statement.h"
 #include "LL1_Head.h"
 
+token* nowtoken; // 当前指向的token节点
+char* S_stack[256];//符号栈
+treenode* G_stack[256];//语法树栈
+int N_stack[256];//操作数栈
+LexType O_stack[256];//操作符栈
+int S_ptr;//符号栈指针
+int G_ptr;//语法树栈指针
+int N_ptr;//操作数栈指针
+int O_ptr;//操作符栈指针
+treenode* G_pointer;//语法栈弹栈指针
+
+int lineno;//单词行号
+int pnum;//产生式处理函数调用序号
+treenode* LL1_treeROOT; // LL1分析法语法分析数根节点
+treenode* newnode;//产生式处理函数使用
 
 //变量在.H头文件中声明时已分配内存空间；
 //数组只能在初始化时给字符串值，不可在后续更改定义时给字符串值

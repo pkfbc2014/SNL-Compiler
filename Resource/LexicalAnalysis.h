@@ -19,12 +19,6 @@ struct word2 //词法信息表,含有定义的所有词法类型
 };	//保留字
 
 
-//变量申明
-state a;
-error error0;//词法错误
-char ch;//取字符后放这里
-int Line;//token所在的行数
-
 //函数声明
 char getNextChar();//从源文件中读取一个字符
 int ungetNextChar();//将文件现有指针向前移动一个字符大小   ....!!!!应增强鲁棒性
