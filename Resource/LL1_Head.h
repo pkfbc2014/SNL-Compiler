@@ -5,7 +5,7 @@
 #include "LexicalAnalysis.h"
 
 // 43个保留字和其他符号（包括终结符）的Lex对照表
-word reservedWords1[42];	//保留字
+
 
 //int maxlen = 20; // 一个字符的最大长度
 token* nowtoken; // 当前指向的token节点
@@ -39,3 +39,4 @@ treenode* LL1_analysis(); //LL1分析法
 void predict(int a);//产生式处理函数
 int Priosity(LexType op);//操作符优先级函数
 treenode* createNode();
+int nPredict(const char* str,int times);//产生式的模板处理函数

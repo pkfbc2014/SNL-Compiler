@@ -8,23 +8,18 @@
 #include<string.h>
 #include "LexicalAnalysis.h"
 
-reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
-    {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
-    {"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
-    {"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
-    {"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//±£Áô×Ö
+word reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
+{"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
+{"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
+{"while",WHILE},{"do",DO},{"endwh",ENDWH},{"read",READ},{"write",WRITE},
+{"return",RETURN},{"integer",INTEGER},{"char",CHAR} };	//±£Áô×Ö
 
-Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDFILE"}, {ERROR,"ERROR"},{ID,"ID"},{INTC,"INTC"},{CHARC,"CHARC"},{ASSIGN,"ASSIGN"},
-    {PROCEDURE,"PROCEDURE"},{BEGIN,"BEGIN"},{END,"END"},{ARRAY,"ARRAY"},{EQ,"EQ"},{LT,"LT"},{PLUS,"PLUS"},{MINUS,"MINUS"},{TIMES,"TIMES"},{OVER,"OVER"},
-    {OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
-    {WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
-    {RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"} };	//±£Áô×Ö
+word2 Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDFILE"}, {ERROR,"ERROR"},{ID,"ID"},{INTC,"INTC"},{CHARC,"CHARC"},{ASSIGN,"ASSIGN"},
+     {PROCEDURE,"PROCEDURE"},{BEGIN,"BEGIN"},{END,"END"},{ARRAY,"ARRAY"},{EQ,"EQ"},{LT,"LT"},{PLUS,"PLUS"},{MINUS,"MINUS"},{TIMES,"TIMES"},{OVER,"OVER"},
+     {OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
+     {WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
+     {RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"} };	//±£Áô×Ö
 
-
-//±äÁ¿¶¨Òå
-a = START;
-error0 = NORMAL;//´Ê·¨´íÎó
-Line = 0;
 
 
 char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
@@ -135,6 +130,13 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
         return nullptr;
     }
     //Á´±í½áµã´¦Àí
+
+
+    //±äÁ¿¶¨Òå
+    a = START;
+    error0 = NORMAL;//´Ê·¨´íÎó
+    Line = 0;
+
     token* head = (token*)malloc(sizeof(token)),*current=head,*next= (token*)malloc(sizeof(token));
     init_node(head); init_node(next);
     current->next = next; next->pre = current;

@@ -5,21 +5,21 @@
 enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR};//DFA状态
 enum error{NORMAL=1,INASSIGN_ERROR,INRANGE_ERROR,INCHAR_ERROR,ERROR1};//错误类型分别对应无错误,赋值错误，程序结束错误,字符错误，读入无法识别错误
 
-
-static struct word //保留字表，便于查阅
+//头文件放声明，定义放在函数中，不可以放在函数之外
+struct word //保留字表，便于查阅
 {
 	char Sem[100];   //语义信息
 	LexType tok; //词法信息
-}reservedWords[21];	//保留字
+};	//保留字
 
-static struct word2 //词法信息表,含有定义的所有词法类型
+struct word2 //词法信息表,含有定义的所有词法类型
 {
 	LexType tok; //词法信息
 	char Sem[100]; //词法信息
-}Words[42];	//保留字
+};	//保留字
 
 
-//变量定义
+//变量申明
 state a;
 error error0;//词法错误
 char ch;//取字符后放这里
