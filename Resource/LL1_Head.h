@@ -5,7 +5,7 @@
 
 void init_S_stack();//初始化符号栈
 char* LexToStr(LexType temp);//终极符转为字符串
-int getReIndex2(const char* s); // 返回终结符s在终结符集合中的下标
+int getReIndex2(LexType temp); // 返回终结符s在终结符集合中的下标
 void S_push(const char* str);//符号栈压栈
 void S_pop();
 void G_push();//语法树压栈

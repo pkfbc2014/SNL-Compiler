@@ -3,11 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "func_statement.h"
 #include "LL1_Head.h"
+#include "global_var.h"
+#include "func_statement.h"
 
-extern const int ReserveNum = 43; //保留字数量
-extern const int NonNum=67;
 extern int LL1table[NonNum][ReserveNum];
 
 token* nowtoken; // 当前指向的token节点
@@ -81,6 +80,10 @@ treenode* G_pop()
 		return G_stack[G_ptr--];
 	printf("ERROE:G_pop()出错！");
 	return NULL;
+}
+void S_pop()
+{
+	S_ptr--;
 }
 char* LexToStr(LexType temp) {//终极符转为字符串
 	for (int i = 0; i < 42; i++) {
@@ -624,8 +627,6 @@ treenode* LL1_analysis() // LL1分析法
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
 	out_predict(); // 输出LL1预测分析表到本地
 
-
-
 	S_ptr = -1;//符号栈指针
 	G_ptr = -1;//语法树栈指针
 	N_ptr = -1;//操作数栈指针
@@ -648,7 +649,8 @@ treenode* LL1_analysis() // LL1分析法
 	G_push(LL1_treeROOT);
 	G_push(LL1_treeROOT);
 
-	while (S_ptr > -1) {//当符号栈非空
+	while (S_ptr > -1) //当符号栈非空
+	{
 		if (getNonIndex(S_stack[S_ptr]) == -1) {//栈顶是终极符
 			if (strcmp(S_stack[S_ptr], LexToStr(nowtoken->Lex)) == 0) {
 				newnode = createNode();//为终极符创建语法树节点
