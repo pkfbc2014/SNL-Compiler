@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "global_var.h"
 
-int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
+extern int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
 FILE* fp = NULL;// 代码文件读写指针
 FILE* w_fp = NULL;// token读写文件
