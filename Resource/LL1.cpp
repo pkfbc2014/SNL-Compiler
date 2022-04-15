@@ -7,7 +7,7 @@
 #include "global_var.h"
 #include "func_statement.h"
 
-extern int LL1table[NonNum][ReserveNum];
+int LL1table[NonNum][ReserveNum];
 
 token* nowtoken; // 当前指向的token节点
 char* S_stack[256];//符号栈
