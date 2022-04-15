@@ -218,6 +218,14 @@ void predict(int a)
 		break;
 	case 26:
 		S_push("FieldDecList");
+		nPredict("FieldDecMore", 1);
+		break;
+	case 27:
+		S_push("IdMore");
+		S_push("ID");
+		nPredict("IdList", 2);
+		break;
+	case 28:
 		nPredict("")
 	}
 }
