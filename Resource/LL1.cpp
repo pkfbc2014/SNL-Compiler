@@ -241,7 +241,28 @@ void predict(int a)
 		nPredict("IdList", 2);
 		break;
 	case 28:
-		nPredict("")
+		nPredict("IdMore", 0);
+		break;
+	case 29:
+		S_push("IdList");
+		S_push("COMMA");
+		nPredict("IdMore", 2);
+		break;
+	case 30:
+		nPredict("VarDec", 0);
+		break;
+	case 31:
+		S_push("VarDeclaration");
+		nPredict("VarDec", 1);
+		break;
+	case 32:
+		S_push("VarDecList");
+		S_push("VAR");
+		nPredict("VarDeclaration", 2);
+		break;
+	case 33:
+		S_push("VarDecMore");
+
 	}
 }
 int Priosity(LexType op)
