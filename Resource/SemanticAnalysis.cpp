@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <string>
-#include <fstream>
+#include <fstream> 
+#include< unordered_map>
 #include "treenode_var.h"
 /*
     符号表管理采用跳转法,以exit栈表示对应局部化区是否已经退出
@@ -22,7 +23,7 @@ void InitFile(string file_path)//初始化对应路径下的文件（清空文件）
 void PrintFile(string message, string file_path)//字符串打印到相应文件中
 {
     fstream foutput;
-    //追加写入,在原来基础上加了ios::app
+    //追加写入,在原来基础上加了ios::app 
     foutput.open(file_path, ios::out | ios::app);
     foutput << message + "\n";
     foutput.close();
@@ -52,19 +53,30 @@ void DestroyTable(vector<bool>& exit_region, int& ValidTableCount) {//废除最新的
     }
 }
 
-SymbTable* SearchSingleTable(const char* id, vector< vector<SymbTable> >& scope, int level, const char kind) {//查找标识符是否存在与对应表中,kind表示所需标识符的种类('*'表示全部匹配)
+SymbTable* SearchSingleTable(const char* id, vector< vector<SymbTable> >& scope, int level, const char kind, const int ProcLevel) {//查找标识符是否存在与对应表中,kind表示所需标识符的种类('*'表示全部匹配),不考虑过程标识符的Level的话需要令ProcLevel小于零
     int position = level - 1;
     SymbTable* temp = NULL;
     for (int ix = scope[position].size() - 1; ix >= 0; ix--) {
-        if (0 == strcmp(scope[position][ix].idname, id) && (scope[position][ix].attrIR.kind == kind || kind == '*')) {
-            temp = &(scope[position][ix]);
-            return temp;//返回这个标识符的地址
+        
+        
+        if (scope[position][ix].attrIR.kind != PROCKIND) {//1. id 等于"*"或者idname; 2. kind等于'*'或者attrIR.kind; 3.不是过程标识符
+            if ((0 == strcmp("*", id) || 0 == strcmp(scope[position][ix].idname, id)) && (scope[position][ix].attrIR.kind == kind || kind == '*')) {
+                temp = &(scope[position][ix]);
+                return temp;//返回这个标识符的地址
+            }
         }
+        else {//1. 是过程标识符; 2. id 等于"*"或者idname; 3. kind等于'*'或者attrIR.kind;  4.  Level相同或者ProcLevel<0 
+            if ((0 == strcmp("*", id) || 0 == strcmp(scope[position][ix].idname, id)) && (scope[position][ix].attrIR.kind == kind || kind == '*') &&  (scope[position][ix].attrIR.More.ProcAttr.level == ProcLevel || ProcLevel < 0)) {
+                temp = &(scope[position][ix]);
+                return temp;//返回这个标识符的地址
+            }
+        }
+        
     }
     return temp;//NULL: 不存在， 非空: 对应标识符地址信息
 }
 
-SymbTable* FindEntry(const char* id, bool flag, vector< vector<SymbTable> >& scope, vector<bool> exit_region, const char kind) {//flag == false:在当前符号表中查找； flag == true:在整个scope栈中查找
+SymbTable* FindEntry(const char* id, bool flag, vector< vector<SymbTable> >& scope, vector<bool> exit_region, const char kind, const int ProcLevel) {//flag == false:在当前符号表中查找； flag == true:在整个scope栈中查找
     int level = exit_region.size();//表示第几层，level == 0相当于scope栈中无元素。使用 n = level-1 访问scope[n][x]或者exit_region[n]，
     SymbTable* temp = NULL;
     //先在当前符号表中查找
@@ -79,11 +91,12 @@ SymbTable* FindEntry(const char* id, bool flag, vector< vector<SymbTable> >& sco
     if (level <= 0) {//不存在一个有效的局部化区
         return NULL;
     }
-    temp = SearchSingleTable(id, scope, level, kind);//查找当前符号表
+    temp = SearchSingleTable(id, scope, level, kind, ProcLevel);//查找当前符号表
     if (flag == true && temp == NULL) {//如果flag == true，且当前符号表内未查找到所需标识符id，则继续查找整个scope栈
+        level--;
         while (level > 0) {
-            if (exit_region[level - 1] == false) {//找到未退出的局部化区的层数
-                temp = SearchSingleTable(id, scope, level, kind);//查找此符号表
+            if (exit_region[level - 1] == false || (kind == PROCKIND && ProcLevel>=0)) {//找到未退出的局部化区的层数；如果是查找过程标识符的重定义情况（kind == PROCKIND && ProcLevel>=0），则一直允许查找
+                temp = SearchSingleTable(id, scope, level, kind, ProcLevel);//查找此符号表
                 if (temp != NULL) {
                     break;
                 }
@@ -94,9 +107,43 @@ SymbTable* FindEntry(const char* id, bool flag, vector< vector<SymbTable> >& sco
     return temp;//NULL: 不存在， 非空: 对应标识符地址信息
 }
 
-bool Enter(char* id, AttributeIR Attrib, vector< vector<SymbTable> >& scope, vector<bool> exit_region) {//登记标识符和其属性到符号表
+//FindProc()用于body中寻找正确的过程标识符
+SymbTable* FindProc(const char* id, bool flag, vector< vector<SymbTable> >& scope, vector<bool> exit_region, const int ValidTableCount){
+    //ProcLevel只能递减的寻找，例如查找了第n层的，就不能再查找大于n层的Proc标识符
+    /*例：定义如下过程标识符
+    * p1()        --- level 1
+    *   p2()      --- level 2
+    *      p3()   --- level 3
+    * p4()        --- level 1
+    *   p5()      --- level 2
+    * 从p5开始向上寻找，只能按照p5 -> p4 -> p1的顺序寻找，因为p5不能调用p3或p2
+    */
+    int level = exit_region.size() - 1;//表示第几层，level == 0相当于scope栈中无元素。使用 n = level-1 访问scope[n][x]或者exit_region[n]，
+    int level_last = exit_region.size() - 1;
+    for (; level >= 1; level--) {//第一个符号表内区内没有定义Proc标识符
+        //level小于等于1时，scope[level][0]表示此标志符为此符号表的过程标识符
+        if (scope[level].size() >= 1) {
+            if (scope[level][0].attrIR.More.ProcAttr.level <= level_last) {//不能大于上一次的level
+                if (0 == strcmp(scope[level][0].idname, id)) {
+                    return &scope[level][0];
+                }
+                level_last = scope[level][0].attrIR.More.ProcAttr.level;
+            }
+        }
+    }
+    return NULL;
+}
+
+bool Enter(const char* id, AttributeIR Attrib, vector< vector<SymbTable> >& scope, vector<bool> exit_region, char kind, const int ProcLevel) {//登记标识符和其属性到符号表,注：如果不是过程标识符的话, ProcLevel无意义，可以直接传ProcLevel = -1
     bool present = false;//记录登记是否成功
-    if (FindEntry(id, false, scope, exit_region, '*') == NULL) {
+    bool flag = false;//FindEntry的传参，表示只查询当前符号表还是全部符号表
+    if (kind == PROCKIND && ProcLevel >= 0) {
+        flag = true;
+    }
+    else {
+        flag = false;
+    }
+    if (FindEntry(id, flag, scope, exit_region, kind, ProcLevel) == NULL || 0 == strcmp(id, WRONGID) ) {//如果是WrongID插入符号表，表示标识符命名非法，但是也插入符号表凑数，只用于过程参数标识符的重复声明
         int level = exit_region.size();//表示第几层，level == 0相当于scope栈中无元素。使用 n = level-1 访问scope[n][x]或者exit_region[n]
         while (level > 0) {
             if (exit_region[level - 1] == false) {//找到第一个未退出的局部化区的层数
@@ -115,7 +162,12 @@ bool Enter(char* id, AttributeIR Attrib, vector< vector<SymbTable> >& scope, vec
             temp.idname[ix] = id[ix];
         }
         temp.attrIR = Attrib;
-        scope[level - 1].push_back(temp);
+        if (kind == PROCKIND) {//如果是过程标识符，则将其插到最新的符号表的最前面，即此过程标识符应该为此符号表的第一个
+            scope[level - 1].insert(scope[level - 1].begin(), temp);
+        }
+        else {
+            scope[level - 1].push_back(temp);
+        }
         present = true;
     }
     else {
@@ -132,63 +184,122 @@ string TypeIRToString(char TypeKind) {//类型种类编号转字符串
     else if (TypeKind == '4') { return "Array "; }
     return "";
 }
+string KindToString(char TypeKind) {//Kind种类编号转字符串
+    if (TypeKind == '0') { return "TypeKind"; }
+    else if (TypeKind == '1') { return "VarKind "; }
+    else if (TypeKind == '2') { return "ProcKind"; }
+    return "";
+}
+string AccessToString(char access) {//Kind种类编号转字符串
+    if (access == '0') { return "dir"; }
+    else if (access == '1') { return "indir "; }
+    return "";
+}
 
-void PrintTable(vector< vector<SymbTable> > scope, vector<struct TypeIR*> TypeList) {//打印类型表和符号表到文件
+void PrintTable(vector< vector<SymbTable> > scope, vector<struct TypeIR*> TypeList, string FilePath) {//打印类型表和符号表到文件
+    InitFile(FilePath);
+    string TabKey = "";
+    if (FilePath == TABLE_FILE_XLS) {
+        TabKey = TAB_XLS;
+    }
+    else if (FilePath == TABLE_FILE_CSV) {
+        TabKey = TAB_CSV;
+    }
+    else {
+        TabKey = "\t";
+    }
+    ofstream FileOut;
+    FileOut.open(FilePath, ios::out | ios::left);
+    FileOut << "类型表" << "\n";
+    FileOut << "序号" << TabKey << "Size" << TabKey << "kind" << TabKey << "indexTy" << TabKey << "elemTy" << TabKey << "Low" << TabKey << "body{类型序号; 变量名; 偏移}" << "\n";
     const int TypeList_size = TypeList.size();
-    string message = "";
-    message += "类型表\n序号\tSize\tkind\tindexTy\telemTy\tLow\tbody{类型序号,变量名,偏移}\n";
     for (int ix = 0; ix < TypeList_size; ix++) {//打印类型表
-        message += to_string(ix + 1);//序号
-        message += "\t";
-        message += to_string(TypeList[ix]->size);
-        message += "\t";
-        message += TypeIRToString(TypeList[ix]->Typekind);
-        message += "\t";
+        FileOut << to_string(TypeList[ix]->serial + 1) << TabKey << to_string(TypeList[ix]->size) << TabKey << TypeIRToString(TypeList[ix]->Typekind) << TabKey;
         if (TypeList[ix]->Typekind == ARRAYTY) {
-            message += "   ";  message += to_string(TypeList[ix]->More.indexTy->serial + 1);//indexTy的序号
-            message += "\t";
-            message += "   ";  message += to_string(TypeList[ix]->More.elemTy->serial + 1);//elemTy的序号
-            message += "\t";
-            message += "  ";  message += to_string(TypeList[ix]->More.Low);//indexTy的序号
-            message += "\t";
-            message += " --- ";//Record_body
-            message += "\t";
+            FileOut << to_string(TypeList[ix]->More.indexTy->serial + 1) << TabKey << to_string(TypeList[ix]->More.elemTy->serial + 1) << TabKey << to_string(TypeList[ix]->More.Low) << TabKey;
+            FileOut << EMPTYSPACE;//Record_body
         }
         else if (TypeList[ix]->Typekind == RECORDTY) {
-            message += " ---- ";//Array_indexTy
-            message += "\t";
-            message += " ---- ";//Array_elemTy
-            message += "\t";
-            message += " --- ";//Array_Low
-            message += "\t";
+            FileOut << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey;//Array_indexTy\t Array_elemTy\t Array_Low
             FieldChain* head = TypeList[ix]->More.body;
             while (head != NULL) {
+                string message = "";
                 message += "{";
                 message += to_string(head->unitType->serial + 1);
-                message += ", ";
+                message += "; ";
                 message += head->idname;
-                message += ", ";
+                message += "; ";
                 message += to_string(head->offset);
                 message += "}  ";
+                FileOut << message;
                 head = head->next;
             }
         }
-        else {//basetype: int,char,bool
-            message += " ---- ";//Array_indexTy
-            message += "\t";
-            message += " ---- ";//Array_elemTy
-            message += "\t";
-            message += " --- ";//Array_Low
-            message += "\t";
-            message += " --- ";//Record_body
-            message += "\t";
+        else {//basetype: int\tchar\tbool
+            FileOut << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey;//Array_indexTy\t Array_elemTy\t Array_Low\t Record_body
         }
-        message += "\n";
+        FileOut << "\n";
     }
-    //在这里编写打印scope栈的代码*********************************************
 
-    PrintFile(message, TABLE_FILE);
+    //打印scope栈（符号表）
+    FileOut << "\n符号表" << "\n";
+    FileOut << "IDname" << TabKey << "TypePtr" << TabKey << "Kind" << TabKey << "Level" << TabKey << "Parm" << TabKey << "Code" << TabKey << "Size" << TabKey << "Access" << TabKey << "Off" << "\n";
+    const int scope_size = scope.size();
+    for (int ix = 0; ix < scope_size; ix++) {
+        const int scope_size_2 = scope[ix].size();
+        for (int jx = 0; jx < scope_size_2; jx++) {
+            FileOut << scope[ix][jx].idname << TabKey;//IDname
+            if (scope[ix][jx].attrIR.kind == TYPEKIND) {
+                FileOut << to_string(scope[ix][jx].attrIR.idtype->serial + 1) << TabKey;//TypePtr
+                FileOut << "TypeKind" << TabKey;//Kind
+                FileOut << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE;
+            }
+            else if (scope[ix][jx].attrIR.kind == VARKIND) {
+                if (scope[ix][jx].attrIR.idtype != NULL) {//TypePtr
+                    FileOut << to_string(scope[ix][jx].attrIR.idtype->serial + 1) << TabKey;
+                }
+                else {//Kind为VarKind且TypePtr为空的情况，即过程的参数的类型错误的情况，仍算进符号表，目的是凑数。此编译器只有当参数标识符重定义时才不将此参数算进符号表
+                    FileOut << "Unknown" << TabKey;
+                }
+                FileOut << "VarKind" << TabKey;//Kind
+                FileOut << to_string(scope[ix][jx].attrIR.More.VarAttr.level) << TabKey;
+                FileOut << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey << EMPTYSPACE << TabKey;//Level
+                FileOut << AccessToString(scope[ix][jx].attrIR.More.VarAttr.access) << TabKey;//Access
+                FileOut << to_string(scope[ix][jx].attrIR.More.VarAttr.off);//Off
+            }
+            else if (scope[ix][jx].attrIR.kind == PROCKIND) {
+                FileOut << EMPTYSPACE << TabKey;//TypePtr
+                FileOut << "ProcKind" << TabKey;//Kind
+                FileOut << to_string(scope[ix][jx].attrIR.More.ProcAttr.level) << TabKey;//Level
+                struct ParamTable* tempptr = scope[ix][jx].attrIR.More.ProcAttr.param;
+                string param = "{ ";
+                if (tempptr != NULL) {
+                    param += to_string(tempptr->entry);
+                    tempptr = tempptr->next;
+                    while (tempptr != NULL) {
+                        param += "; ";
+                        param += to_string(tempptr->entry);
+                        tempptr = tempptr->next;
+                    }
+                }
+                param += " }";
+                FileOut << param << TabKey;//Parm
+                if (scope[ix][jx].attrIR.More.ProcAttr.code == 0) {//Code
+                    FileOut << EMPTYSPACE << TabKey;//如果code等于初始化的0，即空地址，则返回空
+                }
+                else {//否则返回地址
+                    FileOut << to_string( scope[ix][jx].attrIR.More.ProcAttr.code ) << TabKey;
+                }
+                FileOut << to_string(scope[ix][jx].attrIR.More.ProcAttr.size) << TabKey;//Size
+                FileOut << EMPTYSPACE << TabKey << EMPTYSPACE;
+            }
+            FileOut << "\n";
+        }
+    }
+    FileOut.close();
 }
+
+
 
 /******语义错误信息输出相关函数******/
 /***标识符***/
@@ -201,12 +312,21 @@ void Error_IdentifierDuplicateDec(int line, string sem) {// 1.标识符的重复定义，
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
-void Error_IdentifierUndeclared(int line, string sem) {// 2.无声明的标识符，对应书中语义错误(2)
+void Error_IdentifierDuplicateDecRecord(int line, string sem) {// 2.Record标识符中的标识符的重复定义，对应书中语义错误(1)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   在record标识符定义中，标识符\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"重复定义\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
+void Error_IdentifierUndeclared(int line, string sem) {// 3.无声明的标识符，对应书中语义错误(2)
     string ErrorMessage = "Line:";
     ErrorMessage += to_string(line);
     ErrorMessage += ",   标识符\"";
     ErrorMessage += sem;
-    ErrorMessage += "\"未声明就使用\n";
+    ErrorMessage += "\"未声明\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
@@ -227,6 +347,16 @@ void Error_ArraySubscriptOutBounds(int line, string sem1, string sem2) {// 2. 数
     ErrorMessage += "\" > \"";
     ErrorMessage += sem2;
     ErrorMessage += "\")\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
+/***过程调用***/
+void Error_ProcNotProcIdentifier(int line, string sem) {// 1.过程调用语句中，标识符不是过程标识符，对应书中语义错误(10)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   标识符\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"不是过程标识符\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
@@ -258,183 +388,490 @@ void initialize(vector<struct TypeIR*>& TypeList) {//初始化三种基本类型
 }
 
 
-void fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
+void fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
+void fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void variableParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Variable"，对应RD中的"variable函数"
+void variableParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"Variable"，对应RD中的"variable函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void multOpParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"MultOp"，对应RD中的"multOp函数"
+void multOpParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"MultOp"，对应RD中的"multOp函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
+void otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void factorParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Factor"，对应RD中的"factor函数"
+void factorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"Factor"，对应RD中的"factor函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void addOpParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"AddOp"，对应RD中的"addOp函数"
+void addOpParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"AddOp"，对应RD中的"addOp函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
+void otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void termParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Term"，对应RD中的"term函数"
+void termParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"Term"，对应RD中的"term函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void actparamMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ActParamMore"，对应RD中的"actparamMore函数"
+void actparamMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"ActParamMore"，对应RD中的"actparamMore函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void actparamListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ActParamList"，对应RD中的"actparamList函数"
+void actparamListParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"ActParamList"，对应RD中的"actparamList函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void expParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Exp"，对应RD中的"exp函数"
+void expParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"Exp"，对应RD中的"exp函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"VariMore"，对应RD中的"variMore函数"
+void variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"VariMore"，对应RD中的"variMore函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
+void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, AttributeIR* ProcAttr) {//根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
+TypeIR* assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
+    if (RD_ROOT == NULL) { return NULL; }
+}
+
+//----------------------------
+//赋值或者调用过程，返回ID的情况，如果ID不是过程标识符的话，则还要返回对应的类型(Int, Char, Array, Record)
+//ID的类型为： ProcKind->过程调用， VarKind->变量
+//参数ProcAttr只有过程调用部分能用上
+AttributeIR* assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, AttributeIR* ProcAttr) {//根节点名称为"AssCall"，对应RD中的"assCall函数"
+    if (RD_ROOT == NULL) { return NULL; }
+    
+    if (RD_ROOT->child[0] != NULL && RD_ROOT->child[0]->child[0]->token->Lex == LPAREN) {//过程调用callStmRest()
+
+        callStmRestParsing(RD_ROOT->child[0], scope, exit_region, ProcAttr);
+
+    }
+    else {//赋值assignmentRest()
+        
+        assignmentRestParsing(RD_ROOT->child[0], scope, exit_region);
+    }
+    
+}
+
+void returnStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"ReturnStm"，对应RD中的"returnStm函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"AssCall"，对应RD中的"assCall函数"
+void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"OutputStm"，对应RD中的"outputStm函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void returnStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ReturnStm"，对应RD中的"returnStm函数"
+void inputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为"InputStm"，对应RD中的"inputStm函数"
     if (RD_ROOT == NULL) { return; }
 }
 
-void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"OutputStm"，对应RD中的"outputStm函数"
+void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为""，对应RD中的"loopStm函数"********************************************
     if (RD_ROOT == NULL) { return; }
 }
 
-void inputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"InputStm"，对应RD中的"inputStm函数"
+void conditionalStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//根节点名称为""，对应RD中的"conditionalStm函数"********************************************
     if (RD_ROOT == NULL) { return; }
 }
 
-void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为""，对应RD中的"loopStm函数"********************************************
+void stmMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, const int ValidTableCount) {//根节点名称为"StmMore"，对应RD中的"stmMore函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: SEMI， 无操作
+    //RD_ROOT->child[1]: stmList());
+    stmListParsing(RD_ROOT->child[1], scope, exit_region, ValidTableCount);
 }
 
-void conditionalStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为""，对应RD中的"conditionalStm函数"********************************************
+
+//-----------------------------------------------
+void stmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, const int ValidTableCount) {//根节点名称为"Stm"，对应RD中的"stm函数"
     if (RD_ROOT == NULL) { return; }
+    if (RD_ROOT->child[0]->token->Lex == ID) {
+        //赋值或者调用过程
+        SymbTable* TempSym = FindProc(RD_ROOT->child[0]->token->Sem, true, scope, exit_region, ValidTableCount);//找此名称的过程标识符，找不到则返回空
+
+        assCallParsing(RD_ROOT->child[1], scope, exit_region, &(TempSym->attrIR));
+    }
+    else if(RD_ROOT->child[0]->child[0]->token->Lex == READ){
+        inputStmParsing(RD_ROOT->child[0], scope, exit_region);
+    }
+    else if (RD_ROOT->child[0]->child[0]->token->Lex == WRITE) {
+        outputStmParsing(RD_ROOT->child[0], scope, exit_region);
+    }
+    else if (RD_ROOT->child[0]->child[0]->token->Lex == RETURN) {
+        returnStmParsing(RD_ROOT->child[0], scope, exit_region);
+    }/*
+    else if () {
+        conditionalStmParsing();//IF
+    }
+    else if () {
+        loopStmParsing();//WHILE
+    }*/
+    
+
 }
 
-void stmMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"StmMore"，对应RD中的"stmMore函数"
+//body内，表达式List(List and ListMore)
+void stmListParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, const int ValidTableCount) {//根节点名称为"StmList"，对应RD中的"stmList函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]:newnode, stm());
+    stmParsing(RD_ROOT->child[0], scope, exit_region, ValidTableCount);
+    //RD_ROOT->child[1]:newnode, stmMore());
+    stmMoreParsing(RD_ROOT->child[1], scope, exit_region, ValidTableCount);
 }
 
-void stmParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Stm"，对应RD中的"stm函数"
+
+void fidMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"FidMore"，对应RD中的"fidMore函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: COMMA, 无操作;
+    //RD_ROOT->child[1]: formList(),继续读取ID的token
+    formListParsing(RD_ROOT->child[1], token);
 }
 
-void stmListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"StmList"，对应RD中的"stmList函数"
+//过程参数的ID，得到token
+void formListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"FormList"，对应RD中的"formList函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: ID
+    token.push_back(RD_ROOT->child[0]->token);
+    //RD_ROOT->child[1]: fidMore());
+    fidMoreParsing(RD_ROOT->child[1], token);
+
 }
 
-void fidMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"FidMore"，对应RD中的"fidMore函数"
-    if (RD_ROOT == NULL) { return; }
+struct ParamTable* paramMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"ParamMore"，对应RD中的"paramMore函数"
+    if (RD_ROOT == NULL) { return NULL; }
+    //RD_ROOT->child[0]: SEM, 无操作;
+    //RD_ROOT->child[1]: paramDecList()
+    return paramDecListParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
+
 }
 
-void formListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"FormList"，对应RD中的"formList函数"
-    if (RD_ROOT == NULL) { return; }
+//此函数返回一个过程参数链表，因为需要考虑到程序体的过程调用时参数个数的匹配，所以如果此处的Type为非法，也会压入符号表，Type处设置为NULL，但是这些标识符不显示在符号表中
+struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"Param"，对应RD中的"param函数"
+    if (RD_ROOT == NULL) { return NULL; }
+    //RD_ROOT->child[0]: typeDef()
+    AttributeIR* tempAttr = typeDefParsing(RD_ROOT->child[0], scope, exit_region, TypeList);//找到所需要的属性
+    if (tempAttr == NULL) {//如果没有找到对应标识符，则创建一个Type为NULL的属性
+        tempAttr = new AttributeIR;
+        tempAttr->idtype = NULL;
+    }
+    tempAttr->kind = VARKIND;
+    tempAttr->More.VarAttr.level = ValidTableCount;
+    tempAttr->More.VarAttr.access = DIR;
+    SymbTable* Symtemp = FindEntry("*", false, scope, exit_region, VARKIND, -1);//找到当前符号表最新的一个变量标识符用作偏移计算
+    
+    int Off = 0;//计算当前符号表内的总偏移，参数相对于过程的偏移=自身size+总偏移
+    if (Symtemp != NULL) {
+        unsigned int size = 0;
+        if (Symtemp->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
+            size = Symtemp->attrIR.idtype->size;
+        }
+        else {
+            size = 0;
+        }
+        Off = Symtemp->attrIR.More.VarAttr.off + size;
+    }
+    else {
+        Off = 0;
+    }
+    struct ParamTable* temp = NULL;
+    struct ParamTable* rear = NULL;
+    vector<Token*> token;//存储formList中所有token
+
+    //RD_ROOT->child[1]: formList()
+    formListParsing(RD_ROOT->child[1], token);//token.size()一定大于0，否则不可能通过语法分析
+    const int size_origion = scope[scope.size() - 1].size();
+    const int token_size = token.size();
+    int token_Off = 0;//token数组中的偏移
+    int VarSize = 0;//此类标识符的size
+    if (tempAttr->idtype != NULL) {
+        VarSize = tempAttr->idtype->size;
+    }
+    for (int ix = 0; ix < token_size; ix++) {
+        tempAttr->More.VarAttr.off = Off + token_Off;//符号表总偏移加上标识符在token数组中的偏移
+        token_Off += VarSize;//token偏移加上此类标识符的大小
+
+        if (Enter(token[ix]->Sem, *tempAttr, scope, exit_region, VARKIND, -1) == false) {//压入符号栈
+            Error_IdentifierDuplicateDec(token[ix]->Lineshow, token[ix]->Sem);//标识符重命名
+            Enter(WRONGID, *tempAttr, scope, exit_region, VARKIND, -1);//将WrongID插入符号表，表示标识符命名非法
+        }
+
+        struct ParamTable* tempptr = new struct ParamTable;
+        tempptr->next = NULL;
+        if (temp == NULL) {
+            temp = tempptr;
+        }
+        else {
+            rear->next = tempptr;
+        }
+        rear = tempptr;
+        rear->entry = ix + size_origion;//此符号栈中元素的数量即为目前参数在局部化区中的位置(在token中的位置ix + 局部化区内原本的标识符的数量)
+    }
+    return temp;
 }
 
-void paramMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ParamMore"，对应RD中的"paramMore函数"
-    if (RD_ROOT == NULL) { return; }
+struct ParamTable* paramDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"ParamDecList"，对应RD中的"paramDecList函数"
+    if (RD_ROOT == NULL) { return NULL; }
+    //RD_ROOT->child[0]: param()
+    struct ParamTable* temp = paramParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
+    // RD_ROOT->child[1]: paramMore()
+    if (temp != NULL) {//tmep被设定为不可能为空（paramParsing函数返回值人为设计为非空），此处属于冗余操作
+        struct ParamTable* rearptr = temp;
+        while (rearptr-> next != NULL) {//找到链表的最后一个节点，然后连接上paramMoreParsing()
+            rearptr = rearptr->next;
+        }
+        rearptr->next = paramMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
+    }
+    else {
+        temp = paramMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
+    }
+    
+    return temp;
 }
 
-void paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"Param"，对应RD中的"param函数"
+void procBodyParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, int& ValidTableCount) {//根节点名称为"ProcBody"，对应RD中的"procBody函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0], programBody()
+    programBodyParsing(RD_ROOT->child[0], scope, exit_region, ValidTableCount);
 }
 
-void paramDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ParamDecList"，对应RD中的"paramDecList函数"
+//大写D， procDecPart, 负责定义过程中的标识符（类型标识符，变量标识符，过程标识符）
+void procDecPartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"ProcDecPart"，对应RD中的"procDecPart函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0], procDec()
+    declarePartParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
 }
 
-void procBodyParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ProcBody"，对应RD中的"procBody函数"
-    if (RD_ROOT == NULL) { return; }
+//将过程参数压入scope栈，并返回过程参数表
+struct ParamTable* paramListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"ParamList"，对应RD中的"paramList函数"
+    if (RD_ROOT == NULL) { return NULL; }
+    return paramDecListParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
 }
 
-void procDecPartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ProcDecPart"，对应RD中的"procDecPart函数"
-    if (RD_ROOT == NULL) { return; }
-}
-
-void paramListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"ParamList"，对应RD中的"paramList函数"
-    if (RD_ROOT == NULL) { return; }
-}
-
+/*//整个过程树
 void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"ProcDec"，对应RD中的"procDec函数"
     if (RD_ROOT == NULL) { return; }
+    SymbTable temp;
+    //RD_ROOT->child[0]: PROCEDURE, 无操作
+    //RD_ROOT->child[1]: ID
+    strcpy(temp.idname, RD_ROOT->child[1]->token->Sem);//idname
+    temp.attrIR.idtype = NULL;//Typeptr
+    temp.attrIR.kind = PROCKIND;//kind
+    temp.attrIR.More.ProcAttr.level = ValidTableCount - 1;//level，过程仍属于上一层
+    //RD_ROOT->child[2]: LPAREN, 无操作
+    //RD_ROOT->child[3]: paramList()
+    temp.attrIR.More.ProcAttr.param = paramListParsing(RD_ROOT->child[3], scope, exit_region, TypeList, ValidTableCount);
+    temp.attrIR.More.ProcAttr.code = 0;//Code,过程的目标代码地址（代码生成阶段填写，现在初始化为0）
+    //RD_ROOT->child[4]: RPAREN, 无操作
+    //RD_ROOT->child[5]: SEMI, 无操作
+    //RD_ROOT->child[6]: procDecPart()
+    procDecPartParsing(RD_ROOT->child[6], scope, exit_region, TypeList, ValidTableCount);
+    //计算Size
+    SymbTable* SymPtr = FindEntry("*", false, scope, exit_region, VARKIND, -1);//找到当前符号表最新的一个变量标识符用作size计算
+    if (SymPtr == NULL) {//此标识符为当前符号表最新的一个变量标识符，size设置为0
+        temp.attrIR.More.ProcAttr.size = 0;
+    }
+    else {//否则等于当前符号表最新的一个变量标识符的size+偏移
+        unsigned int size = 0;
+        if (SymPtr->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
+            size = SymPtr->attrIR.idtype->size;
+        }
+        else {
+            size = 0;
+        }
+        temp.attrIR.More.ProcAttr.size = SymPtr->attrIR.More.VarAttr.off + size;
+    }
+    if (Enter(temp.idname, temp.attrIR, scope, exit_region, PROCKIND, temp.attrIR.More.ProcAttr.level) == false) {//压入符号栈，需考虑过程的Level
+        Error_IdentifierDuplicateDec(RD_ROOT->child[1]->token->Lineshow, RD_ROOT->child[1]->token->Sem);//标识符重命名
+        const int scope_origin_size = scope.size() - 1;//因为此前已经创建了此过程的符号表，所以scope原本的size等于现在的size-1
+        //RD_ROOT->child[7]: procBody()
+        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);//先检测body中的语义错误，再移除此局部化区
+        //如果过程标志符，而最新的局部化区为这个过程的标识符，所以此过程的局部化区以及其body中定义的全部局部化区应该全部被删除
+        const int times = scope.size() - scope_origin_size;//通过scope原本的size来将scope栈还原回加入此局部化区原本的样子，需要弹scope栈的次数
+        for (int ix = 0; ix < times; ix++) {
+            scope.pop_back();
+            exit_region.pop_back();
+        }
+    }
+    else {
+        //RD_ROOT->child[7]: procBody()
+        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);
+    }
+    //RD_ROOT->child[8]: procDecpart()
+    procDecpartParsing(RD_ROOT->child[8], scope, exit_region, TypeList, ValidTableCount);
+}
+*/
+
+//整个过程树
+void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"ProcDec"，对应RD中的"procDec函数"
+    if (RD_ROOT == NULL) { return; }
+    SymbTable temp;
+    //RD_ROOT->child[0]: PROCEDURE, 无操作
+    //RD_ROOT->child[1]: ID
+    strcpy(temp.idname, RD_ROOT->child[1]->token->Sem);//idname
+    temp.attrIR.idtype = NULL;//Typeptr
+    temp.attrIR.kind = PROCKIND;//kind
+    temp.attrIR.More.ProcAttr.level = ValidTableCount - 1;//level，过程仍属于上一层
+
+    if (Enter(temp.idname, temp.attrIR, scope, exit_region, PROCKIND, temp.attrIR.More.ProcAttr.level) == false) {//压入符号栈，需考虑过程的Level
+        Error_IdentifierDuplicateDec(RD_ROOT->child[1]->token->Lineshow, RD_ROOT->child[1]->token->Sem);//标识符重命名
+        const int scope_origin_size = scope.size() - 1;//因为此前已经创建了此过程的符号表，所以scope原本的size等于现在的size-1
+        //RD_ROOT->child[7]: procBody()
+        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);//先检测body中的语义错误，再移除此局部化区
+        //如果过程标志符，而最新的局部化区为这个过程的标识符，所以此过程的局部化区以及其body中定义的全部局部化区应该全部被删除
+        const int times = scope.size() - scope_origin_size;//通过scope原本的size来将scope栈还原回加入此局部化区原本的样子，需要弹scope栈的次数
+        for (int ix = 0; ix < times; ix++) {
+            scope.pop_back();
+            exit_region.pop_back();
+        }
+    }
+    else {
+        //RD_ROOT->child[2]: LPAREN, 无操作
+        //RD_ROOT->child[3]: paramList()
+        const int scope_size = scope.size();
+        scope[scope_size - 1][0].attrIR.More.ProcAttr.param = paramListParsing(RD_ROOT->child[3], scope, exit_region, TypeList, ValidTableCount);
+        scope[scope_size - 1][0].attrIR.More.ProcAttr.code = 0;//Code,过程的目标代码地址（代码生成阶段填写，现在初始化为0）
+        //RD_ROOT->child[4]: RPAREN, 无操作
+        //RD_ROOT->child[5]: SEMI, 无操作
+        //RD_ROOT->child[6]: procDecPart()
+        procDecPartParsing(RD_ROOT->child[6], scope, exit_region, TypeList, ValidTableCount);
+        //计算Size
+        //scope[scope_size - 1][0]表示这个符号表的过程标识符
+        scope[scope_size - 1][0].attrIR.More.ProcAttr.size = 0;
+        for (int ix = scope[scope_size - 1].size() - 1; ix >= 0; ix--) {
+            if (scope[scope_size - 1][ix].attrIR.kind == VARKIND) {
+                int size = 0;//表示这个过程的最后一个变量标识符的大小
+                if (scope[scope_size - 1][ix].attrIR.idtype != NULL) {
+                    size = scope[scope_size - 1][ix].attrIR.idtype->size;
+                }
+                scope[scope_size - 1][0].attrIR.More.ProcAttr.size = size + scope[scope_size - 1][ix].attrIR.More.VarAttr.off;
+            }
+        }
+        ;
+        /*SymbTable* SymPtr = FindEntry("*", false, scope, exit_region, VARKIND, -1);//找到当前符号表最新的一个变量标识符用作size计算
+        if (SymPtr == NULL) {//此标识符为当前符号表最新的一个变量标识符，size设置为0
+            scope[scope_size - 1][0].attrIR.More.ProcAttr.size = 0;
+        }
+        else {//否则等于当前符号表最新的一个变量标识符的size+偏移
+            unsigned int size = 0;
+            if (SymPtr->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
+                size = SymPtr->attrIR.idtype->size;
+            }
+            else {
+                size = 0;
+            }
+            scope[scope_size - 1][0].attrIR.More.ProcAttr.size = SymPtr->attrIR.More.VarAttr.off + size;
+        }*/
+        //RD_ROOT->child[7]: procBody()
+        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);
+        //RD_ROOT->child[8]: procDecpart()
+        procDecpartParsing(RD_ROOT->child[8], scope, exit_region, TypeList, ValidTableCount);
+
+    }
 }
 
-void varIDMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
+void varIDMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: COMMA, 无操作
+    //RD_ROOT->child[1]: IDList()
+    varIDListParsing(RD_ROOT->child[1], token);
+    return;
 }
 
-void varDecMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"VarDecMore"，对应RD中的"varDecMore函数"
+void varDecMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"VarDecMore"，对应RD中的"varDecMore函数"
     if (RD_ROOT == NULL) { return; }
+    varDecListParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
 }
 
-void varIDListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
-    if (RD_ROOT == NULL) { return; }
+void varIDListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
+    //RD_ROOT->child[0]: ID
+    token.push_back(RD_ROOT->child[0]->token);
+    //RD_ROOT->child[1]: varIDMore()
+    varIDMoreParsing(RD_ROOT->child[1], token);
+    return;
 }
-
-void varDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"VarDecList"，对应RD中的"varDecList函数"
+//处理变量声明
+void varDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"VarDecList"，对应RD中的"varDecList函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: typeDef()
+    AttributeIR* Attr = typeDefParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
+    if (Attr != NULL) {
+        Attr->kind = VARKIND;//变量标识符
+        Attr->More.VarAttr.access = DIR;//直接变量
+        Attr->More.VarAttr.level = ValidTableCount;//层数
+        //RD_ROOT->child[1]: varIDList()
+        vector<Token*> token;//存储IDList内的所有token
+        varIDListParsing(RD_ROOT->child[1], token);
+        int token_size = token.size();
+        for (int ix = 0; ix < token_size; ix++) {
+            SymbTable* Symtemp = FindEntry("*", false, scope, exit_region, VARKIND, -1);//找到当前符号表最新的一个变量标识符用作偏移计算
+            if (Symtemp == NULL) {//此标识符为当前符号表最新的一个变量标识符，偏移设置为0
+                Attr->More.VarAttr.off = 0;
+            }
+            else {//否则等于当前符号表最新的一个变量标识符的size+偏移
+                int size = 0;
+                if (Symtemp->attrIR.idtype != NULL) {
+                    size = Symtemp->attrIR.idtype->size;
+                }
+                Attr->More.VarAttr.off = Symtemp->attrIR.More.VarAttr.off + size;
+            }
+            //向符号表内插入符号
+            if (Enter(token[ix]->Sem, *Attr, scope, exit_region, VARKIND, -1) == false) {
+                Error_IdentifierDuplicateDec(token[ix]->Lineshow, token[ix]->Sem);//标识符重命名
+            }
+        }
+    }
+    
+    //RD_ROOT->child[2]: SEMI, 无操作
+    //RD_ROOT->child[3]: varDecMore()
+    varDecMoreParsing(RD_ROOT->child[3], scope, exit_region, TypeList, ValidTableCount);
+
 }
 
 void varDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"VarDec"，对应RD中的"varDec函数"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: VAR, 无操作
+    //RD_ROOT->child[1]: varDecList()
+    varDecListParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
 }
 
 
-void IDMoreParsing(treenode* RD_ROOT, vector<string>& StrVec) {//根节点名称为"IDMore"，对应RD中的"IDMore函数"
+void IDMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDMore"，对应RD中的"IDMore函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: COMMA, 无操作
     //RD_ROOT->child[1]: IDList()
-    IDListParsing(RD_ROOT->child[1], StrVec);
+    IDListParsing(RD_ROOT->child[1], token);
     return;
 }
 
-fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList) {//根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
+fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*>& token) {//根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]:fieldDecList()
-    return fieldDecListParsing(RD_ROOT->child[0], TypeList);
+    return fieldDecListParsing(RD_ROOT->child[0], TypeList, token);
 }
 
-void IDListParsing(treenode* RD_ROOT, vector<string>& StrVec) {//根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
+void IDListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: ID
-    StrVec.push_back(RD_ROOT->child[0]->token->Sem);
+    token.push_back(RD_ROOT->child[0]->token);
     //RD_ROOT->child[1]: IDMore()
-    IDMoreParsing(RD_ROOT->child[1], StrVec);
+    IDMoreParsing(RD_ROOT->child[1], token);
     return;
 }
 
-fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList) {//根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
+fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*>& token) {//根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
     if (RD_ROOT == NULL) { return NULL; }
     fieldChain* temp = NULL;
     //RD_ROOT->child[0]: BaseType 或 ArrayType,决定unitType
@@ -449,7 +886,7 @@ fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeL
     }
     else if (RD_ROOT->child[0]->child[0]->token->Lex == ARRAY) {
         temp = new fieldChain;
-        AttributeIR* tempAttr = arrayTypeParsing(RD_ROOT->child[0]->child[0], TypeList);
+        AttributeIR* tempAttr = arrayTypeParsing(RD_ROOT->child[0], TypeList);
         if (tempAttr == NULL) {
             delete tempAttr;
             delete temp;
@@ -464,27 +901,32 @@ fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeL
         return NULL;
     }
     //RD_ROOT->child[1]:IDList(),决定idname
-    vector<string> StrVec;
-    IDListParsing(RD_ROOT->child[1], StrVec);//得到IDList中的所有ID，并存入StrVec
-    if (StrVec.size() == 0) {//ID数量为0
+    int token_size1 = token.size();//token未增长前
+    IDListParsing(RD_ROOT->child[1], token);//得到IDList中的所有token
+    if (token.size() - token_size1 == 0) {//ID数量为0
         delete temp;
-        return NULL;
+        temp = NULL;
+    }
+
+    if (temp == NULL) {//ID数量为0
+        return fieldDecMoreParsing(RD_ROOT->child[3], TypeList, token);
     }
     else {
-        strcpy(temp->idname, StrVec[0].c_str());
+        strcpy(temp->idname, token[token_size1 + 0]->Sem);
         fieldChain* rear = temp;
-        for (int ix = 1; ix < StrVec.size(); ix++) {//将所有ID都生成为fieldChain，并接入链表
+        for (int ix = token_size1 + 1; ix < token.size(); ix++) {//将所有token都生成为fieldChain，并接入链表
             fieldChain* tempID = new fieldChain;
             tempID->unitType = temp->unitType;//所有ID都是相同的类型
-            strcpy(tempID->idname, StrVec[ix].c_str());
+            strcpy(tempID->idname, token[ix]->Sem);
             rear->next = tempID;
             rear = tempID;
         }
         //RD_ROOT->child[2]:SEMI，无操作
         //RD_ROOT->child[3]:fieldDecMore()
-        rear->next = fieldDecMoreParsing(RD_ROOT->child[3], TypeList);
+        rear->next = fieldDecMoreParsing(RD_ROOT->child[3], TypeList, token);
+        return temp;
     }
-    return temp;
+    
 }
 
 AttributeIR* recTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList) {//根节点名称为"RecType"，对应RD中的"recType函数"
@@ -496,10 +938,31 @@ AttributeIR* recTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList)
     tempTypeIR->Typekind = RECORDTY;//记录类型Typeind
     //RD_ROOT->child[0]: RECORD, 无操作
     //RD_ROOT->child[1]: fieldDecList()
-    fieldChain* body = fieldDecListParsing(RD_ROOT->child[1], TypeList);
+    vector<Token*> token;
+    fieldChain* body = fieldDecListParsing(RD_ROOT->child[1], TypeList, token);
     //RD_ROOT->child[2]: END, 无操作
     if (body == NULL) {
         delete temp;
+        temp = NULL;
+        return NULL;
+    }
+    fieldChain* head = body;
+    unordered_map <string, int> UnMap;
+    bool flag = false;
+    for (int ix = 0; head != NULL && ix<token.size(); ix++) {//token与body节点一定一一对应
+        string str = head->idname;//将字符数组转化成string类型
+        if (UnMap.find(str) != UnMap.end()) {//ID如果已经在map内，则表示Record中标识符重复声明
+            Error_IdentifierDuplicateDecRecord(token[ix]->Lineshow, token[ix]->Sem);//Record中标识符重复声明
+            flag = true;
+        }
+        else {
+            UnMap[str] = 0;//ID入Map
+        }
+        head = head->next;
+    }
+    if (flag == true) {
+        delete temp;
+        temp = NULL;
         return NULL;
     }
     tempTypeIR->More.body = body;//记录类型body
@@ -513,7 +976,7 @@ AttributeIR* recTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList)
     }
     tempTypeIR->size = size;//记录类型size
     tempTypeIR->serial = TypeList.size();
-
+    
     TypeList.push_back(tempTypeIR);
     //END 新建一个TypeIR，并插入TypeList------------------------------------------------------------------------------------
     temp->idtype = TypeList[TypeList.size() - 1];
@@ -566,12 +1029,12 @@ AttributeIR* arrayTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeLis
         return NULL;
     }
     else {
-        tempTypeIR->size = (str2_n - str1_n + 1) * tempTypeIR->More.elemTy->size;//数组类型size = 数组元素个数 * 数组元素尺寸
+        tempTypeIR->size = (str2_n - str1_n + 1) * tempTypeIR->More.elemTy->size;//数组类型size = 数组元素个数 * 数组元素尺寸 
     }
     tempTypeIR->serial = TypeList.size();
     TypeList.push_back(tempTypeIR);
-
-
+    
+    
     //END 新建一个TypeIR，并插入TypeList------------------------------------------------------------------------------------
     temp->idtype = TypeList[TypeList.size() - 1];
     return temp;
@@ -623,7 +1086,7 @@ AttributeIR* typeDefParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope
         temp = structureTypeParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
     }
     else {
-        SymbTable* Sym = FindEntry(RD_ROOT->child[0]->token->Sem, false, scope, exit_region, TYPEKIND);
+        SymbTable* Sym = FindEntry(RD_ROOT->child[0]->token->Sem, true, scope, exit_region, TYPEKIND, -1);
         if (Sym == NULL) {//如果未找到此标识符
             Error_IdentifierUndeclared(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
         }
@@ -634,6 +1097,7 @@ AttributeIR* typeDefParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope
     }
     return temp;
 }
+
 /*
 void typeIDParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"TypeID"，对应RD中的"typeID函数"
     if (RD_ROOT == NULL) { return; }
@@ -654,7 +1118,7 @@ void typeDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, v
         delete tempAttr;
         //RD_ROOT->child[3]: SEMI, 特殊符号，无操作
         temp.attrIR.kind = TYPEKIND;//冗余操作
-        bool flag = Enter(temp.idname, temp.attrIR, scope, exit_region);//插入标识符
+        bool flag = Enter(temp.idname, temp.attrIR, scope, exit_region, TYPEKIND, -1);//插入标识符
         if (flag == false) {//插入标识符失败（标识符重复定义）
             Error_IdentifierDuplicateDec(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
         }
@@ -687,41 +1151,41 @@ void varDecPartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, ve
     return;
 }
 
-void typeDecPartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"TypeDecPart"，对应RD中的"typeDecPart函数"
+void typeDecPartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"TypeDecPart"，对应RD中的"typeDecPart函数"
     if (RD_ROOT == NULL) { return; }
     typeDecParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
     return;
 }
 
-void programBodyParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"ProgramBody"，对应RD中的"programBody函数"
+void programBodyParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, int& ValidTableCount) {//根节点名称为"ProgramBody"，对应RD中的"programBody函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: Begin,无操作
     //RD_ROOT->child[1]: stmList
-    stmListParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
+    stmListParsing(RD_ROOT->child[1], scope, exit_region, ValidTableCount);
     DestroyTable(exit_region, ValidTableCount);//RD_ROOT->child[2]: End，废除第一个符号表
     return;
 }
 
 void declarePartParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//根节点名称为"DeclarePart"，对应RD中的"declarePart函数"
     if (RD_ROOT == NULL) { return; }
-    typeDecPartParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
+    typeDecPartParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
     varDecPartParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
     procDecpartParsing(RD_ROOT->child[2], scope, exit_region, TypeList, ValidTableCount);
     return;
 }
 
-void programHeadParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"ProgramHead"，对应RD中的"programHead函数"
+void programHeadParsing(treenode* RD_ROOT) {//根节点名称为"ProgramHead"，对应RD中的"programHead函数"
     if (RD_ROOT == NULL) { return; }
-    //do nothing
+    //程序头如果不加入符号表的话就没有用处，这里不考虑程序头
     return;
 }
 
 void RDTreeParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//解析语法树,根节点名称为"Program"
     if (RD_ROOT == NULL) { return; }
     CreateTable(scope, exit_region, ValidTableCount);//program,新建一个空符号表
-    programHeadParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
+    programHeadParsing(RD_ROOT->child[0]);
     declarePartParsing(RD_ROOT->child[1], scope, exit_region, TypeList, ValidTableCount);
-    programBodyParsing(RD_ROOT->child[2], scope, exit_region, TypeList, ValidTableCount);
+    programBodyParsing(RD_ROOT->child[2], scope, exit_region, ValidTableCount);
 }
 
 
@@ -737,13 +1201,16 @@ void semantic_analysis(treenode* RD_ROOT) {
 
     //初始化函数
     InitFile(ERROR_FILE);//清空存储语义错误信息的文件
-    InitFile(TABLE_FILE);//清空存储类型表和符号表的文件
+
     initialize(TypeList);////初始化三种基本类型
 
     //解析语法树
     RDTreeParsing(RD_ROOT, scope, exit_region, TypeList, ValidTableCount);
 
     //打印类型表和符号表到文件
-    PrintTable(scope, TypeList);
+    //PrintTable(scope, TypeList, TABLE_FILE_XLS);
+    PrintTable(scope, TypeList, TABLE_FILE_CSV);
     return;
 }
+
+//2022_4_15
