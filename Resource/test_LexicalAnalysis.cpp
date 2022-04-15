@@ -13,7 +13,8 @@ state a;
 error error0;//词法错误
 char ch;//取字符后放这里
 int Line;//token所在的行数
-
+extern FILE* fp;
+extern FILE* w_fp;
 word reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
 {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
 {"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},

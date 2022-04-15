@@ -3,10 +3,6 @@
 #include <cstdio>
 //一些全局变量
 
-extern const int NonNum = 67; // 非终结符数量
-extern const int ReserveNum = 43; //保留字数量
-extern const int ProductNum = 104; // 产生式数量
-extern const int maxloop = 40; // 求follow集的最大循环次数
 
 typedef enum//词法类型定义
 {	//簿记单词符
@@ -44,14 +40,14 @@ typedef struct first
 {
 	int num; // 该非终结符的first集中元素个数
 	const char* ptr[20]; // 指向各个终结符
-	bool flag[ReserveNum + 1]; // 保证集合无重复元素（多一个$的位）
+	bool flag[43 + 1]; // 保证集合无重复元素（多一个$的位）
 }first;
 
 typedef struct follow
 {
 	int num; // 该非终结符的follow集中元素个数
 	const char* ptr[20]; // 指向各个终结符
-	bool flag[ReserveNum + 1]; // 保证集合无重复元素（多一个$的位）
+	bool flag[43 + 1]; // 保证集合无重复元素（多一个$的位）
 }follow;
 
 typedef struct production // 产生式类型

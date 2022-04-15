@@ -6,6 +6,10 @@
 #include "func_statement.h"
 #include "LL1_Head.h"
 
+extern const int ReserveNum = 43; //保留字数量
+extern const int NonNum=67;
+extern int LL1table[NonNum][ReserveNum];
+
 token* nowtoken; // 当前指向的token节点
 char* S_stack[256];//符号栈
 treenode* G_stack[256];//语法树栈
@@ -22,10 +26,6 @@ int pnum;//产生式处理函数调用序号
 treenode* LL1_treeROOT; // LL1分析法语法分析数根节点
 treenode* newnode;//产生式处理函数使用
 
-//变量在.H头文件中声明时已分配内存空间；
-//数组只能在初始化时给字符串值，不可在后续更改定义时给字符串值
-//.h头文件中只可放声明，不可放定义(是不被推荐的)；被声明的变量在cpp中若要给值，则应在函数中，而不是函数外
-//.h申明的数据应该是被众多.cpp文件所需要的；若非如此，应放到.cpp中函数外定义
 word reservedWords1[42] = {//保留字
 	{"ENDFILE",ENDFILE},{"ERROR",ERROR},
 	{"PROGRAM",PROGRAM},{"PROCEDURE",PROCEDURE},{"TYPE",PROCEDURE},{"VAR",VAR},{"IF",IF},
@@ -50,7 +50,6 @@ void initnode(treenode* temp) {
 	if (temp == NULL)
 	{
 		printf("ERROR:initnode()!");
-		return NULL;
 	}
 	temp->childnum = 0;
 	temp->token = NULL;
@@ -116,6 +115,7 @@ void predict(int a)
 		S_push("ProgramBody");
 		S_push("DeclarePaart");
 		S_push("ProgramHead");
+		nPredict("Program", 3);
 		break;
 	case 2:
 		S_push("ProgramName");
@@ -130,8 +130,10 @@ void predict(int a)
 		S_push("ProcDec");
 		S_push("VarDec");
 		S_push("TypeDec");
+		nPredict("DeclarePart", 3);
 		break;
 	case 5:
+		nPredict("TypeDec", 0);
 		break;
 	case 6:
 		S_push("TypeDeclaration");
@@ -262,6 +264,344 @@ void predict(int a)
 		break;
 	case 33:
 		S_push("VarDecMore");
+		S_push("SEMI");
+		S_push("VarIdList");
+		S_push("TypeName");
+		nPredict("VarDecList", 4);
+		break;
+	case 34:
+		nPredict("VarDecMore", 0);
+		break;
+	case 35:
+		S_push("VarDecList");
+		nPredict("VarDecMore", 1);
+		break;
+	case 36:
+		S_push("VarIdMore");
+		S_push("ID");
+		nPredict("VarIdList", 2);
+		break;
+	case 37:
+		nPredict("VarIdMore", 0);
+		break;
+	case 38:
+		S_push("VarIdList");
+		S_push("COMMA");
+		nPredict("VarIdMore",2);
+		break;
+	case 39:
+		nPredict("ProcDec", 0);
+		break;
+	case 40:
+		S_push("ProcDeclaration");
+		nPredict("ProcDec", 1);
+		break;
+	case 41:
+		S_push("ProcDecMore");
+		S_push("ProcBody");
+		S_push("ProcDecPart");
+		S_push("SEMI");
+		S_push("BaseType");
+		S_push("COLON");
+		S_push("RPAREN");
+		S_push("ParamList");
+		S_push("LPAREN");
+		S_push("ProcName");
+		S_push("PROCEDURE");
+		nPredict("ProcDeclaration",11);
+		break;
+	case 42:
+		nPredict("ProcDecMore",0);
+		break;
+	case 43:
+		S_push("ProcDeclaration");
+		nPredict("ProcDecMore", 1);
+		break;
+	case 44:
+		S_push("ID");
+		nPredict("ProcName",1);
+		break;
+	case 45:
+		nPredict("ParamList", 0);
+		break;
+	case 46:
+		S_push("ParamDecList");
+		nPredict("ParamList",1);
+		break;
+	case 47:
+		S_push("ParamMore");
+		S_push("Param");
+		nPredict("ParaDecList",2);
+		break;
+	case 48:
+		nPredict("ParamMore", 0);
+		break;
+	case 49:
+		S_push("ParamDecList");
+		S_push("SEMI");
+		nPredict("ParamMore", 2);
+		break;
+	case 50:
+		S_push("FormList");
+		S_push("TypeName");
+		nPredict("Param", 2);
+		break;
+	case 51:
+		S_push("FormList");
+		S_push("TypeName");
+		S_push("VAR");
+		nPredict("Param",3);
+		break;
+	case 52:
+		S_push("FidMore");
+		S_push("ID");
+		nPredict("FormList", 2);
+		break;
+	case 53:
+		nPredict("FidMore",0);
+		break;
+	case 54:
+		S_push("FormList");
+		S_push("COMMA");
+		nPredict("FidMore",2);
+		break;
+	case 55:
+		S_push("DeclarePart");
+		nPredict("ProcDecPart", 1);
+		break;
+	case 56:
+		S_push("ProgramBody");
+		nPredict("ProcBody", 1);
+		break;
+	case 57:
+		S_push("END");
+		S_push("StmList");
+		S_push("BEGIN");
+		nPredict("ProgramBody", 3);
+		break;
+	case 58:
+		S_push("StmMore");
+		S_push("Stm");
+		nPredict("StmList", 2);
+		break;
+	case 59:
+		nPredict("StmMore", 0);
+		break;
+	case 60:
+		S_push("StmList");
+		S_push("SEMI");
+		nPredict("StmMore",2);
+		break;
+	case 61:
+		S_push("ConditionalStm");
+		nPredict("Stm", 1);
+		break;
+	case 62:
+		S_push("LoopStm");
+		nPredict("Stm", 1);
+		break;
+	case 63:
+		S_push("InputStm");
+		nPredict("Stm", 1);
+		break;
+	case 64:
+		S_push("OutputStm");
+		nPredict("Stm", 1);
+		break;
+	case 65:
+		S_push("ReturnStm");
+		nPredict("Stm", 1);
+		break;
+	case 66:
+		S_push("AssCall");
+		S_push("ID");
+		nPredict("Stm", 2);
+		break;
+	case 67:
+		S_push("AssignmentRest");
+		nPredict("AssCall", 1);
+		break;
+	case 68:
+		S_push("CallStmRest");
+		nPredict("AssCall",1);
+		break;
+	case 69:
+		S_push("Exp");
+		S_push("EQ");
+		S_push("VariMore");
+		nPredict("AssignmentRest", 3);
+		break;
+	case 70:
+		S_push("FI");
+		S_push("StmList");
+		S_push("ELSE");
+		S_push("StmList");
+		S_push("THEN");
+		S_push("RelExp");
+		S_push("IF");
+		nPredict("ConditionalStm", 7);
+		break;
+	case 71:
+		S_push("EDNWH");
+		S_push("StmList");
+		S_push("DO");
+		S_push("RelExp");
+		S_push("WHILE");
+		nPredict("LoopStm", 5);
+		break;
+	case 72:
+		S_push("RPAREN");
+		S_push("InVar");
+		S_push("LPAREN");
+		S_push("READ");
+		nPredict("InputStm", 4);
+		break;
+	case 73:
+		S_push("ID");
+		nPredict("InVar", 1);
+		break;
+	case 74:
+		S_push("RPAREN");
+		S_push("Exp");
+		S_push("LPAREN");
+		S_push("WRITE");
+		nPredict("OutputStm", 4);
+		break;
+	case 75:
+		S_push("RETURN");
+		nPredict("ReturnStm", 1);
+		break;
+	case 76:
+		S_push("RPAREN");
+		S_push("ActParamList");
+		S_push("LPAREN");
+		nPredict("CallStmRest", 3);
+		break;
+	case 77:
+		nPredict("ActParamList", 0);
+		break;
+	case 78:
+		S_push("ActParamMore");
+		S_push("Exp");
+		nPredict("ActParamList", 2);
+		break;
+	case 79:
+		nPredict("ActParamMore", 0);
+		break;
+	case 80:
+		S_push("ActParamList");
+		S_push("COMMA");
+		nPredict("ActParamMore", 2);
+		break;
+	case 81:
+		S_push("OtherRelE");
+		S_push("Exp");
+		nPredict("RelExp", 2);
+		break;
+	case 82:
+		S_push("Exp");
+		S_push("CmpOp");
+		nPredict("OtherRelE", 2);
+		break;
+	case 83:
+		S_push("OtherTerm");
+		S_push("Term");
+		nPredict("Exp",2);
+		break;
+	case 84:
+		nPredict("OtherTerm", 0);
+		break;
+	case 85:
+		S_push("Exp");
+		S_push("AddOp");
+		nPredict("OtherTerm", 2);
+		break;
+	case 86:
+		S_push("OtherFactor");
+		S_push("Factor");
+		nPredict("Term", 2);
+		break;
+	case 87:
+		nPredict("OtherFactor", 0);
+		break;
+	case 88:
+		S_push("Term");
+		S_push("MultOp");
+		nPredict("OtherFactor", 2);
+		break;
+	case 89:
+		S_push("RPAREN");
+		S_push("Exp");
+		S_push("LPAREN");
+		nPredict("Factor", 3);
+		break;
+	case 90:
+		S_push("INTC");
+		nPredict("Factor", 1);
+		break;
+	case 91:
+		S_push("Variable");
+		nPredict("Factor", 1);
+		break;
+	case 92:
+		S_push("VariMore");
+		S_push("ID");
+		nPredict("Variable", 2);
+		break;
+	case 93:
+		nPredict("VariMore", 0);
+		break;
+	case 94:
+		S_push("RMIDPAREN");
+		S_push("Exp");
+		S_push("LMIDPAREN");
+		nPredict("VariMore",3);
+		break;
+	case 95:
+		S_push("FieldVar");
+		S_push("DOT");
+		nPredict("VariMore", 2);
+		break;
+	case 96:
+		S_push("FieldVarMore");
+		S_push("ID");
+		nPredict("FieldVar", 2);
+		break;
+	case 97:
+		nPredict("FieldVarMore", 0);
+		break;
+	case 98:
+		S_push("RMIDPAREN");
+		S_push("Exp");
+		S_push("LMIDPAREN");
+		nPredict("FieldVarMore", 3);
+		break;
+	case 99:
+		S_push("LT");
+		nPredict("CmpOp", 1);
+		break;
+	case 100:
+		S_push("EQ");
+		nPredict("CmpOp", 1);
+		break;
+	case 101:
+		S_push("PLUS");
+		nPredict("AddOp",1);
+		break;
+	case 102:
+		S_push("MINUS");
+		nPredict("AddOp", 1);
+		break;
+	case 103:
+		S_push("TIMES");
+		nPredict("MultOp", 1);
+		break;
+	case 104:
+		S_push("OVER");
+		nPredict("MultOp", 1);
+		break;
+	default:
+		printf("ERROR:predict()出错！");
 
 	}
 }
@@ -286,7 +626,6 @@ treenode* LL1_analysis() // LL1分析法
 
 
 
-	//int maxlen = 20; // 一个字符的最大长度
 	S_ptr = -1;//符号栈指针
 	G_ptr = -1;//语法树栈指针
 	N_ptr = -1;//操作数栈指针

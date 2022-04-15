@@ -6,11 +6,16 @@
 #include <string.h>
 #include "global_var.h"
 
-first firsts[NonNum];
-follow follows[NonNum];
+extern const int NonNum = 67; // 非终结符数量
+extern const int ReserveNum = 43; //保留字数量
+extern const int ProductNum = 104; // 产生式数量
 extern const char* Non_symbol[NonNum]; // 全局变量的使用，得加上 extern 关键字
 extern const char* Reserved_word[ReserveNum]; // 全局变量的使用，得加上 extern 关键字
 extern production Productions[ProductNum]; // 全局变量的使用，得加上 extern 关键字
+extern int LL1table[NonNum][ReserveNum];//LL1分析表
+
+first firsts[NonNum];
+follow follows[NonNum];
 
 int getNonIndex(const char* s) // 返回非终结符s在非终结符集合中的下标（判断s是否为非终结符）
 {
