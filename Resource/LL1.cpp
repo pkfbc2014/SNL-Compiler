@@ -7,7 +7,7 @@
 #include "global_var.h"
 #include "func_statement.h"
 
-int LL1table[NonNum][ReserveNum];
+extern int LL1table[NonNum][ReserveNum];
 
 token* nowtoken; // 当前指向的token节点
 char* S_stack[256];//符号栈
@@ -114,11 +114,10 @@ void predict(int a)
 {
 	switch (a)
 	{
-	case 1:
+	case 1://首个非终极符，也即语法树的根节点，特别处理（已在循环开始前处理完成)
 		S_push("ProgramBody");
-		S_push("DeclarePaart");
+		S_push("DeclarePart");
 		S_push("ProgramHead");
-		nPredict("Program", 3);
 		break;
 	case 2:
 		S_push("ProgramName");
@@ -622,6 +621,15 @@ int Priosity(LexType op)
 	return -1;
 
 }
+int prePrint(treenode* root)
+{
+	if (root == NULL)
+		return 0;
+	printf("%s\n", root->str);
+	for (int k = 0; k < root->childnum; k--)
+		prePrint(root->child[k]);
+	return 0;
+}
 treenode* LL1_analysis() // LL1分析法
 {
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
@@ -640,6 +648,7 @@ treenode* LL1_analysis() // LL1分析法
 
 	init_S_stack();
 	nowtoken = getTokenList();
+	printToken(nowtoken);
 	lineno = nowtoken->Lineshow;
 	S_push("Program");//文法开始符压栈
 	LL1_treeROOT = (treenode*)malloc(sizeof(treenode));
@@ -658,7 +667,7 @@ treenode* LL1_analysis() // LL1分析法
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
 				S_pop();
-				nowtoken = getTokenList();
+				nowtoken = nowtoken->next;
 				lineno = nowtoken->Lineshow;
 			}
 			else {
@@ -669,15 +678,19 @@ treenode* LL1_analysis() // LL1分析法
 		else {
 			pnum = LL1table[getNonIndex(S_stack[S_ptr])][getReIndex2(nowtoken->Lex)];
 			S_pop();
-			predict(pnum);
+			predict(pnum+1);
 		}
 	}
 	if (nowtoken->Lex != ENDFILE) {
-		printf("ERROR:语法分析中，文件提前结束");
+		printf("\nERROR:语法分析中，文件提前结束");
 		return LL1_treeROOT;
 	}
 	else
+	{
+		prePrint(LL1_treeROOT);
 		return LL1_treeROOT;
+	}
+
 }
 //int main() {
 //	LL1_analysis();

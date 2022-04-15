@@ -28,6 +28,7 @@ int classify(char ch);//自动机所需的对输入字符的分类函数
 LexType classify1(char ch);//单分界符的分类函数
 LexType classify2(char* ptr);//ID的分类函数
 int print_Lex(LexType a);//打印输出词法信息
+int printToken(token* head);//打印输出token表
 token* getTokenList();
 int reservedLookup();
 int ChainToFile();

@@ -142,7 +142,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
     //±äÁ¿¶¨Òå
     a = START;
     error0 = NORMAL;//´Ê·¨´íÎó
-    Line = 0;
+    Line = 1;
 
     token* head = (token*)malloc(sizeof(token)),*current=head,*next= (token*)malloc(sizeof(token));
     init_node(head); init_node(next);
@@ -264,6 +264,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             ch = getNextChar();
             while (ch != '}')
                 ch = getNextChar();
+            ch = getNextChar();
             //printf("Ê¶±ğ²¢ÒÑÌø¹ı×¢ÊÍ");//²»Ó°ÏìÏÂÒ»ÂÖtokenÉú³É
             state0 = START;
             break;
@@ -319,11 +320,11 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
     switch (error0) {
     case NORMAL:
         printf("NORMAL:tokenĞòÁĞÎ´Ê¶±ğµ½ÎÄ¼ş½áÊø·û\n");
-        return head;
+        exit(0);
         break;
     case INASSIGN_ERROR:
         printf("INASSIGN_ERROR:¸³Öµ·ûºÅÊéĞ´´íÎó\n");
-        return head;
+        exit(0);
         break;
     case INRANGE_ERROR:
         printf("INRANGE_ERROR:tokenÊ¶±ğ³ÌĞòÕı³£Ê¶±ğµ½ÎÄ¼ş½áÊø·û½áÊø\n");
@@ -331,44 +332,45 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
         break;
     case INCHAR_ERROR:
         printf("INCHAR_ERROR:×Ö·ûÊéĞ´³ö´í\n");
-        return head;
+        exit(0);
         break;
     case ERROR1:
         printf("ERROR1:¶ÁÈëÎŞ·¨Ê¶±ğµÄ×Ö·û,×Ö·ûÎª:%c\n",ch);
-        return head;
+        exit(0);
         break;
     default:
         printf("tokenÊ¶±ğ³ÌĞòÒì³£ÍË³ö\n");
-        return head;
+        exit(0);
     }
     return head;
 }
-//int main() {
-//    token* head = getTokenList();
-//    //½«tokenĞÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼şÖĞ
-//    if (error0 == INRANGE_ERROR) {//tokenÊ¶±ğÕı³£µÄ´¦Àí
-//        printf("\nĞĞÊı\t´Ê·¨ĞÅÏ¢\tÓïÒåĞÅÏ¢\t");
-//        fprintf(w_fp, "\nĞĞÊı\t´Ê·¨ĞÅÏ¢\t\tÓïÒåĞÅÏ¢\t");
-//        while (head->Lex != ENDFILE) {
-//            printf("\n%d\t", head->Lineshow);
-//            fprintf(w_fp,"\n%d\t", head->Lineshow);
-//            print_Lex(head->Lex);
-//            if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
-//            {
-//                printf("\t%s\t", head->Sem);
-//                fprintf(w_fp,"\t%s\t", head->Sem);
-//            }
-//            head = head->next;
-//        }
-//        printf("\n%d\t", head->Lineshow);
-//        fprintf(w_fp, "\n%d\t", head->Lineshow);
-//        print_Lex(head->Lex);
-//        if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
-//        {
-//            printf("\t%s\t", head->Sem);
-//            fprintf(w_fp, "\t%s\t", head->Sem);
-//        }
-//        head = head->next;
-//    }
-//	return 0;
-//}
+int printToken(token* head)
+{
+        //½«tokenĞÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼şÖĞ
+    if (error0 == INRANGE_ERROR) 
+    {//tokenÊ¶±ğÕı³£µÄ´¦Àí
+        printf("\nĞĞÊı\t´Ê·¨ĞÅÏ¢\tÓïÒåĞÅÏ¢\t");
+        fprintf(w_fp, "\nĞĞÊı\t´Ê·¨ĞÅÏ¢\t\tÓïÒåĞÅÏ¢\t");
+        while (head->Lex != ENDFILE) {
+            printf("\n%d\t", head->Lineshow);
+            fprintf(w_fp,"\n%d\t", head->Lineshow);
+            print_Lex(head->Lex);
+            if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+            {
+                printf("\t%s\t", head->Sem);
+                fprintf(w_fp,"\t%s\t", head->Sem);
+            }
+            head = head->next;
+        }
+        printf("\n%d\t", head->Lineshow);
+        fprintf(w_fp, "\n%d\t", head->Lineshow);
+        print_Lex(head->Lex);
+        if (head->Lex == ID || head->Lex == CHARC || head->Lex == INTC)
+        {
+            printf("\t%s\t", head->Sem);
+            fprintf(w_fp, "\t%s\t", head->Sem);
+        }
+        head = head->next;
+    }
+    return 0;
+}
