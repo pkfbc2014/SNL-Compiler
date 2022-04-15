@@ -1,6 +1,6 @@
 #pragma once
 
-//一些函数的声明
+// 一些常用函数的声明
 
 int getNonIndex(char* s); // 返回非终结符s在非终结符集合中的下标
 int getReIndex(char* s); // 返回终结符s在终结符集合中的下标

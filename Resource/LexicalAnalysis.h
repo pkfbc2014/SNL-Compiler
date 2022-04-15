@@ -1,10 +1,9 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
 #include "global_var.h"
+
 //类型声明
 enum state { START = 1, INID, INNUM, DONE, INASSIGN, INCOMMENT, INRANGE, INCHAR};//DFA状态
 enum error{NORMAL=1,INASSIGN_ERROR,INRANGE_ERROR,INCHAR_ERROR,ERROR1};//错误类型分别对应无错误,赋值错误，程序结束错误,字符错误，读入无法识别错误
-
 
 static struct word //保留字表，便于查阅
 {

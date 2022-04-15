@@ -1,9 +1,10 @@
 #pragma once
+
 #include "global_var.h"
 
 //语法树节点和一些相关函数的定义
+extern const int maxlen = 20; // 全局变量的使用，带上 extern 关键字
 
-const int maxlen = 20; // 一个字符的最大长度
 typedef struct treenode
 {
 	char str[maxlen]; // 当前符号
