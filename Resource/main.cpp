@@ -5,9 +5,6 @@
 #include <string.h>
 #include "func_statement.h"
 #include "LL1_Head.h"
-//#include "global_var.h"
-//#include "SemanticAnalysis.h"
-//#include "LexicalAnalysis.h"//´Ê·¨·ÖÎö
 
 int main()
 {

@@ -5,7 +5,6 @@
 #include <string.h>
 #include "RD_head.h"
 
-
 void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken = tokenhead; // 指向token序列的头
@@ -15,7 +14,6 @@ void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 
 void initnode(treenode* temp) // 初始化节点
 {
-	extern const int maxlen;
 	strcpy(temp->str, "\0");
 	temp->token = NULL;
 	for (int i = 0; i < maxlen; i++)

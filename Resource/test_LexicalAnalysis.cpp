@@ -8,7 +8,7 @@
 #include<string.h>
 #include "LexicalAnalysis.h"
 
-//变量申明
+//变量定义
 state a;
 error error0;//词法错误
 char ch;//取字符后放这里

@@ -4,13 +4,6 @@
 #include <stdio.h>
 #include "global_var.h"
 
-const int NonNum = 67; // 非终结符数量
-const int ReserveNum = 43; //保留字数量
-const int ProductNum = 104; // 产生式数量
-const int maxloop = 40; // 求follow集的最大循环次数
-
-const int maxlen = 20; // 一个字符的最大长度
-
 int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
 FILE* fp = NULL;// 代码文件读写指针
