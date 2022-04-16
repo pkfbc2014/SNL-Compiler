@@ -9,17 +9,20 @@
 	GraphvizÏÂÔØÁ´½Ó: http://www.graphviz.org/gallery/
 	Ê¹ÓÃ½Ì³Ì: https://www.jianshu.com/p/6d9bbbbf38b1
 	dot½Å±¾µÄ¼òµ¥Óï·¨¸ñÊ½ÈçÏÂ: 
-	digraph graph{
+	digraph graph1{
 		a->b;
 		b->d;
 		c->d;
 	}
 */
 
+int tetete = 0;
+
 FILE* treefp; // ÎÄ¼ş¶ÁĞ´Ö¸Õë
 Queue* head; // ¶ÓÍ·ÉÚ±ø½Úµã
 Queue* tail; // ¶ÓÎ²Ö¸Õë
 int queuenum; // ¶ÓÁĞÖĞÔªËØÊıÁ¿
+extern const char* Reserved_word[ReserveNum];
 
 void initvar() // È«¾Ö±äÁ¿³õÊ¼»¯
 {
@@ -46,7 +49,7 @@ void choosePrint(treenode* root, int treetype)
 		printRDTree(root);
 		fprintf(treefp, "}");
 		fclose(treefp);
-
+		
 		//system("dot -Tpng RDtree.dot -o RDtree.png"); // ÔËĞĞ½Å±¾
 	}
 	else // ´òÓ¡LL1Ê÷
@@ -75,7 +78,22 @@ void printRDTree(treenode* root) // Óï·¨Ê÷¸ù½Úµã¡¢Ê÷µÄÀàĞÍ£¨RDÊ÷ - 0£¬LL1Ê÷ - 1£
 		treenode* temp = pop();
 		for (int i = 0; i < temp->childnum; i++)
 		{
-			fprintf(treefp, "%s->%s\n", temp->str, temp->child[i]->str);
+			if (tetete == 58)
+			{
+				int kkk = 10;
+			}
+			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
+			{
+				fprintf(treefp, "%s->%s\n", temp->str, temp->child[i]->str);
+				printf("%s->%s\n", temp->str, temp->child[i]->str);
+				tetete++;
+			}
+			else // ÖÕ½á·û£¬Êä³ötoken->Lex
+			{
+				fprintf(treefp, "%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
+				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
+				tetete++;
+			}
 			push(temp->child[i]);
 		}
 	}
@@ -100,8 +118,10 @@ treenode* pop() // µ¯³ö¶ÓÊ×ÔªËØ
 {
 	Queue* temp = head->next; // tempÖ¸ÏòÉÚ±ø½ÚµãµÄnext£¬¼´Í·½Úµã
 	head->next = temp->next;
-	treenode* flag = temp->node; // ±£´ætempµÄnodeĞÅÏ¢£¬ÒòÎªtempÂíÉÏ»á±»É¾³ı
+	treenode* message = temp->node; // ±£´ætempµÄnodeĞÅÏ¢£¬ÒòÎªtempÂíÉÏ»á±»É¾³ı
 	free(temp);
 	queuenum--;
-	return flag;
+	if (queuenum == 0) // ÌØÊâ´¦ÀíÒ»ÏÂ
+		tail = head;
+	return message;
 }
