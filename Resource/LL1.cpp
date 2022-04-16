@@ -12,12 +12,8 @@ extern int LL1table[NonNum][ReserveNum];
 token* nowtoken; // 当前指向的token节点
 char* S_stack[256];//符号栈
 treenode* G_stack[256];//语法树栈
-int N_stack[256];//操作数栈
-LexType O_stack[256];//操作符栈
-int S_ptr;//符号栈指针
+int S_ptr;//符号栈栈顶指针
 int G_ptr;//语法树栈指针
-int N_ptr;//操作数栈指针
-int O_ptr;//操作符栈指针
 treenode* G_pointer;//语法栈弹栈指针
 
 int lineno;//单词行号
@@ -43,6 +39,11 @@ extern word2 Words[42];
 void init_S_stack() {
 	for (int i = 0; i < 256; i++) {
 		S_stack[i] = (char*)malloc(sizeof(char) * 20);
+		if (S_stack[i] == NULL)
+		{
+			printf("ERROR:init_S_stack()出错");
+			exit(0);
+		}
 	}
 }
 void initnode(treenode* temp) {
@@ -74,16 +75,16 @@ void G_push(treenode* temp) {
 	else
 		printf("G_stack数组下标越界");
 }
+void S_pop()
+{
+	S_ptr--;
+}
 treenode* G_pop()
 {
 	if (G_ptr > -1)
 		return G_stack[G_ptr--];
 	printf("ERROE:G_pop()出错！");
 	return NULL;
-}
-void S_pop()
-{
-	S_ptr--;
 }
 char* LexToStr(LexType temp) {//终极符转为字符串
 	for (int i = 0; i < 42; i++) {
@@ -607,20 +608,6 @@ void predict(int a)
 
 	}
 }
-int Priosity(LexType op)
-{
-	if (op == END)
-		return 0;
-	if (op == LT or op == EQ)
-		return 1;
-	if (op == PLUS or op == MINUS)
-		return 2;
-	if (op == TIMES or op == OVER)
-		return 3;
-	printf("ERROR:语法分析Priosity()输入不合法！");
-	return -1;
-
-}
 int prePrint(treenode* root)
 {
 	if (root == NULL)
@@ -634,24 +621,24 @@ treenode* LL1_analysis() // LL1分析法
 {
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
 	out_predict(); // 输出LL1预测分析表到本地
-
 	S_ptr = -1;//符号栈指针
 	G_ptr = -1;//语法树栈指针
-	N_ptr = -1;//操作数栈指针
-	O_ptr = -1;//操作符栈指针
 	G_pointer = NULL;//语法栈弹栈指针
-
 	lineno = 0;//单词行号
 	pnum = -1;//产生式处理函数调用序号
-	LL1_treeROOT = NULL; // LL1分析法语法分析数根节点
-	newnode = NULL;//产生式处理函数使用
+	LL1_treeROOT = NULL; // LL1分析法语法分析树根节点
+	nowtoken = getTokenList();//获取token列表
+	printToken(nowtoken);//输出token
 
 	init_S_stack();
-	nowtoken = getTokenList();
-	printToken(nowtoken);
 	lineno = nowtoken->Lineshow;
 	S_push("Program");//文法开始符压栈
 	LL1_treeROOT = (treenode*)malloc(sizeof(treenode));
+	if (LL1_treeROOT == NULL)
+	{
+		printf("ERROR:LL1_treeROOT内存申请失败");
+		exit(0);
+	}
 	initnode(LL1_treeROOT);
 	strcpy(LL1_treeROOT->str, "Program");
 	G_push(LL1_treeROOT);
@@ -666,6 +653,7 @@ treenode* LL1_analysis() // LL1分析法
 				newnode->token = nowtoken;
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
+
 				S_pop();
 				nowtoken = nowtoken->next;
 				lineno = nowtoken->Lineshow;
