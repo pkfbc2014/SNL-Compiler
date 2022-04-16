@@ -6,6 +6,7 @@
 #include "func_statement.h"
 #include "RD_head.h"
 #include "LL1_Head.h"
+#include "printTree.h"
 
 int main()
 {
@@ -23,6 +24,6 @@ int main()
 
     freetree(RDtreeROOT); // 释放RD语法树
     //freetree(LL1treeROOT); // 释放LL1语法树
-
+    
 	return 0;
 } 

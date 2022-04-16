@@ -68,11 +68,6 @@ void freetree(treenode* root) // 递归释放以 root 为根节点的树
 	}
 }
 
-void printRDtree(treenode* root) // 将RD语法树输出到本地
-{
-	
-}
-
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
 {
