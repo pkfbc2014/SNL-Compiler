@@ -16,12 +16,24 @@
 	}
 */
 
-FILE* treefp = NULL; // 文件读写指针
-Queue* head = NULL; // 队尾指针
-Queue* tail = NULL; // 队尾指针
+FILE* treefp; // 文件读写指针
+Queue* head; // 队头哨兵节点
+Queue* tail; // 队尾指针
+int queuenum; // 队列中元素数量
+
+void initvar() // 全局变量初始化
+{
+	treefp = NULL;
+	head = (Queue*)malloc(sizeof(Queue)); // 建立哨兵节点
+	head->node = NULL;
+	head->next = NULL;
+	tail = head;
+	queuenum = 0;
+}
 
 void choosePrint(treenode* root, int treetype)
 {
+	initvar();
 	if (treetype == 0) // 打印RD树
 	{	
 		if ((treefp = fopen("RDtree.dot", "w")) == NULL)
@@ -56,15 +68,14 @@ void choosePrint(treenode* root, int treetype)
 
 void printRDTree(treenode* root) // 语法树根节点、树的类型（RD树 - 0，LL1树 - 1）
 {
-	head = (Queue*)malloc(sizeof(Queue)); // 根节点入队
-	head->node = root;
+	push(root); // 根节点入队
 
-	while (!isEmpty())
+	while (queuenum != 0) // 循环直到队列为空
 	{
 		treenode* temp = pop();
 		for (int i = 0; i < temp->childnum; i++)
 		{
-			fprintf(treefp, "\t%s->%s\n", temp->str, temp->child[i]->str);
+			fprintf(treefp, "%s->%s\n", temp->str, temp->child[i]->str);
 			push(temp->child[i]);
 		}
 	}
@@ -75,27 +86,22 @@ void printLL1Tree(treenode* root)
 
 }
 
-bool isEmpty() // 判断队列是否为空
-{
-	if (head == tail) // 队列为空
-		return true;
-	else // 队列不为空
-		return false;
-}
-
 void push(treenode* node) // 向队尾增加元素 node
 {
 	Queue* temp = (Queue*)malloc(sizeof(Queue));
 	temp->node = node;
+	temp->next = tail->next;
 	tail->next = temp;
 	tail = tail->next;
+	queuenum++;
 }
 
 treenode* pop() // 弹出队首元素
 {
-	Queue* temp = head;
-	head = head->next;
-	treenode* flag = temp->node;
+	Queue* temp = head->next; // temp指向哨兵节点的next，即头节点
+	head->next = temp->next;
+	treenode* flag = temp->node; // 保存temp的node信息，因为temp马上会被删除
 	free(temp);
+	queuenum--;
 	return flag;
 }
