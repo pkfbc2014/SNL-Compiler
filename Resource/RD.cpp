@@ -5,11 +5,13 @@
 #include <string.h>
 #include "RD_head.h"
 
-void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
+token* nowtoken = NULL; // 当前指向的token节点
+
+treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken = tokenhead; // 指向token序列的头
-
-	treenode* RD_treeROOT = program();
+	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
+	return RD_treeROOT; // 返回总根节点，以便语义分析
 }
 
 void initnode(treenode* temp) // 初始化节点
@@ -796,15 +798,61 @@ treenode* stmMore()
 	return newnode;
 }
 
-//treenode* conditionalStm() // ??
-//{
-//
-//}
+treenode* conditionalStm()
+{
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "ConditionalStm");
+		addChild(newnode, ReadmatchToken(IF));
+		addChild(newnode, exp());
+		if (nowtoken->Lex == LT)
+			addChild(newnode, ReadmatchToken(LT));
+		else if (nowtoken->Lex == EQ)
+			addChild(newnode, ReadmatchToken(EQ));
+		else
+		{
+			; // 输出错误信息 ???
+		}
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(THEN));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(ELSE));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(FI));
+		return newnode;
+	}
+}
 
-//treenode* loopStm() // ??
-//{
-//
-//}
+treenode* loopStm()
+{
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "LoopStm");
+		addChild(newnode, ReadmatchToken(WHILE));
+		addChild(newnode, exp());
+		if (nowtoken->Lex == LT)
+			addChild(newnode, ReadmatchToken(LT));
+		else if(nowtoken->Lex == EQ)
+			addChild(newnode, ReadmatchToken(EQ));
+		else
+		{
+			; // 输出错误信息 ???
+		}
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(DO));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(ENDWH));
+		return newnode;
+	}
+}
 
 treenode* inputStm()
 {

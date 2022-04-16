@@ -13,8 +13,10 @@ state a;
 error error0;//´Ê·¨´íÎó
 char ch;//È¡×Ö·ûºó·ÅÕâÀï
 int Line;//tokenËùÔÚµÄĞĞÊı
+
 FILE* fp = fopen("Code\\code.txt", "r");// ´úÂëÎÄ¼ş¶ÁĞ´Ö¸Õë
 FILE* w_fp = fopen("Output\\token.txt", "w");// token¶ÁĞ´ÎÄ¼ş
+
 word reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
 {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
 {"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
@@ -27,8 +29,6 @@ word2 Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDF
      {WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
      {RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"} };	//±£Áô×Ö
 
-
-
 char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     char ch = fgetc(fp);
     //while (ch == ' ' || ch == '\n'||ch=='\t') {
@@ -36,11 +36,13 @@ char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     //}
     return ch;
 }
+
 int ungetNextChar() 
 {
     fseek(fp, -(long)sizeof(char), SEEK_CUR);
     return 0;
 }
+
 int classify(char ch) {//
     if ((ch > '@' && ch < '[') || (ch > '`' && ch < '{'))
         return 1;//×ÖÄ¸
@@ -65,6 +67,7 @@ int classify(char ch) {//
         return 10;
     return 11;
 }
+
 LexType classify1(char ch) {
     if (ch == '+') {
         return PLUS;
@@ -107,12 +110,14 @@ LexType classify1(char ch) {
     }
 
 }
+
 int init_node(token* ptr) {//Á´±í½áµã³õÊ¼»¯
     ptr->Lex = ID;//³õÊ¼»¯Îª±êÊ¶·û
     ptr->next = ptr->pre = nullptr;
     ptr->Lineshow = -1;
     return 0;
 }
+
 LexType classify2(char* ptr) {//ID·ÖÀàº¯Êı
     for (int i = 0; i < 21; i++) {
         if (strcmp(reservedWords[i].Sem, ptr) == 0) {
@@ -121,6 +126,7 @@ LexType classify2(char* ptr) {//ID·ÖÀàº¯Êı
     }
     return ID;
 }
+
 int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ĞÅÏ¢
     for (int i = 0; i < 42; i++) {
         if (Words[i].tok==a) {
@@ -130,6 +136,7 @@ int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ĞÅÏ¢
         }
     }
 }
+
 //Î´´¦Àí:Ìí¼Ó¿Õ×Ö·ûµÄtoken´¦Àí?¿Î±¾ÖĞ´¦Àí²¢ÎŞ¿Õtoken
 token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·¨
     if (fp == nullptr) {
@@ -344,6 +351,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
     }
     return head;
 }
+
 int printToken(token* head)
 {
         //½«tokenĞÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼şÖĞ
@@ -372,5 +380,7 @@ int printToken(token* head)
         }
         head = head->next;
     }
+    fclose(fp); // ¹ØÎÄ¼şÖ¸Õë
+    fclose(w_fp); // ¹ØÎÄ¼şÖ¸Õë
     return 0;
 }

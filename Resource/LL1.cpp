@@ -36,6 +36,7 @@ word reservedWords1[42] = {//保留字
 };	
 
 extern word2 Words[42];
+
 void init_S_stack() {
 	for (int i = 0; i < 256; i++) {
 		S_stack[i] = (char*)malloc(sizeof(char) * 20);
@@ -46,6 +47,7 @@ void init_S_stack() {
 		}
 	}
 }
+
 void initnode(treenode* temp) {
 	if (temp == NULL)
 	{
@@ -54,6 +56,7 @@ void initnode(treenode* temp) {
 	temp->childnum = 0;
 	temp->token = NULL;
 }
+
 treenode* createNode() 
 {
 	treenode* a = (treenode*)malloc(sizeof(treenode));
@@ -63,22 +66,26 @@ treenode* createNode()
 	return a;
 
 }
+
 void S_push(const char* str) {
 	if (S_ptr<255 && S_ptr>-2)
 		strcpy(S_stack[++S_ptr], str);
 	else
 		printf("S_stack数组下标越界");
 }
+
 void G_push(treenode* temp) {
 	if (G_ptr<255 && G_ptr>-2)
 		G_stack[++G_ptr] = temp;
 	else
 		printf("G_stack数组下标越界");
 }
+
 void S_pop()
 {
 	S_ptr--;
 }
+
 treenode* G_pop()
 {
 	if (G_ptr > -1)
@@ -86,6 +93,7 @@ treenode* G_pop()
 	printf("ERROE:G_pop()出错！");
 	return NULL;
 }
+
 char* LexToStr(LexType temp) {//终极符转为字符串
 	for (int i = 0; i < 42; i++) {
 		if (Words[i].tok == temp) {
@@ -94,6 +102,7 @@ char* LexToStr(LexType temp) {//终极符转为字符串
 	}
 	printf("Error:LexToStr");
 }
+
 int getReIndex2(LexType temp) // 返回终结符s在终结符集合中的下标
 {
 	for (int i = 0; i < 42; i++)
@@ -101,6 +110,7 @@ int getReIndex2(LexType temp) // 返回终结符s在终结符集合中的下标
 			return i;
 	return -1;
 }
+
 int nPredict(const char* str, int times)//完成非终结符节点创建，赋值，连接，压语法栈操作
 {
 	newnode = createNode();
@@ -112,6 +122,7 @@ int nPredict(const char* str, int times)//完成非终结符节点创建，赋值，连接，压语
 		G_push(newnode);
 	return 0;
 }
+
 void predict(int a)
 {
 	switch (a)
@@ -613,6 +624,7 @@ void predict(int a)
 
 	}
 }
+
 int prePrint(treenode* root)
 {
 	if (root == NULL)
@@ -626,6 +638,7 @@ int prePrint(treenode* root)
 		prePrint(root->child[k]);
 	return 0;
 }
+
 treenode* LL1_analysis() // LL1分析法
 {
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
@@ -705,6 +718,7 @@ treenode* LL1_analysis() // LL1分析法
 	}
 
 }
+
 //int main() {
 //	LL1_analysis();
 //	return 0;
