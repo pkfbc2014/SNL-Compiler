@@ -6,8 +6,6 @@
 
 extern int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
-
-
 // 67个非终结符
 const char* Non_symbol[NonNum] = {
 	"Program","ProgramHead","ProgramName","DeclarePart","TypeDec","TypeDeclaration",
