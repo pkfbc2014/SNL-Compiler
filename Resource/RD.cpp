@@ -56,6 +56,23 @@ void printerror(char* message) // 语法分析错误信息输出
 	printf("%s\n", message);
 }
 
+void freetree(treenode* root) // 递归释放以 root 为根节点的树
+{
+	if (root == NULL)
+		return;
+	else
+	{
+		for (int i = 0; i < root->childnum; i++)
+			freetree(root->child[i]);
+		free(root);
+	}
+}
+
+void printRDtree(treenode* root) // 将RD语法树输出到本地
+{
+	
+}
+
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
 {
@@ -798,15 +815,61 @@ treenode* stmMore()
 	return newnode;
 }
 
-//treenode* conditionalStm() // ??
-//{
-//
-//}
+treenode* conditionalStm()
+{
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "ConditionalStm");
+		addChild(newnode, ReadmatchToken(IF));
+		addChild(newnode, exp());
+		if (nowtoken->Lex == LT)
+			addChild(newnode, ReadmatchToken(LT));
+		else if (nowtoken->Lex == EQ)
+			addChild(newnode, ReadmatchToken(EQ));
+		else
+		{
+			; // 输出错误信息 ???
+		}
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(THEN));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(ELSE));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(FI));
+		return newnode;
+	}
+}
 
-//treenode* loopStm() // ??
-//{
-//
-//}
+treenode* loopStm()
+{
+	treenode* newnode = (treenode*)malloc(sizeof(treenode));
+	if (newnode == NULL)
+		return NULL;
+	else
+	{
+		initnode(newnode);
+		strcpy(newnode->str, "LoopStm");
+		addChild(newnode, ReadmatchToken(WHILE));
+		addChild(newnode, exp());
+		if (nowtoken->Lex == LT)
+			addChild(newnode, ReadmatchToken(LT));
+		else if(nowtoken->Lex == EQ)
+			addChild(newnode, ReadmatchToken(EQ));
+		else
+		{
+			; // 输出错误信息 ???
+		}
+		addChild(newnode, exp());
+		addChild(newnode, ReadmatchToken(DO));
+		addChild(newnode, stmList());
+		addChild(newnode, ReadmatchToken(ENDWH));
+		return newnode;
+	}
+}
 
 treenode* inputStm()
 {
