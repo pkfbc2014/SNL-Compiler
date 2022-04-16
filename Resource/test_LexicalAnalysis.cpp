@@ -36,11 +36,13 @@ char getNextChar() {//È¡µÃÏÂ¸ö·Ç ¿Õ ×Ö ·û
     //}
     return ch;
 }
+
 int ungetNextChar() 
 {
     fseek(fp, -(long)sizeof(char), SEEK_CUR);
     return 0;
 }
+
 int classify(char ch) {//
     if ((ch > '@' && ch < '[') || (ch > '`' && ch < '{'))
         return 1;//×ÖÄ¸
@@ -65,6 +67,7 @@ int classify(char ch) {//
         return 10;
     return 11;
 }
+
 LexType classify1(char ch) {
     if (ch == '+') {
         return PLUS;
@@ -107,12 +110,14 @@ LexType classify1(char ch) {
     }
 
 }
+
 int init_node(token* ptr) {//Á´±í½áµã³õÊ¼»¯
     ptr->Lex = ID;//³õÊ¼»¯Îª±êÊ¶·û
     ptr->next = ptr->pre = nullptr;
     ptr->Lineshow = -1;
     return 0;
 }
+
 LexType classify2(char* ptr) {//ID·ÖÀàº¯Êý
     for (int i = 0; i < 21; i++) {
         if (strcmp(reservedWords[i].Sem, ptr) == 0) {
@@ -121,6 +126,7 @@ LexType classify2(char* ptr) {//ID·ÖÀàº¯Êý
     }
     return ID;
 }
+
 int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ÐÅÏ¢
     for (int i = 0; i < 42; i++) {
         if (Words[i].tok==a) {
@@ -130,6 +136,7 @@ int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ÐÅÏ¢
         }
     }
 }
+
 //Î´´¦Àí:Ìí¼Ó¿Õ×Ö·ûµÄtoken´¦Àí?¿Î±¾ÖÐ´¦Àí²¢ÎÞ¿Õtoken
 token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·¨
     if (fp == nullptr) {
@@ -344,6 +351,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
     }
     return head;
 }
+
 int printToken(token* head)
 {
         //½«tokenÐÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼þÖÐ
