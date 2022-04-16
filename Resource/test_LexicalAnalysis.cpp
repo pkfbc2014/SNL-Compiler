@@ -380,5 +380,7 @@ int printToken(token* head)
         }
         head = head->next;
     }
+    fclose(fp); // 关文件指针
+    fclose(w_fp); // 关文件指针
     return 0;
 }

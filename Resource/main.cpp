@@ -8,25 +8,12 @@
 
 int main()
 {
-	//FILE* fp;
- //   char input_filename[20] = {"test.txt"}; // 输入文件为test.txt
 
- //   if ((fp = fopen(input_filename, "r")) == NULL) // 读入test文件
- //   {
- //       printf("cannot open the file!\n"); // 文件打开失败
- //       exit(0); // 结束进程
- //   }
+    token* tokenlisthead = NULL; // token序列头
+    tokenlisthead = getTokenList(); // 计算代码的tokenlist
+    out_fitstfollow(); // 计算三个集合并输出到本地，LL1分析表存储在运行内存中（全局变量）
 
-    out_fitstfollow();
-
-    // ......
-
-    // fclose(fp);
-
-    //function1(fp); // 词法分析
-    //LL1_analysis(); // 语法分析 - LL1
-    //RD_analysis(); //语法分析 - 递归下降
-    //semantic_analysis(); //语义分析
+    RD_analysis(); //语法分析 - 递归下降
     
 	return 0;
 } 

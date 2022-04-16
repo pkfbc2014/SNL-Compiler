@@ -1,10 +1,8 @@
 #pragma once
 
-
 #include "treenode_var.h"
 
 token* nowtoken; // 当前指向的token节点
-
 treenode* RD_treeROOT = NULL; // 递归下降法语法分析数根节点
 
 void RD_analysis(token* tokenhead); // 递归下降分析法，接收token序列头
