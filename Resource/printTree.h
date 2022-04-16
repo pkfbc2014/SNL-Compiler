@@ -2,4 +2,4 @@
 
 #include "treenode_var.h"
 
-void printTree(treenode* root);
+void printTree(treenode* root, int treetype);
