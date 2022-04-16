@@ -2,10 +2,11 @@
 
 #include "treenode_var.h"
 
-token* nowtoken; // 当前指向的token节点
-treenode* RD_treeROOT = NULL; // 递归下降法语法分析数根节点
-
-void RD_analysis(token* tokenhead); // 递归下降分析法，接收token序列头
+treenode* RD_analysis(token* tokenhead); // 递归下降分析法，接收token序列头
+void initnode(treenode* temp); // 初始化节点
+treenode* ReadmatchToken(LexType tok); // 匹配当前token与终结符，之后移动指针
+void addChild(treenode* root, treenode* child); // 为根节点root增加孩子节点child
+void printerror(char* message); // 语法分析错误信息输出
 
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program();

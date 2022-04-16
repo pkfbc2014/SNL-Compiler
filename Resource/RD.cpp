@@ -5,11 +5,13 @@
 #include <string.h>
 #include "RD_head.h"
 
-void RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
+token* nowtoken = NULL; // 当前指向的token节点
+
+treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken = tokenhead; // 指向token序列的头
-
-	treenode* RD_treeROOT = program();
+	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
+	return RD_treeROOT; // 返回总根节点，以便语义分析
 }
 
 void initnode(treenode* temp) // 初始化节点
