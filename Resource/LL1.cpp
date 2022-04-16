@@ -23,7 +23,7 @@ treenode* newnode;//产生式处理函数使用
 
 word reservedWords1[42] = {//保留字
 	{"ENDFILE",ENDFILE},{"ERROR",ERROR},
-	{"PROGRAM",PROGRAM},{"PROCEDURE",PROCEDURE},{"TYPE",PROCEDURE},{"VAR",VAR},{"IF",IF},
+	{"PROGRAM",PROGRAM},{"PROCEDURE",PROCEDURE},{"TYPE",TYPE},{"VAR",VAR},{"IF",IF},
 	{"THEN",THEN},{"ELSE",ELSE},{"FI",FI},{"WHILE",WHILE},{"DO",DO},{"ENDWH",ENDWH},
 	{"BEGIN",BEGIN},{"END",END},{"READ",READ},{"WRITE",WRITE},{"ARRAY",ARRAY},{"OF",OF},
 	{"RECORD",RECORD},{"RETURN",RETURN},
@@ -139,10 +139,11 @@ void predict(int a)
 		nPredict("TypeDec", 0);
 		break;
 	case 6:
-		S_push("TypeDeclaration");
+		S_push("TypeDeclaration"); 
+		nPredict("TypeDec", 1);
 		break;
 	case 7:
-		S_push("TypeDeclist");
+		S_push("TypeDecList");
 		S_push("TYPE");
 		nPredict("TypeDeclaration", 2);
 		break;
@@ -164,7 +165,7 @@ void predict(int a)
 		break;
 	case 11:
 		S_push("ID");
-		nPredict("TypeDecMore", 1);
+		nPredict("TypeId", 1);
 		break;
 	case 12:
 		S_push("BaseType");
@@ -187,7 +188,7 @@ void predict(int a)
 		nPredict("BaseType", 1);
 		break;
 	case 17:
-		S_push("ARRAYTYPE");
+		S_push("ArrayType");
 		nPredict("StructureType", 1);
 		break;
 	case 18:
@@ -197,11 +198,11 @@ void predict(int a)
 	case 19:
 		S_push("BaseType");
 		S_push("OF");
-		S_push("LMIDPAREN");
+		S_push("RMIDPAREN");
 		S_push("Top");
 		S_push("UNDERANGE");
 		S_push("Low");
-		S_push("LPAREN");
+		S_push("LMIDPAREN");
 		S_push("ARRAY");
 		nPredict("ArrayType", 8);
 		break;
@@ -304,14 +305,12 @@ void predict(int a)
 		S_push("ProcBody");
 		S_push("ProcDecPart");
 		S_push("SEMI");
-		S_push("BaseType");
-		S_push("COLON");
 		S_push("RPAREN");
 		S_push("ParamList");
 		S_push("LPAREN");
 		S_push("ProcName");
 		S_push("PROCEDURE");
-		nPredict("ProcDeclaration",11);
+		nPredict("ProcDeclaration",9);
 		break;
 	case 42:
 		nPredict("ProcDecMore",0);
@@ -334,7 +333,7 @@ void predict(int a)
 	case 47:
 		S_push("ParamMore");
 		S_push("Param");
-		nPredict("ParaDecList",2);
+		nPredict("ParamDecList",2);
 		break;
 	case 48:
 		nPredict("ParamMore", 0);
@@ -430,7 +429,7 @@ void predict(int a)
 		break;
 	case 69:
 		S_push("Exp");
-		S_push("EQ");
+		S_push("ASSIGN");
 		S_push("VariMore");
 		nPredict("AssignmentRest", 3);
 		break;
@@ -471,6 +470,9 @@ void predict(int a)
 		nPredict("OutputStm", 4);
 		break;
 	case 75:
+		S_push("RPAREN");
+		S_push("Exp");
+		S_push("LPAREN");
 		S_push("RETURN");
 		nPredict("ReturnStm", 1);
 		break;
@@ -604,7 +606,9 @@ void predict(int a)
 		nPredict("MultOp", 1);
 		break;
 	default:
-		printf("ERROR:predict()出错！");
+		printf("\nERROR:predict()出错！");
+		exit(0);
+		break;
 
 	}
 }
@@ -612,7 +616,11 @@ int prePrint(treenode* root)
 {
 	if (root == NULL)
 		return 0;
-	printf("%s\n", root->str);
+	if (root->childnum != 0)
+		printf("%s\n", root->str);
+	else
+		printf("%s\n", root->token->Sem);
+
 	for (int k = 0; k < root->childnum; k--)
 		prePrint(root->child[k]);
 	return 0;
@@ -653,18 +661,22 @@ treenode* LL1_analysis() // LL1分析法
 				newnode->token = nowtoken;
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
-
 				S_pop();
 				nowtoken = nowtoken->next;
 				lineno = nowtoken->Lineshow;
 			}
 			else {
-				printf("Error:LL1终极符匹配出错");
+				printf("Error:LL1终极符匹配出错，位置：行 %d",lineno);
 				exit(0);
 			}
 		}
 		else {
 			pnum = LL1table[getNonIndex(S_stack[S_ptr])][getReIndex2(nowtoken->Lex)];
+			if (pnum == -1)
+			{
+				printf("\nLL1分析表查表错误，位置：行 %d",lineno);
+				exit(0);
+			}
 			S_pop();
 			predict(pnum+1);
 		}

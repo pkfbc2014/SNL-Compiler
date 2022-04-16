@@ -6,8 +6,7 @@
 
 extern int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
 
-FILE* fp = fopen("Code\\code.txt", "r");// 代码文件读写指针
-FILE* w_fp = fopen("Output\\token.txt", "w");// token读写文件
+
 
 // 67个非终结符
 const char* Non_symbol[NonNum] = {
