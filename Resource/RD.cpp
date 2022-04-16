@@ -56,18 +56,6 @@ void printerror(char* message) // 语法分析错误信息输出
 	printf("%s\n", message);
 }
 
-void freetree(treenode* root) // 递归释放以 root 为根节点的树
-{
-	if (root == NULL)
-		return;
-	else
-	{
-		for (int i = 0; i < root->childnum; i++)
-			freetree(root->child[i]);
-		free(root);
-	}
-}
-
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
 {

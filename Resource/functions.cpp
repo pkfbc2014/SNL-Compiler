@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "global_var.h"
+#include "treenode_var.h"
 
 extern const char* Non_symbol[NonNum]; // 全局变量的使用，得加上 extern 关键字
 extern const char* Reserved_word[ReserveNum]; // 全局变量的使用，得加上 extern 关键字
@@ -319,4 +320,16 @@ void out_predict() //输出LL1预测分析表到本地
 		fprintf(fp, "%s\n", Non_symbol[i]);
 	}
 	fclose(fp);
+}
+
+void freetree(treenode* root) // 递归释放以 root 为根节点的树
+{
+	if (root == NULL)
+		return;
+	else
+	{
+		for (int i = 0; i < root->childnum; i++)
+			freetree(root->child[i]);
+		free(root);
+	}
 }
