@@ -15,6 +15,7 @@ char ch;//取字符后放这里
 int Line;//token所在的行数
 extern FILE* fp;
 extern FILE* w_fp;
+
 word reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
 {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
 {"of",OF},{"record",RECORD},{"if",IF},{"then",THEN},{"else",ELSE},{"fi",FI},
@@ -26,8 +27,6 @@ word2 Words[42] = { {PROGRAM,"PROGRAM"},{TYPE,"TYPE"},{VAR,"VAR"},{ENDFILE,"ENDF
      {OF,"OF"},{RECORD,"RECORD"},{IF,"IF"},{THEN,"THEN"},{ELSE,"ELSE"},{FI,"FI"},{LPAREN,"LPAREN"},{RPAREN,"RPAREN"},{DOT,"DOT"},{COLON,"COLON"},{SEMI,"SEMI"},
      {WHILE,"WHILE"},{DO,"DO"},{ENDWH,"ENDWH"},{READ,"READ"},{WRITE,"WRITE"},{COMMA,"COMMA"},{LMIDPAREN,"LMIDPAREN"},{RMIDPAREN,"RMIDPAREN"},{UNDERANGE,"UNDERANGE"},
      {RETURN,"RETURN"},{INTEGER,"INTEGER"},{CHAR,"CHAR"} };	//保留字
-
-
 
 char getNextChar() {//取得下个非 空 字 符
     char ch = fgetc(fp);

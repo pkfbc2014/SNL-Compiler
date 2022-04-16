@@ -24,7 +24,7 @@ int main()
     // fclose(fp);
 
     //function1(fp); // 词法分析
-    LL1_analysis(); // 语法分析 - LL1
+    //LL1_analysis(); // 语法分析 - LL1
     //RD_analysis(); //语法分析 - 递归下降
     //semantic_analysis(); //语义分析
     
