@@ -48,7 +48,7 @@ void init_S_stack() {
 	}
 }
 
-void initnode(treenode* temp) {
+void initnode_LL1(treenode* temp) {
 	if (temp == NULL)
 	{
 		printf("ERROR:initnode()!");
@@ -62,7 +62,7 @@ treenode* createNode()
 	treenode* a = (treenode*)malloc(sizeof(treenode));
 	if (a == NULL)
 		return NULL;
-	initnode(a);
+	initnode_LL1(a);
 	return a;
 
 }
@@ -661,7 +661,7 @@ treenode* LL1_analysis() // LL1·ÖÎö·¨
 		printf("ERROR:LL1_treeROOTÄÚ´æÉêÇëÊ§°Ü");
 		exit(0);
 	}
-	initnode(LL1_treeROOT);
+	initnode_LL1(LL1_treeROOT);
 	strcpy(LL1_treeROOT->str, "Program");
 	G_push(LL1_treeROOT);
 	G_push(LL1_treeROOT);
