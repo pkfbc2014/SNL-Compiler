@@ -119,7 +119,7 @@ int nPredict(const char* str, int times)//完成非终结符节点创建，赋值，连接，压语
 {
 	newnode = createNode();
 	strcpy(newnode->str, str);
-	//printf("\n            生成语法树非叶节点:%s", str);
+	printf("\n            生成语法树非叶节点:%s", str);
 	G_pointer = G_pop();
 	G_pointer->child[G_pointer->childnum++] = newnode;
 	for (int i = 0; i < times; i++) 
@@ -132,6 +132,7 @@ void predict(int a)
 	switch (a)
 	{
 	case 1://首个非终极符，也即语法树的根节点，特别处理（已在循环开始前处理完成)
+		S_push("DOT");
 		S_push("ProgramBody");
 		S_push("DeclarePart");
 		S_push("ProgramHead");
@@ -672,6 +673,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 	G_push(LL1_treeROOT);
 	G_push(LL1_treeROOT);
 	G_push(LL1_treeROOT);
+	G_push(LL1_treeROOT);
 
 	while (S_ptr > -1) //当符号栈非空
 	{
@@ -680,7 +682,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 			if (strcmp(S_stack[S_ptr], LexToStr(nowtoken->Lex)) == 0) 
 			{
 				newnode = createNode();//为终极符创建语法树节点
-				//printf("\n            生成语法树叶子节点:%s", S_stack[S_ptr]);
+				printf("\n            生成语法树叶子节点:%s", S_stack[S_ptr]);
 				newnode->token = nowtoken;
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
@@ -689,7 +691,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 				lineno = nowtoken->Lineshow;
 			}
 			else {
-				//printf("Error:LL1终极符匹配出错，位置：行 %d",lineno);
+				printf("\nError:LL1终极符匹配出错，位置：行 %d",lineno);
 				exit(0);
 			}
 		}
@@ -705,7 +707,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 			{
 				newnode = createNode();//为终极符创建语法树节点
 				strcpy(newnode->str, S_stack[S_ptr]);
-				//printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
+				printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
 				S_pop();

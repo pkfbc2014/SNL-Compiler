@@ -384,3 +384,12 @@ int printToken(token* head)
     fclose(w_fp); // 关文件指针
     return 0;
 }
+
+void freetoken(token* head)
+{
+    while (head->next != NULL) {
+        head = head->next;
+        free(head->pre);
+    }
+    free(head);
+}
