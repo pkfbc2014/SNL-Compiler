@@ -16,8 +16,6 @@
 	}
 */
 
-int tetete = 0;
-
 FILE* treefp; // ÎÄ¼ş¶ÁĞ´Ö¸Õë
 Queue* head; // ¶ÓÍ·ÉÚ±ø½Úµã
 Queue* tail; // ¶ÓÎ²Ö¸Õë
@@ -79,16 +77,15 @@ void printRDTree(treenode* root) // Óï·¨Ê÷¸ù½Úµã¡¢Ê÷µÄÀàĞÍ£¨RDÊ÷ - 0£¬LL1Ê÷ - 1£
 		for (int i = 0; i < temp->childnum; i++)
 		{
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
-			{
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str, temp->child[i]->index);
-				printf("%s->%s\n", temp->str, temp->child[i]->str);
-				tetete++;
-			}
 			else // ÖÕ½á·û£¬Êä³ötoken->Lex
 			{
-				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex], temp->child[i]->index);
-				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
-				tetete++;
+				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC)
+					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else if (temp->child[i]->token->Lex == INTC)
+					fprintf(treefp, "%s_%d->INT%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else
+					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex], temp->child[i]->index);
 			}
 			push(temp->child[i]);
 		}
@@ -105,16 +102,15 @@ void printLL1Tree(treenode* root)
 		for (int i = 0; i < temp->childnum; i++)
 		{
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
-			{
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str,temp->child[i]->index);
-				printf("%s->%s\n", temp->str, temp->child[i]->str);
-				tetete++;
-			}
 			else // ÖÕ½á·û£¬Êä³ötoken->Lex
 			{
-				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex],temp->child[i]->index);
-				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
-				tetete++;
+				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC)
+					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else if(temp->child[i]->token->Lex == INTC)
+					fprintf(treefp, "%s_%d->INT%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else
+					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex], temp->child[i]->index);
 			}
 			push(temp->child[i]);
 		}

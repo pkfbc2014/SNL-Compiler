@@ -45,10 +45,10 @@ Typekind，类型的种类, 用"char"声明，前三个固定（不允许更改），因为类型表初始化时
 #define TAB_CSV ","
 #define TAB_XLS "\t"
 //语义错误信息输出路径
-#define ERROR_FILE "../file/ErrorSemantic.txt"
+#define ERROR_FILE "C:\\Users\\14768\\source\\repos\\SNL\\SNL\\Data\\ErrorSemantic.txt"
 //类型表和符号表输出路径（.csv文件和.xls文件，二者EXCEL中Tab分别为","和"\t"）
-#define TABLE_FILE_CSV "../file/SymbolTable.csv"
-#define TABLE_FILE_XLS "../file/SymbolTable.xls"
+#define TABLE_FILE_CSV "C:\\Users\\14768\\source\\repos\\SNL\\SNL\\Data\\SymbolTable.csv"
+#define TABLE_FILE_XLS "C:\\Users\\14768\\source\\repos\\SNL\\SNL\\Data\\SymbolTable.xls"
 
 typedef struct FieldChain {
     char idname[IDLENGTH];//变量名
