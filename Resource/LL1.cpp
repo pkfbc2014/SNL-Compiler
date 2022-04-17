@@ -640,7 +640,7 @@ int prePrint(treenode* root)
 	return 0;
 }
 
-treenode* LL1_analysis() // LL1分析法
+treenode* LL1_analysis(token* head) // LL1分析法
 {
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
 	out_predict(); // 输出LL1预测分析表到本地
@@ -650,8 +650,7 @@ treenode* LL1_analysis() // LL1分析法
 	lineno = 0;//单词行号
 	pnum = -1;//产生式处理函数调用序号
 	LL1_treeROOT = NULL; // LL1分析法语法分析树根节点
-	nowtoken = getTokenList();//获取token列表
-	printToken(nowtoken);//输出token
+	nowtoken = head;//获取token列表
 
 	init_S_stack();
 	lineno = nowtoken->Lineshow;
@@ -690,7 +689,7 @@ treenode* LL1_analysis() // LL1分析法
 		}
 		else {
 			pnum = LL1table[getNonIndex(S_stack[S_ptr])][getReIndex2(nowtoken->Lex)];
-			if (pnum == -1)//LL1分析表查表为-1
+			if (pnum == -2)//LL1分析表查表为-2,直接创建语法树节点
 			{	
 				newnode = createNode();//为终极符创建语法树节点
 				strcpy(newnode->str, S_stack[S_ptr]);

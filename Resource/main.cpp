@@ -18,7 +18,7 @@ int main()
 
     out_fitstfollow(); // 计算三个集合并输出到本地，LL1分析表存储在运行内存中（全局变量）
 
-    treenode* LL1TreeROOT = LL1_analysis();
+    treenode* LL1TreeROOT = LL1_analysis(tokenlisthead);
 
     // treenode* RDtreeROOT = RD_analysis(tokenlisthead); //语法分析 - 递归下降
 

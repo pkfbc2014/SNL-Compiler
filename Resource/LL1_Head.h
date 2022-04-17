@@ -15,5 +15,5 @@ void predict(int a);//产生式处理函数
 char* LexToStr(LexType temp);//终极符转为字符串
 int getReIndex2(LexType temp); // 返回终结符s在终结符集合中的下标
 int nPredict(const char* str,int times);//产生式的模板处理函数
-treenode* LL1_analysis(); //LL1分析法
+treenode* LL1_analysis(token* head); //LL1分析法
 int prePrint(treenode* root);//打印语法树
