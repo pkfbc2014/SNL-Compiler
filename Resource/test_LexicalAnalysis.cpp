@@ -1,7 +1,5 @@
 //本文件仅用于测试词法分析功能
 //push之前应将LL1,func,main加入项目
-
-//1.注意LEXTYPE是否全部用上 2.正常生成行数信息
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
