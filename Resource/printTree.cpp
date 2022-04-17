@@ -65,7 +65,7 @@ void choosePrint(treenode* root, int treetype)
 		fprintf(treefp, "}");
 		fclose(treefp);
 
-		//system("dot -Tpng LL1tree.dot -o LL1tree.png"); // ÔËÐÐ½Å±¾
+		system("dot -Tpng LL1Tree.dot -o LL1Tree.png"); // ÔËÐÐ½Å±¾
 	}
 }
 
@@ -101,7 +101,32 @@ void printRDTree(treenode* root) // Óï·¨Ê÷¸ù½Úµã¡¢Ê÷µÄÀàÐÍ£¨RDÊ÷ - 0£¬LL1Ê÷ - 1£
 
 void printLL1Tree(treenode* root)
 {
+	push(root); // ¸ù½ÚµãÈë¶Ó
 
+	while (queuenum != 0) // Ñ­»·Ö±µ½¶ÓÁÐÎª¿Õ
+	{
+		treenode* temp = pop();
+		for (int i = 0; i < temp->childnum; i++)
+		{
+			if (tetete == 58)
+			{
+				int kkk = 10;
+			}
+			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
+			{
+				fprintf(treefp, "%s->%s\n", temp->str, temp->child[i]->str);
+				printf("%s->%s\n", temp->str, temp->child[i]->str);
+				tetete++;
+			}
+			else // ÖÕ½á·û£¬Êä³ötoken->Lex
+			{
+				fprintf(treefp, "%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
+				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
+				tetete++;
+			}
+			push(temp->child[i]);
+		}
+	}
 }
 
 void push(treenode* node) // Ïò¶ÓÎ²Ôö¼ÓÔªËØ node
