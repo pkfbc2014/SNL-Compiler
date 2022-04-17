@@ -955,7 +955,7 @@ treenode* assignmentRest()
 		strcpy(newnode->str, "AssignmentRest");
 		if (nowtoken_RD->Lex == LMIDPAREN || nowtoken_RD->Lex == DOT)
 			addChild(newnode, variMore());
-		addChild(newnode, ReadmatchToken(COLON));
+		addChild(newnode, ReadmatchToken(ASSIGN));
 		addChild(newnode, exp());
 	}
 	return newnode;
