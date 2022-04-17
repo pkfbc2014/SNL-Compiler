@@ -136,25 +136,25 @@ void initialize(vector<struct TypeIR*>& TypeList); //初始化三种基本类型
 //在类型表里，参数Type类型是否已经存在存在，存在的话返回其地址，否则返回空; Typekind是待测标识符的类型（数组类型或者记录类型）
 struct TypeIR* WhetherTypeDuplicate(vector<struct TypeIR*>& TypeList, struct TypeIR* Type, char Typekind);
 
-struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, Token* tok); //返回TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
+struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, token* tok); //返回TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
 
-void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, Token* tok); //在比较表达式中，检查TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
+void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, token* tok); //在比较表达式中，检查TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
 
-struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* Arraytok, struct TypeIR* ArrayTy); //根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
+struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, token* Arraytok, struct TypeIR* ArrayTy); //根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
 
-struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* tok); //根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
+struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, token* tok); //根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
 
 struct TypeIR* variableParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"Variable"，对应RD中的"variable函数"
 
 void multOpParsing(); //根节点名称为"MultOp"，对应RD中的"multOp函数"
 
-struct TypeIR* otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token*& tok); //根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
+struct TypeIR* otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token*& tok); //根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
 
 struct TypeIR* factorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"Factor"，对应RD中的"factor函数"
 
 void addOpParsing(); //根节点名称为"AddOp"，对应RD中的"addOp函数"
 
-struct TypeIR* otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token*& tok); //根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
+struct TypeIR* otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token*& tok); //根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
 
 struct TypeIR* termParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"Term"，对应RD中的"term函数"
 
@@ -164,13 +164,13 @@ void actparamListParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, v
 
 struct TypeIR* expParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"Exp"，对应RD中的"exp函数"
 
-struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* tok); //根节点名称为"VariMore"，对应RD中的"variMore函数"
+struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, token* tok); //根节点名称为"VariMore"，对应RD中的"variMore函数"
 
-void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ProcPosition, Token* IDTok); //根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
+void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ProcPosition, token* IDTok); //根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
 
-void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, Token* IDTok); //根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
+void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, token* IDTok); //根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
 
-void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token* IDtok, const int ValidTableCount);//根节点名称为"AssCall"，对应RD中的"assCall函数"
+void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token* IDtok, const int ValidTableCount);//根节点名称为"AssCall"，对应RD中的"assCall函数"
 
 void returnStmParsing(); //根节点名称为"ReturnStm"，对应RD中的"returnStm函数"
 
@@ -188,9 +188,9 @@ void stmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<boo
 
 void stmListParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount); //根节点名称为"StmList"，对应RD中的"stmList函数"
 
-void fidMoreParsing(treenode* RD_ROOT, vector<Token*>& token); //根节点名称为"FidMore"，对应RD中的"fidMore函数"
+void fidMoreParsing(treenode* RD_ROOT, vector<token*>& token); //根节点名称为"FidMore"，对应RD中的"fidMore函数"
 
-void formListParsing(treenode* RD_ROOT, vector<Token*>& token); //根节点名称为"FormList"，对应RD中的"formList函数"
+void formListParsing(treenode* RD_ROOT, vector<token*>& token); //根节点名称为"FormList"，对应RD中的"formList函数"
 
 struct ParamTable* paramMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount); //根节点名称为"ParamMore"，对应RD中的"paramMore函数"
 
@@ -206,23 +206,23 @@ struct ParamTable* paramListParsing(treenode* RD_ROOT, vector< vector<SymbTable>
 
 void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount); //根节点名称为"ProcDec"，对应RD中的"procDec函数"
 
-void varIDMoreParsing(treenode* RD_ROOT, vector<Token*>& token);//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
+void varIDMoreParsing(treenode* RD_ROOT, vector<token*>& token);//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
 
 void varDecMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount);//根节点名称为"VarDecMore"，对应RD中的"varDecMore函数"
 
-void varIDListParsing(treenode* RD_ROOT, vector<Token*>& token);//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
+void varIDListParsing(treenode* RD_ROOT, vector<token*>& token);//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
 
 void varDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount);//根节点名称为"VarDecList"，对应RD中的"varDecList函数"
 
 void varDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount);//根节点名称为"VarDec"，对应RD中的"varDec函数"
 
-void IDMoreParsing(treenode* RD_ROOT, vector<Token*>& token); //根节点名称为"IDMore"，对应RD中的"IDMore函数"
+void IDMoreParsing(treenode* RD_ROOT, vector<token*>& token); //根节点名称为"IDMore"，对应RD中的"IDMore函数"
 
-fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*>& token); //根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
+fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<token*>& token); //根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
 
-void IDListParsing(treenode* RD_ROOT, vector<Token*>& token); //根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
+void IDListParsing(treenode* RD_ROOT, vector<token*>& token); //根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
 
-fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*> &token); //根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
+fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<token*> &token); //根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
 
 AttributeIR* recTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList); //根节点名称为"RecType"，对应RD中的"recType函数"
 

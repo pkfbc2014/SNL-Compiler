@@ -78,10 +78,6 @@ void printRDTree(treenode* root) // Óï·¨Ê÷¸ù½Úµã¡¢Ê÷µÄÀàÐÍ£¨RDÊ÷ - 0£¬LL1Ê÷ - 1£
 		treenode* temp = pop();
 		for (int i = 0; i < temp->childnum; i++)
 		{
-			if (tetete == 58)
-			{
-				int kkk = 10;
-			}
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
 			{
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str, temp->child[i]->index);
@@ -108,10 +104,6 @@ void printLL1Tree(treenode* root)
 		treenode* temp = pop();
 		for (int i = 0; i < temp->childnum; i++)
 		{
-			if (tetete == 58)
-			{
-				int kkk = 10;
-			}
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
 			{
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str,temp->child[i]->index);

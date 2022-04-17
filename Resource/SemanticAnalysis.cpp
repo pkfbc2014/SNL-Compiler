@@ -551,7 +551,7 @@ struct TypeIR* WhetherTypeDuplicate(vector<struct TypeIR*>& TypeList, struct Typ
     }
 }
 //tok是运算符的token信息
-struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 ,Token* tok) {//在计算或赋值表达式中，返回TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
+struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 ,token* tok) {//在计算或赋值表达式中，返回TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
     /*什么情况下返回NULL(表示结果不合法)
     * 1. TypeP1==NULL || TypeP2==NULL
     * 2. 当TypeP1->Typekind != TypeP2->Typekind 时，一定不合法
@@ -580,7 +580,7 @@ struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 
     }
 }
 //tok是运算符的token信息
-void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, Token* tok) {//在比较表达式中，检查TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
+void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, token* tok) {//在比较表达式中，检查TypeP1与TypeP2是否匹配，并根据情况返回匹配的类型或者NULL(不匹配)
     /*什么情况下返回NULL(表示结果不合法)
     * 1. TypeP1==NULL || TypeP2==NULL
     * 2. 当TypeP1->Typekind != TypeP2->Typekind 时，一定不合法
@@ -607,7 +607,7 @@ void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, Token* to
 }
 
 //判断记录类型标识符内的数组类型域成员变量的成员引用是否合法，合法就返回数组元素的类型
-struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* Arraytok, struct TypeIR* ArrayTy) {//根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
+struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, token* Arraytok, struct TypeIR* ArrayTy) {//根节点名称为"FieldVarMore"，对应RD中的"fieldVarMore函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: LMIDPAREN，无操作
     //RD_ROOT->child[1]: exp()，判断记录类型标识符内的数组类型域成员变量的成员引用是否合法
@@ -622,7 +622,7 @@ struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> 
 }
 
 //返回记录类型的域成员类型,tok是Record类型变量的token信息，目的是传递此变量的行数
-struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* tok) {//根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
+struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, token* tok) {//根节点名称为"FieldVar"，对应RD中的"fieldVar函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: ID，此ID是记录类型的域成员ID
     struct FieldChain* body = sym->attrIR.idtype->More.body;
@@ -684,7 +684,7 @@ void multOpParsing() {//根节点名称为"MultOp"，对应RD中的"multOp函数"
 }
 
 //tok作用在于得到otherFactor内的符号的token信息
-struct TypeIR* otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token*& tok) {//根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
+struct TypeIR* otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token*& tok) {//根节点名称为"OtherFactor"，对应RD中的"otherFactor函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: multOp，无操作
     multOpParsing();
@@ -718,7 +718,7 @@ void addOpParsing() {//根节点名称为"AddOp"，对应RD中的"addOp函数"
     return; 
 }
 //返回此表达式的otherTerm部分的计算结果的类型，tok作用在于得到otherTermParsing内的符号的token信息
-struct TypeIR* otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token* &tok) {//根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
+struct TypeIR* otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token* &tok) {//根节点名称为"OtherTerm"，对应RD中的"otherTerm函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: addOp(), 只是决定了符号而已，并不影响类型的返回值，但是需要将其赋值给tok
     addOpParsing();
@@ -738,7 +738,7 @@ struct TypeIR* termParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope,
         return TypeP1;
     }
     else {
-        Token* tok = new Token;
+        token* tok = new token;
         struct TypeIR* TypeP2 = otherFactorParsing(RD_ROOT->child[1], scope, exit_region, TypeList, tok);//tok作用在于得到otherFactor内的符号的token信息
         struct TypeIR* CalculatValidity = WhetherResaultValid(TypeP1, TypeP2, tok); //返回TypeP1与TypeP2是否匹配
         if (CalculatValidity == NULL) {//如果为NULL，则不匹配
@@ -778,7 +778,7 @@ struct TypeIR* expParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, 
         return TypeP1;
     }
     else {
-        Token* tok = new Token;
+        token* tok = new token;
         struct TypeIR* TypeP2 = otherTermParsing(RD_ROOT->child[1], scope, exit_region, TypeList, tok);//tok作用在于得到otherTermParsing内的符号的token信息
         struct TypeIR* CalculatValidity = WhetherResaultValid(TypeP1, TypeP2, tok); //返回TypeP1与TypeP2是否匹配
         if (CalculatValidity == NULL) {//如果为NULL，则不匹配
@@ -789,7 +789,7 @@ struct TypeIR* expParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, 
 }
 
 //sym是structure类型变量的符号表信息，tok是其token信息，用于传递其行数
-struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable *sym, Token *tok) {//根节点名称为"VariMore"，对应RD中的"variMore函数"
+struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable *sym, token *tok) {//根节点名称为"VariMore"，对应RD中的"variMore函数"
     if (RD_ROOT == NULL) { return NULL; }
     if (RD_ROOT->child[0]->token->Lex == LMIDPAREN) {
         //RD_ROOT->child[0]: ReadmatchToken(LMIDPAREN));
@@ -821,7 +821,7 @@ struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > sc
 }
 
 //参数 ProcPosition 是过程标识符所在的符号表在scope栈的位置
-void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ProcPosition, Token* IDTok) {//根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
+void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ProcPosition, token* IDTok) {//根节点名称为"CallStmRest"，对应RD中的"callStmRest函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: LPAREN, 无操作
     //RD_ROOT->child[1]: actparamList()
@@ -860,7 +860,7 @@ void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, ve
 
 }
 //VarSym是指被赋值的变量的符号表信息，IDtok是指被赋值的变量的token信息，目的是传递行数
-void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, Token* IDTok) {//根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
+void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, token* IDTok) {//根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
     if (RD_ROOT == NULL) { return; }
     struct TypeIR* TypeP = NULL;
     if (RD_ROOT->child[0]->token == NULL) {//variMore()
@@ -880,7 +880,7 @@ void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope,
 
 //赋值或者调用过程，返回ID的情况，如果ID不是过程标识符的话，则还要返回对应的类型(Int, Char, Array, Record)
 //参数IDtoke是ID的token信息
-void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, Token* IDtok, const int ValidTableCount) {//根节点名称为"AssCall"，对应RD中的"assCall函数"
+void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token* IDtok, const int ValidTableCount) {//根节点名称为"AssCall"，对应RD中的"assCall函数"
     if (RD_ROOT == NULL) { return ; }
     if ( 0 == strcmp(RD_ROOT->child[0]->str, "CallStmRest") ){//过程调用callStmRest()
         int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//找此名称的过程标识符，找不到则返回0，后续使用scope[level][0]表示此过程标识符
@@ -1003,7 +1003,7 @@ void stmListParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector
 }
 
 
-void fidMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"FidMore"，对应RD中的"fidMore函数"
+void fidMoreParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"FidMore"，对应RD中的"fidMore函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: COMMA, 无操作;
     //RD_ROOT->child[1]: formList(),继续读取ID的token
@@ -1011,7 +1011,7 @@ void fidMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"Fi
 }
 
 //过程参数的ID，得到token
-void formListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"FormList"，对应RD中的"formList函数"
+void formListParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"FormList"，对应RD中的"formList函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: ID
     token.push_back(RD_ROOT->child[0]->token);
@@ -1058,7 +1058,7 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     }
     struct ParamTable* temp = NULL;
     struct ParamTable* rear = NULL;
-    vector<Token*> token;//存储formList中所有token
+    vector<token*> token;//存储formList中所有token
 
     //RD_ROOT->child[1]: formList()
     formListParsing(RD_ROOT->child[1], token);//token.size()一定大于0，否则不可能通过语法分析
@@ -1198,7 +1198,7 @@ void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vecto
     }
 }
 
-void varIDMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
+void varIDMoreParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"VarIDMore"，对应RD中的"varIDMore函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: COMMA, 无操作
     //RD_ROOT->child[1]: IDList()
@@ -1211,7 +1211,7 @@ void varDecMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, ve
     varDecListParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
 }
 
-void varIDListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
+void varIDListParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"VarIDList"，对应RD中的"varIDList函数"
     //RD_ROOT->child[0]: ID
     token.push_back(RD_ROOT->child[0]->token);
     //RD_ROOT->child[1]: varIDMore()
@@ -1228,7 +1228,7 @@ void varDecListParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, ve
         Attr->More.VarAttr.access = DIR;//直接变量
         Attr->More.VarAttr.level = ValidTableCount;//层数
         //RD_ROOT->child[1]: varIDList()
-        vector<Token*> token;//存储IDList内的所有token
+        vector<token*> token;//存储IDList内的所有token
         varIDListParsing(RD_ROOT->child[1], token);
         int token_size = token.size();
         for (int ix = 0; ix < token_size; ix++) {
@@ -1264,7 +1264,7 @@ void varDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector
 }
 
 
-void IDMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDMore"，对应RD中的"IDMore函数"
+void IDMoreParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"IDMore"，对应RD中的"IDMore函数"
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: COMMA, 无操作
     //RD_ROOT->child[1]: IDList()
@@ -1272,13 +1272,13 @@ void IDMoreParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDM
     return;
 }
 
-fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*>& token) {//根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
+fieldChain* fieldDecMoreParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<token*>& token) {//根节点名称为"FieldDecMore"，对应RD中的"fieldDecMore函数"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]:fieldDecList()
     return fieldDecListParsing(RD_ROOT->child[0], TypeList, token);
 }
 
-void IDListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
+void IDListParsing(treenode* RD_ROOT, vector<token*>& token) {//根节点名称为"IDList"，对应RD中的"IDList函数"，StrVec是最后所需要的ID表
     if (RD_ROOT == NULL) { return; }
     //RD_ROOT->child[0]: ID
     token.push_back(RD_ROOT->child[0]->token);
@@ -1287,7 +1287,7 @@ void IDListParsing(treenode* RD_ROOT, vector<Token*>& token) {//根节点名称为"IDL
     return;
 }
 
-fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<Token*>& token) {//根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
+fieldChain* fieldDecListParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList, vector<token*>& token) {//根节点名称为"FieldDecList"，对应RD中的"fieldDecList函数"
     if (RD_ROOT == NULL) { return NULL; }
     fieldChain* temp = NULL;
     //RD_ROOT->child[0]: BaseType 或 ArrayType,决定unitType
@@ -1354,7 +1354,7 @@ AttributeIR* recTypeParsing(treenode* RD_ROOT, vector<struct TypeIR*>& TypeList)
     tempTypeIR->Typekind = RECORDTY;//记录类型Typeind
     //RD_ROOT->child[0]: RECORD, 无操作
     //RD_ROOT->child[1]: fieldDecList()
-    vector<Token*> token;
+    vector<token*> token;
     fieldChain* body = fieldDecListParsing(RD_ROOT->child[1], TypeList, token);
     //RD_ROOT->child[2]: END, 无操作
     if (body == NULL) {
