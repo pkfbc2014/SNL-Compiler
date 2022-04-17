@@ -84,13 +84,13 @@ void printRDTree(treenode* root) // Óï·¨Ê÷¸ù½Úµã¡¢Ê÷µÄÀàĞÍ£¨RDÊ÷ - 0£¬LL1Ê÷ - 1£
 			}
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
 			{
-				fprintf(treefp, "%d:%s->%d:%s\n", temp->index, temp->str, temp->child[i]->index, temp->child[i]->str);
+				fprintf(treefp, "%d~%s->%d~%s\n", temp->index, temp->str, temp->child[i]->index, temp->child[i]->str);
 				printf("%s->%s\n", temp->str, temp->child[i]->str);
 				tetete++;
 			}
 			else // ÖÕ½á·û£¬Êä³ötoken->Lex
 			{
-				fprintf(treefp, "%d:%s->%d:%s\n", temp->index, temp->str, temp->child[i]->index, Reserved_word[temp->child[i]->token->Lex]);
+				fprintf(treefp, "%d~%s->%d~%s\n", temp->index, temp->str, temp->child[i]->index, Reserved_word[temp->child[i]->token->Lex]);
 				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
 				tetete++;
 			}
@@ -114,13 +114,13 @@ void printLL1Tree(treenode* root)
 			}
 			if (temp->child[i]->token == NULL) // ·ÇÖÕ½á·û£¬Êä³östr
 			{
-				fprintf(treefp, "%d:%s->%d:%s\n", temp->index, temp->str, temp->child[i]->index, temp->child[i]->str);
+				fprintf(treefp, "%d~%s->%d~%s\n", temp->index, temp->str, temp->child[i]->index, temp->child[i]->str);
 				printf("%s->%s\n", temp->str, temp->child[i]->str);
 				tetete++;
 			}
 			else // ÖÕ½á·û£¬Êä³ötoken->Lex
 			{
-				fprintf(treefp, "%d:%s->%d:%s\n", temp->index, temp->str, temp->child[i]->index, Reserved_word[temp->child[i]->token->Lex]);
+				fprintf(treefp, "%d~%s->%d~%s\n", temp->index, temp->str, temp->child[i]->index, Reserved_word[temp->child[i]->token->Lex]);
 				printf("%s->%s\n", temp->str, Reserved_word[temp->child[i]->token->Lex]);
 				tetete++;
 			}
