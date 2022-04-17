@@ -11,5 +11,3 @@ typedef struct treenode
 	treenode* child[67]; // NonNum 比 ReserveNum 多
 	int childnum; //当前节点的子节点数量
 }treenode;
-
-void initnode(treenode* temp); // 初始化一个新节点
