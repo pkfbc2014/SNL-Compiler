@@ -25,7 +25,7 @@ int main()
     //choosePrint(RDtreeROOT, 0); // 打印RD语法树
     choosePrint(LL1treeROOT, 1); // 打印LL1语法树
     
-   //semantic_analysis(RDtreeROOT); // 语义分析部分
+   semantic_analysis(RDtreeROOT); // 语义分析部分
 
     freetree(RDtreeROOT); // 释放RD语法树
     freetree(LL1treeROOT); // 释放LL1语法树
