@@ -45,7 +45,7 @@ treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 	}
 }
 
-void movenowtoken() // 指针单纯后移
+void movenowtoken() // 指针单纯后移，恐慌模式
 {
 	nowtoken_RD = nowtoken_RD->next;
 }
@@ -915,7 +915,7 @@ treenode* returnStm()
 treenode* assCall()
 {
 	treenode* newnode = NULL;
-	if (nowtoken_RD->Lex == LMIDPAREN ||nowtoken_RD->Lex == DOT ||nowtoken_RD->Lex == ASSIGN)
+	if (nowtoken_RD->Lex == LMIDPAREN || nowtoken_RD->Lex == DOT || nowtoken_RD->Lex == ASSIGN)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)

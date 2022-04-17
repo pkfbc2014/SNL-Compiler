@@ -300,8 +300,17 @@ void cal_predict() // 计算predict集 - LL1文法
 	}
 
 	for (int i = 0; i < NonNum; i++) // 将同步词法单元synch加入到predict集中
+	{
 		for (int j = 0; j < follows[i].num; j++)
-			LL1table[i][getReIndex(follows[i].ptr[j])] = -2;
+		{
+			if (LL1table[i][getReIndex(follows[i].ptr[j])] == -1)
+			{
+				// 只有当LL1分析表的当前位是-1时，才能加入synch单元
+				// 否则会把产生式为空的产生式编号覆盖掉，但其实空产生式是有意义的
+				LL1table[i][getReIndex(follows[i].ptr[j])] = -2;
+			}
+		}	
+	}	
 }
 
 void out_predict() //输出LL1预测分析表到本地
