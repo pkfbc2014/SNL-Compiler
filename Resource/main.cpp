@@ -20,15 +20,15 @@ int main()
     out_fitstfollow(); // 计算三个集合并输出到本地，LL1分析表存储在运行内存中（全局变量）
 
     treenode* RDtreeROOT = RD_analysis(tokenlisthead); // 语法分析 - 递归下降
-    //treenode* LL1treeROOT = LL1_analysis(tokenlisthead); // 语法分析 - LL1
+    treenode* LL1treeROOT = LL1_analysis(tokenlisthead); // 语法分析 - LL1
 
-    choosePrint(RDtreeROOT, 0); // 打印RD语法树
-    //choosePrint(LL1treeROOT, 1); // 打印LL1语法树
+    //choosePrint(RDtreeROOT, 0); // 打印RD语法树
+    choosePrint(LL1treeROOT, 1); // 打印LL1语法树
     
-    semantic_analysis(RDtreeROOT); // 语义分析部分
-                                 
+   //semantic_analysis(RDtreeROOT); // 语义分析部分
+
     freetree(RDtreeROOT); // 释放RD语法树
-    //freetree(LL1treeROOT); // 释放LL1语法树
-    
+    freetree(LL1treeROOT); // 释放LL1语法树
+    freetoken(tokenlisthead);
 	return 0;
 } 
