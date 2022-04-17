@@ -50,7 +50,7 @@ void choosePrint(treenode* root, int treetype)
 		fprintf(treefp, "}");
 		fclose(treefp);
 		
-		//system("dot -Tpng RDtree.dot -o RDtree.png"); // 运行脚本
+		system("dot -Tpng RDtree.dot -o RDtree.png"); // 运行脚本
 	}
 	else // 打印LL1树
 	{

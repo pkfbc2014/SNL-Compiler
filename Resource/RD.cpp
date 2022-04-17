@@ -56,8 +56,11 @@ void movenowtoken() // 指针单纯后移，恐慌模式
 
 void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
 {
-	root->child[root->childnum] = child;
-	root->childnum++;
+	if (child != NULL) // 孩子节点不为空，则增加
+	{
+		root->child[root->childnum] = child;
+		root->childnum++;
+	}
 }
 
 void printerror(char* message) // 语法分析错误信息输出
