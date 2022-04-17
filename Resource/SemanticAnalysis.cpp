@@ -688,7 +688,7 @@ struct TypeIR* otherFactorParsing(treenode* RD_ROOT, vector< vector<SymbTable> >
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: multOp，无操作
     multOpParsing();
-    tok = RD_ROOT->child[0]->token;
+    tok = RD_ROOT->child[0]->child[0]->token;
     //RD_ROOT->child[1]: term()
     return termParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
 
@@ -722,7 +722,7 @@ struct TypeIR* otherTermParsing(treenode* RD_ROOT, vector< vector<SymbTable> > s
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: addOp(), 只是决定了符号而已，并不影响类型的返回值，但是需要将其赋值给tok
     addOpParsing();
-    tok = RD_ROOT->child[0]->token;
+    tok = RD_ROOT->child[0]->child[0]->token;
     //RD_ROOT->child[1]: exp());
     return expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
 
