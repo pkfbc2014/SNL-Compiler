@@ -393,8 +393,18 @@ void Error_RecordFieldArrayInvalid(int line, string Rsem1, string Asem2) {// 2.¼
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
+void Error_RecordFieldNotArrayType(int line, string Rsem1, string Asem2) {// 3.bodyÄÚÊ¹ÓÃµÄÓò³ÉÔ±±äÁ¿²»ÊÇÊı×é±êÊ¶·û£¬¶ÔÓÚÊéÖĞÓïÒå´íÎó(5)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   ¼ÇÂ¼\"";
+    ErrorMessage += Rsem1;
+    ErrorMessage += "\"ÖĞµÄÓò³ÉÔ±\"";
+    ErrorMessage += Asem2;
+    ErrorMessage += "\"µÄ²»ÊÇÊı×éÀàĞÍ£¬ÒıÓÃ²»ºÏ·¨\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
 
-void Error_RecordNotRecordType(int line, string sem) {// 3.bodyÄÚÊ¹ÓÃµÄ±êÊ¶·û²»ÊÇ¼ÇÂ¼±êÊ¶·û£¬¶ÔÓÚÊéÖĞÓïÒå´íÎó(3)
+void Error_RecordNotRecordType(int line, string sem) {// 4.bodyÄÚÊ¹ÓÃµÄ±êÊ¶·û²»ÊÇ¼ÇÂ¼±êÊ¶·û£¬¶ÔÓÚÊéÖĞÓïÒå´íÎó(3)
     string ErrorMessage = "Line:";
     ErrorMessage += to_string(line);
     ErrorMessage += ",   ±äÁ¿\"";
@@ -434,8 +444,27 @@ void Error_ProcNotProcIdentifier(int line, string sem) {// 3.¹ı³Ìµ÷ÓÃÓï¾äÖĞ£¬±êÊ
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
+/***¸³Öµ***/
+void Error_AssignContentIncompatible(int line, string sem) {// 1.¸³ÖµÓï¾äÖĞ£¬×óÓÒÁ½±ßÀàĞÍ²»ÏàÈİ£¬¶ÔÓ¦ÊéÖĞÓïÒå´íÎó(6)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   ±êÊ¶·û\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"Óë¸³ÖµÄÚÈİÀàĞÍ²»ÏàÈİ\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
+void Error_AssignNotVarIdentifier(int line, string sem) {// 2.¸³ÖµÓï¾äÖĞ£¬±êÊ¶·û²»ÊÇ±äÁ¿±êÊ¶·û£¬¶ÔÓ¦ÊéÖĞÓïÒå´íÎó(7)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   ±êÊ¶·û\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"²»ÊÇ±äÁ¿±êÊ¶·û\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
 /***±í´ïÊ½***/
-void Error_StmOpComponentIncompatibility(int line, string sem) {// 1.±í´ïÊ½ÖĞÔËËã·ûµÄ·ÖÁ¿µÄÀàĞÍ²»ÏàÈİ£¬¶ÔÓ¦ÊéÖĞÓïÒå´íÎó(12)
+void Error_StmOpComponentIncompatibility(int line, string sem) {// 1.¼ÆËã»ò¸³Öµ²Î±í´ïÊ½ÖĞÔËËã·ûµÄ·ÖÁ¿µÄÀàĞÍ²»ÏàÈİ£¬¶ÔÓ¦ÊéÖĞÓïÒå´íÎó(12)
     string ErrorMessage = "Line:";
     ErrorMessage += to_string(line);
     ErrorMessage += ",  ÔËËã·û\"";
@@ -443,6 +472,17 @@ void Error_StmOpComponentIncompatibility(int line, string sem) {// 1.±í´ïÊ½ÖĞÔËË
     ErrorMessage += "\"µÄ·ÖÁ¿µÄÀàĞÍ²»ÏàÈİ\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
+
+/***Ìõ¼şÓï¾ä***/
+void Error_StmCompareComponentIncompatibility(int line, string sem) {// 1.Ìõ¼ş±í´ïÊ½ÖĞÔËËã·ûµÄ·ÖÁ¿µÄÀàĞÍ²»ÏàÈİ£¬¶ÔÓ¦ÊéÖĞÓïÒå´íÎó(11)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",  ±È½ÏÔËËã·û\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"µÄ±È½Ï½á¹û²»ºÏ·¨\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
 
 /******½âÎöÓï·¨Ê÷ĞèÒªµÄÏà¹Øº¯Êı******/
 
@@ -510,8 +550,8 @@ struct TypeIR* WhetherTypeDuplicate(vector<struct TypeIR*>& TypeList, struct Typ
         return NULL;
     }
 }
-
-struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 ,Token* tok) {//·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä£¬²¢¸ù¾İÇé¿ö·µ»ØÆ¥ÅäµÄÀàĞÍ»òÕßNULL(²»Æ¥Åä)
+//tokÊÇÔËËã·ûµÄtokenĞÅÏ¢
+struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 ,Token* tok) {//ÔÚ¼ÆËã»ò¸³Öµ±í´ïÊ½ÖĞ£¬·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä£¬²¢¸ù¾İÇé¿ö·µ»ØÆ¥ÅäµÄÀàĞÍ»òÕßNULL(²»Æ¥Åä)
     /*Ê²Ã´Çé¿öÏÂ·µ»ØNULL(±íÊ¾½á¹û²»ºÏ·¨)
     * 1. TypeP1==NULL || TypeP2==NULL
     * 2. µ±TypeP1->Typekind != TypeP2->Typekind Ê±£¬Ò»¶¨²»ºÏ·¨
@@ -536,8 +576,33 @@ struct TypeIR* WhetherResaultValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2 
         return TypeP1;
     }
     else {
-        Error_StmOpComponentIncompatibility(tok->Lineshow, tok->Sem);
         return NULL;
+    }
+}
+//tokÊÇÔËËã·ûµÄtokenĞÅÏ¢
+void WhetherCompareValid(struct TypeIR* TypeP1, struct TypeIR* TypeP2, Token* tok) {//ÔÚ±È½Ï±í´ïÊ½ÖĞ£¬¼ì²éTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä£¬²¢¸ù¾İÇé¿ö·µ»ØÆ¥ÅäµÄÀàĞÍ»òÕßNULL(²»Æ¥Åä)
+    /*Ê²Ã´Çé¿öÏÂ·µ»ØNULL(±íÊ¾½á¹û²»ºÏ·¨)
+    * 1. TypeP1==NULL || TypeP2==NULL
+    * 2. µ±TypeP1->Typekind != TypeP2->Typekind Ê±£¬Ò»¶¨²»ºÏ·¨
+    * 3. µ±TypeP1 == TypeP2 Ê±£¬TypeP1->Typekind == ARRAYTY || TypeP1->Typekind == RECORDTY£¨Êı×éÀàĞÍ²»ÄÜºÍÊı×éÀàĞÍÖ±½Ó¼ÆËã£¬¼ÇÂ¼ÀàĞÍÒ²ÊÇÒ»Ñù£©
+    * */
+    bool flag = true;
+    if (TypeP1 == NULL || TypeP2 == NULL) {
+        flag = false;
+    }
+    else {
+        if (TypeP1->Typekind != TypeP2->Typekind) {
+            flag = false;
+        }
+        else if (TypeP1->Typekind == ARRAYTY || TypeP1->Typekind == RECORDTY) {//ÇÒTypeP1 == TypeP2
+            flag = false;
+        }
+        else {
+            flag = true;
+        }
+    }
+    if (flag == false) {
+        Error_StmCompareComponentIncompatibility(tok->Lineshow, tok->Sem);
     }
 }
 
@@ -556,7 +621,7 @@ struct TypeIR* fieldVarMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> 
     //RD_ROOT->child[2]: RMIDPAREN£¬ÎŞ²Ù×÷
 }
 
-//·µ»Ø¼ÇÂ¼ÀàĞÍµÄÓò³ÉÔ±ÀàĞÍ
+//·µ»Ø¼ÇÂ¼ÀàĞÍµÄÓò³ÉÔ±ÀàĞÍ,tokÊÇRecordÀàĞÍ±äÁ¿µÄtokenĞÅÏ¢£¬Ä¿µÄÊÇ´«µİ´Ë±äÁ¿µÄĞĞÊı
 struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* sym, Token* tok) {//¸ù½ÚµãÃû³ÆÎª"FieldVar"£¬¶ÔÓ¦RDÖĞµÄ"fieldVarº¯Êı"
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: ID£¬´ËIDÊÇ¼ÇÂ¼ÀàĞÍµÄÓò³ÉÔ±ID
@@ -574,12 +639,19 @@ struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > sc
         return NULL;
     }
     else {
-        if (RD_ROOT->child[1] == NULL) {//BaseTypeµÄÓò³ÉÔ±
+        if (RD_ROOT->child[1] == NULL) {//Óò³ÉÔ±ÊÇBaseType
             return body->unitType;
         }
-        else {//AyyarTypeµÄÓò³ÉÔ±
+        else {//Óò³ÉÔ±ÊÇAyyarType
             //RD_ROOT->child[1]: fieldVarMore()
-            fieldVarMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, sym, RD_ROOT->child[0]->token, body->unitType);
+            if (body->unitType->Typekind == ARRAYTY) {
+                fieldVarMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, sym, RD_ROOT->child[0]->token, body->unitType);
+            }
+            else {//Èç¹û²»ÊÇÊı×éÀàĞÍ£¬ÔòÏàµ±ÓÚ·ÃÎÊÁË·Ç·¨ÇøÓò
+                Error_RecordFieldNotArrayType(RD_ROOT->child[0]->token->Lineshow, tok->Sem, RD_ROOT->child[0]->token->Sem);
+                return NULL;
+            }
+            
         }
     }
     
@@ -668,7 +740,11 @@ struct TypeIR* termParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope,
     else {
         Token* tok = new Token;
         struct TypeIR* TypeP2 = otherFactorParsing(RD_ROOT->child[1], scope, exit_region, TypeList, tok);//tok×÷ÓÃÔÚÓÚµÃµ½otherFactorÄÚµÄ·ûºÅµÄtokenĞÅÏ¢
-        return WhetherResaultValid(TypeP1, TypeP2, tok); //·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
+        struct TypeIR* CalculatValidity = WhetherResaultValid(TypeP1, TypeP2, tok); //·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
+        if (CalculatValidity == NULL) {//Èç¹ûÎªNULL£¬Ôò²»Æ¥Åä
+            Error_StmOpComponentIncompatibility(tok->Lineshow, tok->Sem);
+        }
+        return CalculatValidity;//·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
     }
 
 }
@@ -704,10 +780,15 @@ struct TypeIR* expParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, 
     else {
         Token* tok = new Token;
         struct TypeIR* TypeP2 = otherTermParsing(RD_ROOT->child[1], scope, exit_region, TypeList, tok);//tok×÷ÓÃÔÚÓÚµÃµ½otherTermParsingÄÚµÄ·ûºÅµÄtokenĞÅÏ¢
-        return WhetherResaultValid(TypeP1, TypeP2, tok); //·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
+        struct TypeIR* CalculatValidity = WhetherResaultValid(TypeP1, TypeP2, tok); //·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
+        if (CalculatValidity == NULL) {//Èç¹ûÎªNULL£¬Ôò²»Æ¥Åä
+            Error_StmOpComponentIncompatibility(tok->Lineshow, tok->Sem);
+        }
+        return CalculatValidity; //·µ»ØTypeP1ÓëTypeP2ÊÇ·ñÆ¥Åä
     }
 }
 
+//symÊÇstructureÀàĞÍ±äÁ¿µÄ·ûºÅ±íĞÅÏ¢£¬tokÊÇÆätokenĞÅÏ¢£¬ÓÃÓÚ´«µİÆäĞĞÊı
 struct TypeIR* variMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable *sym, Token *tok) {//¸ù½ÚµãÃû³ÆÎª"VariMore"£¬¶ÔÓ¦RDÖĞµÄ"variMoreº¯Êı"
     if (RD_ROOT == NULL) { return NULL; }
     if (RD_ROOT->child[0]->token->Lex == LMIDPAREN) {
@@ -767,7 +848,7 @@ void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, ve
             //Ê¹ÓÃTypeList[ix]·ÃÎÊµ÷ÓÃ¹ı³ÌµÄµÚix¸ö²ÎÊıµÄÀàĞÍ
             if (scope[ProcPosition][ix + 1].attrIR.idtype == NULL || TypeVec[ix] == NULL) {
                 //ĞÎÊµ²ÎÖĞ´æÔÚNULL£¬±íÊ¾²ÎÊıÀàĞÍÎ´¶¨Òå£¬ÔòĞÎÊµ²ÎÊıÀàĞÍÒ»¶¨²»Æ¥Åä
-                Error_ProcParamType(IDTok->Lineshow, ix+1, IDTok->Sem);
+                Error_ProcParamType(IDTok->Lineshow, ix + 1, IDTok->Sem);
             }
             else if(scope[ProcPosition][ix + 1].attrIR.idtype != TypeVec[ix]){
                 //ĞÎÊµ²ÎÊıÀàĞÍÒ»¶¨²»Æ¥Åä
@@ -778,9 +859,22 @@ void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, ve
     //RD_ROOT->child[2]: RPAREN, ÎŞ²Ù×÷
 
 }
-
-void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, SymbTable* VarSym) {//¸ù½ÚµãÃû³ÆÎª"AssignmentRest"£¬¶ÔÓ¦RDÖĞµÄ"assignmentRestº¯Êı"
+//VarSymÊÇÖ¸±»¸³ÖµµÄ±äÁ¿µÄ·ûºÅ±íĞÅÏ¢£¬IDtokÊÇÖ¸±»¸³ÖµµÄ±äÁ¿µÄtokenĞÅÏ¢£¬Ä¿µÄÊÇ´«µİĞĞÊı
+void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, Token* IDTok) {//¸ù½ÚµãÃû³ÆÎª"AssignmentRest"£¬¶ÔÓ¦RDÖĞµÄ"assignmentRestº¯Êı"
     if (RD_ROOT == NULL) { return; }
+    struct TypeIR* TypeP = NULL;
+    if (RD_ROOT->child[0]->token == NULL) {//variMore()
+        //RD_ROOT->child[0]: variMore()
+        TypeP = variMoreParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDTok);
+    }
+    else {
+        //RD_ROOT->child[0]: COLON£¬ÎŞ²Ù×÷
+        //RD_ROOT->child[1]: exp()
+        TypeP = expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
+    }
+    if (WhetherResaultValid(VarSym->attrIR.idtype, TypeP, RD_ROOT->child[0]->token) == NULL) {//ËµÃ÷¸³ÖµÓï¾äÁ½±ßÀàĞÍ²»ÏàÈİ
+        Error_AssignContentIncompatible(IDTok->Lineshow, IDTok->Sem);
+    }
 }
 
 
@@ -802,35 +896,68 @@ void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector
     else if( 0 == strcmp(RD_ROOT->child[0]->str, "AssignmentRest") ){//¸³ÖµassignmentRest()
         SymbTable* VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, VARKIND, -1);//ÕÒ´ËÃû³ÆµÄ±äÁ¿±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø¿Õ
         if (VarSym == NULL) {
-            Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//±äÁ¿±êÊ¶·ûÎ´ÉùÃ÷
+            Error_AssignNotVarIdentifier(IDtok->Lineshow, IDtok->Sem);//²»ÊÇ±äÁ¿±êÊ¶·û
             return;
         }
         else {
-            assignmentRestParsing(RD_ROOT->child[0], scope, exit_region, VarSym);
+            assignmentRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDtok);
         }
         
     }
     
 }
 
-void returnStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//¸ù½ÚµãÃû³ÆÎª"ReturnStm"£¬¶ÔÓ¦RDÖĞµÄ"returnStmº¯Êı"
-    if (RD_ROOT == NULL) { return; }
+void returnStmParsing() {//¸ù½ÚµãÃû³ÆÎª"ReturnStm"£¬¶ÔÓ¦RDÖĞµÄ"returnStmº¯Êı"
+    //returnStmÖĞ¶¼ÊÇtoken£¬ÎŞº¯Êı£¬Ö»ÓĞÓï·¨´íÎó£¬²»»á³öÏÖÓïÒå´íÎó£¬²»ĞèÒª¼ì²â´íÎó
+
+
 }
 
-void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//¸ù½ÚµãÃû³ÆÎª"OutputStm"£¬¶ÔÓ¦RDÖĞµÄ"outputStmº¯Êı"
+void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList) {//¸ù½ÚµãÃû³ÆÎª"OutputStm"£¬¶ÔÓ¦RDÖĞµÄ"outputStmº¯Êı"
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: WRITE£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[1]: LPAREN£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[2]: exp()
+    expParsing(RD_ROOT->child[2], scope, exit_region, TypeList);
+    //RD_ROOT->child[3]: RPAREN£¬ÎŞ²Ù×÷
 }
 
-void inputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//¸ù½ÚµãÃû³ÆÎª"InputStm"£¬¶ÔÓ¦RDÖĞµÄ"inputStmº¯Êı"
-    if (RD_ROOT == NULL) { return; }
+void inputStmParsing() {//¸ù½ÚµãÃû³ÆÎª"InputStm"£¬¶ÔÓ¦RDÖĞµÄ"inputStmº¯Êı"
+    //inputStmÖĞ¶¼ÊÇtoken£¬ÎŞº¯Êı£¬Ö»ÓĞÓï·¨´íÎó£¬²»»á³öÏÖÓïÒå´íÎó£¬²»ĞèÒª¼ì²â´íÎó
 }
 
-void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//¸ù½ÚµãÃû³ÆÎª""£¬¶ÔÓ¦RDÖĞµÄ"loopStmº¯Êı"********************************************
+void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª""£¬¶ÔÓ¦RDÖĞµÄ"loopStmº¯Êı"********************************************
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: WHILE£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[1]: exp()£¬µÚÒ»¸ö±í´ïÊ½
+    struct TypeIR* TypeP1 = expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
+    //RD_ROOT->child[2]: LT»òÕßEQ£¬±È½Ï·ûºÅ('<', '=')£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[3]: exp()£¬µÚ¶ş¸ö±í´ïÊ½
+    struct TypeIR* TypeP2 = expParsing(RD_ROOT->child[3], scope, exit_region, TypeList);
+    WhetherCompareValid(TypeP1, TypeP2, RD_ROOT->child[2]->token);
+    //RD_ROOT->child[4]: DO£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[5]: stmList()
+    stmListParsing(RD_ROOT->child[5], scope, exit_region, TypeList, ValidTableCount);
+    //RD_ROOT->child[6]: ENDWH£¬ÎŞ²Ù×÷
 }
 
-void conditionalStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region) {//¸ù½ÚµãÃû³ÆÎª""£¬¶ÔÓ¦RDÖĞµÄ"conditionalStmº¯Êı"********************************************
+void conditionalStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª""£¬¶ÔÓ¦RDÖĞµÄ"conditionalStmº¯Êı"********************************************
     if (RD_ROOT == NULL) { return; }
+    //RD_ROOT->child[0]: IF£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[1]: exp()£¬µÚÒ»¸ö±í´ïÊ½
+    struct TypeIR* TypeP1 = expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
+    //RD_ROOT->child[2]: LT»òÕßEQ£¬±È½Ï·ûºÅ('<', '=')£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[3]: exp()£¬µÚ¶ş¸ö±í´ïÊ½
+    struct TypeIR* TypeP2 = expParsing(RD_ROOT->child[3], scope, exit_region, TypeList);
+    WhetherCompareValid(TypeP1, TypeP2, RD_ROOT->child[2]->token);
+    //RD_ROOT->child[4]: THEN£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[5]: stmList()
+    stmListParsing(RD_ROOT->child[5], scope, exit_region, TypeList, ValidTableCount);
+    //RD_ROOT->child[6]: ELSE£¬ÎŞ²Ù×÷
+    //RD_ROOT->child[7]: stmList()
+    stmListParsing(RD_ROOT->child[7], scope, exit_region, TypeList, ValidTableCount);
+    //RD_ROOT->child[8]: FI£¬ÎŞ²Ù×÷
+
 }
 
 void stmMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª"StmMore"£¬¶ÔÓ¦RDÖĞµÄ"stmMoreº¯Êı"
@@ -845,20 +972,20 @@ void stmMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector
 void stmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª"Stm"£¬¶ÔÓ¦RDÖĞµÄ"stmº¯Êı"
     if (RD_ROOT == NULL) { return; }
     if(0 == strcmp(RD_ROOT->child[0]->str, "InputStm")){
-        inputStmParsing(RD_ROOT->child[0], scope, exit_region);
+        inputStmParsing();
     }
     else if (0 == strcmp(RD_ROOT->child[0]->str, "OutputStm")) {
-        outputStmParsing(RD_ROOT->child[0], scope, exit_region);
+        outputStmParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
     }
     else if (0 == strcmp(RD_ROOT->child[0]->str, "ReturnStm")) {
-        returnStmParsing(RD_ROOT->child[0], scope, exit_region);
+        returnStmParsing();
     }
-    /*else if (0 == strcmp(RD_ROOT->child[0]->str, "InputStm")) {
-        conditionalStmParsing();//IF
+    else if (0 == strcmp(RD_ROOT->child[0]->str, "ConditionalStm")) {
+        conditionalStmParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);//IF
     }
-    else if (0 == strcmp(RD_ROOT->child[0]->str, "InputStm")) {
-        loopStmParsing();//WHILE
-    }*/
+    else if (0 == strcmp(RD_ROOT->child[0]->str, "LoopStm")) {
+        loopStmParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);//WHILE
+    }
     else {//¸³Öµ»òÕßµ÷ÓÃ¹ı³Ì
         assCallParsing(RD_ROOT->child[1], scope, exit_region, TypeList, RD_ROOT->child[0]->token, ValidTableCount);
     }
@@ -1003,60 +1130,6 @@ struct ParamTable* paramListParsing(treenode* RD_ROOT, vector< vector<SymbTable>
     return paramDecListParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ValidTableCount);
 }
 
-/*//Õû¸ö¹ı³ÌÊ÷
-void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª"ProcDec"£¬¶ÔÓ¦RDÖĞµÄ"procDecº¯Êı"
-    if (RD_ROOT == NULL) { return; }
-    SymbTable temp;
-    //RD_ROOT->child[0]: PROCEDURE, ÎŞ²Ù×÷
-    //RD_ROOT->child[1]: ID
-    strcpy(temp.idname, RD_ROOT->child[1]->token->Sem);//idname
-    temp.attrIR.idtype = NULL;//Typeptr
-    temp.attrIR.kind = PROCKIND;//kind
-    temp.attrIR.More.ProcAttr.level = ValidTableCount - 1;//level£¬¹ı³ÌÈÔÊôÓÚÉÏÒ»²ã
-    //RD_ROOT->child[2]: LPAREN, ÎŞ²Ù×÷
-    //RD_ROOT->child[3]: paramList()
-    temp.attrIR.More.ProcAttr.param = paramListParsing(RD_ROOT->child[3], scope, exit_region, TypeList, ValidTableCount);
-    temp.attrIR.More.ProcAttr.code = 0;//Code,¹ı³ÌµÄÄ¿±ê´úÂëµØÖ·£¨´úÂëÉú³É½×¶ÎÌîĞ´£¬ÏÖÔÚ³õÊ¼»¯Îª0£©
-    //RD_ROOT->child[4]: RPAREN, ÎŞ²Ù×÷
-    //RD_ROOT->child[5]: SEMI, ÎŞ²Ù×÷
-    //RD_ROOT->child[6]: procDecPart()
-    procDecPartParsing(RD_ROOT->child[6], scope, exit_region, TypeList, ValidTableCount);
-    //¼ÆËãSize
-    SymbTable* SymPtr = FindEntry("*", false, scope, exit_region, VARKIND, -1);//ÕÒµ½µ±Ç°·ûºÅ±í×îĞÂµÄÒ»¸ö±äÁ¿±êÊ¶·ûÓÃ×÷size¼ÆËã
-    if (SymPtr == NULL) {//´Ë±êÊ¶·ûÎªµ±Ç°·ûºÅ±í×îĞÂµÄÒ»¸ö±äÁ¿±êÊ¶·û£¬sizeÉèÖÃÎª0
-        temp.attrIR.More.ProcAttr.size = 0;
-    }
-    else {//·ñÔòµÈÓÚµ±Ç°·ûºÅ±í×îĞÂµÄÒ»¸ö±äÁ¿±êÊ¶·ûµÄsize+Æ«ÒÆ
-        unsigned int size = 0;
-        if (SymPtr->attrIR.idtype != NULL) {//Èç¹ûidtypeÎªNULL£¬ ÔòÀí½âÎªsizeÎª0
-            size = SymPtr->attrIR.idtype->size;
-        }
-        else {
-            size = 0;
-        }
-        temp.attrIR.More.ProcAttr.size = SymPtr->attrIR.More.VarAttr.off + size;
-    }
-    if (Enter(temp.idname, temp.attrIR, scope, exit_region, PROCKIND, temp.attrIR.More.ProcAttr.level) == false) {//Ñ¹Èë·ûºÅÕ»£¬Ğè¿¼ÂÇ¹ı³ÌµÄLevel
-        Error_IdentifierDuplicateDec(RD_ROOT->child[1]->token->Lineshow, RD_ROOT->child[1]->token->Sem);//±êÊ¶·ûÖØÃüÃû
-        const int scope_origin_size = scope.size() - 1;//ÒòÎª´ËÇ°ÒÑ¾­´´½¨ÁË´Ë¹ı³ÌµÄ·ûºÅ±í£¬ËùÒÔscopeÔ­±¾µÄsizeµÈÓÚÏÖÔÚµÄsize-1
-        //RD_ROOT->child[7]: procBody()
-        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);//ÏÈ¼ì²âbodyÖĞµÄÓïÒå´íÎó£¬ÔÙÒÆ³ı´Ë¾Ö²¿»¯Çø
-        //Èç¹û¹ı³Ì±êÖ¾·û£¬¶ø×îĞÂµÄ¾Ö²¿»¯ÇøÎªÕâ¸ö¹ı³ÌµÄ±êÊ¶·û£¬ËùÒÔ´Ë¹ı³ÌµÄ¾Ö²¿»¯ÇøÒÔ¼°ÆäbodyÖĞ¶¨ÒåµÄÈ«²¿¾Ö²¿»¯ÇøÓ¦¸ÃÈ«²¿±»É¾³ı
-        const int times = scope.size() - scope_origin_size;//Í¨¹ıscopeÔ­±¾µÄsizeÀ´½«scopeÕ»»¹Ô­»Ø¼ÓÈë´Ë¾Ö²¿»¯ÇøÔ­±¾µÄÑù×Ó£¬ĞèÒªµ¯scopeÕ»µÄ´ÎÊı
-        for (int ix = 0; ix < times; ix++) {
-            scope.pop_back();
-            exit_region.pop_back();
-        }
-    }
-    else {
-        //RD_ROOT->child[7]: procBody()
-        procBodyParsing(RD_ROOT->child[7], scope, exit_region, ValidTableCount);
-    }
-    //RD_ROOT->child[8]: procDecpart()
-    procDecpartParsing(RD_ROOT->child[8], scope, exit_region, TypeList, ValidTableCount);
-}
-*/
-
 //Õû¸ö¹ı³ÌÊ÷
 void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª"ProcDec"£¬¶ÔÓ¦RDÖĞµÄ"procDecº¯Êı"
     if (RD_ROOT == NULL) { return; }
@@ -1093,13 +1166,13 @@ void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vecto
         //¼ÆËãSize
         //scope[scope_size - 1][0]±íÊ¾Õâ¸ö·ûºÅ±íµÄ¹ı³Ì±êÊ¶·û
         scope[scope_size - 1][0].attrIR.More.ProcAttr.size = 0;
-        for (int ix = scope[scope_size - 1].size() - 1; ix >= 0; ix--) {
+        for (int ix = scope[scope_size - 1].size() - 1; ix >= 1; ix--) {
             if (scope[scope_size - 1][ix].attrIR.kind == VARKIND) {
                 int size = 0;//±íÊ¾Õâ¸ö¹ı³ÌµÄ×îºóÒ»¸ö±äÁ¿±êÊ¶·ûµÄ´óĞ¡
                 if (scope[scope_size - 1][ix].attrIR.idtype != NULL) {
                     size = scope[scope_size - 1][ix].attrIR.idtype->size;
                 }
-                scope[scope_size - 1][0].attrIR.More.ProcAttr.size = size + scope[scope_size - 1][ix].attrIR.More.VarAttr.off;
+                scope[scope_size - 1][0].attrIR.More.ProcAttr.size += size;
             }
         }
         ;
@@ -1568,4 +1641,4 @@ void semantic_analysis(treenode* RD_ROOT) {
     return;
 }
 
-//2022_4_16
+//2022_4_17
