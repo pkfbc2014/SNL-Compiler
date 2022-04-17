@@ -21,6 +21,8 @@ int pnum;//产生式处理函数调用序号
 treenode* LL1_treeROOT; // LL1分析法语法分析数根节点
 treenode* newnode;//产生式处理函数使用
 
+int totalnum_LL1 = 0;
+
 word reservedWords1[42] = {//保留字
 	{"ENDFILE",ENDFILE},{"ERROR",ERROR},
 	{"PROGRAM",PROGRAM},{"PROCEDURE",PROCEDURE},{"TYPE",TYPE},{"VAR",VAR},{"IF",IF},
@@ -55,6 +57,8 @@ void initnode_LL1(treenode* temp) {
 	}
 	temp->childnum = 0;
 	temp->token = NULL;
+	temp->index = totalnum_LL1;
+	totalnum_LL1++;
 }
 
 treenode* createNode() 
