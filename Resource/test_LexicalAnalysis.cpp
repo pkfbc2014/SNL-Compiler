@@ -193,9 +193,11 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                 if (ch == '.') {
                     state0 = INRANGE; receiver[num++] = ch; break;//Êı×éÏÂ±ê½çÏŞ×´Ì¬
                 }
-                else {
-                    current->Lex = ENDFILE; current->Lineshow = Line; current->next = NULL;
-                    state0 = START; error0 = INRANGE_ERROR;  break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖĞ':'ºóËù¸ú²¢·Ç'='
+                else {//ÆäËû·ûºÅ
+                    current->Lex = DOT; current->Lineshow = Line;
+                    current = next; next = next->next;//ĞÂcurrentµÄÖ¸ÕëĞÅÏ¢ÊÇÍêÕûµÄ
+                    next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëĞÅÏ¢
+                    state0 = START;break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖĞ':'ºóËù¸ú²¢·Ç'='
                 }
             case 7://ÎŞĞèÂ¼Èë
                 state0 = INCHAR; break;
