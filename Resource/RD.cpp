@@ -5,16 +5,19 @@
 #include <string.h>
 #include "RD_head.h"
 
+token* tokenheadtt = NULL; // 调试用，记得删
+int ttnum = 0;
+
 token* nowtoken_RD = NULL; // 当前指向的token节点
+int totalnum_RD = 0; // RD树的各节点编号
 
 treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken_RD = tokenhead; // 指向token序列的头
+	tokenheadtt = tokenhead;
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
 	return RD_treeROOT; // 返回总根节点，以便语义分析
 }
-
-int totalnum_RD = 0;
 
 void initnode_RD(treenode* temp) // 初始化节点
 {
@@ -29,6 +32,7 @@ void initnode_RD(treenode* temp) // 初始化节点
 
 treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 {
+	ttnum++;
 	if (tok == nowtoken_RD->Lex) // 终结符匹配上了
 	{
 		treenode* newnode = (treenode*)malloc(sizeof(treenode));
@@ -52,12 +56,16 @@ treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 void movenowtoken() // 指针单纯后移，恐慌模式
 {
 	nowtoken_RD = nowtoken_RD->next;
+	ttnum++;
 }
 
 void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
 {
-	root->child[root->childnum] = child;
-	root->childnum++;
+	if (child != NULL) // 孩子节点不为空，则增加
+	{
+		root->child[root->childnum] = child;
+		root->childnum++;
+	}
 }
 
 void printerror(char* message) // 语法分析错误信息输出
