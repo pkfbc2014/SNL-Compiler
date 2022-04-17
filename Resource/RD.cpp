@@ -14,6 +14,8 @@ treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 	return RD_treeROOT; // 返回总根节点，以便语义分析
 }
 
+int totalnum_RD = 0;
+
 void initnode_RD(treenode* temp) // 初始化节点
 {
 	strcpy(temp->str, "\0");
@@ -21,6 +23,8 @@ void initnode_RD(treenode* temp) // 初始化节点
 	for (int i = 0; i < maxlen; i++)
 		temp->child[i] = NULL;
 	temp->childnum = 0;
+	temp->index = totalnum_RD;
+	totalnum_RD++;
 }
 
 treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
@@ -955,7 +959,7 @@ treenode* assignmentRest()
 		strcpy(newnode->str, "AssignmentRest");
 		if (nowtoken_RD->Lex == LMIDPAREN || nowtoken_RD->Lex == DOT)
 			addChild(newnode, variMore());
-		addChild(newnode, ReadmatchToken(COLON));
+		addChild(newnode, ReadmatchToken(ASSIGN));
 		addChild(newnode, exp());
 	}
 	return newnode;
