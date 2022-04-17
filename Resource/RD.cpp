@@ -45,6 +45,11 @@ treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 	}
 }
 
+void movenowtoken() // 指针单纯后移
+{
+	nowtoken = nowtoken->next;
+}
+
 void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
 {
 	root->child[root->childnum] = child;
@@ -295,6 +300,7 @@ treenode* baseType()
 			return newnode;
 		}
 	}
+	movenowtoken();
 	return newnode;
 }
 
@@ -402,6 +408,7 @@ treenode* fieldDecList()
 			return newnode;
 		}
 	}
+	movenowtoken();
 	return newnode;
 }
 
@@ -661,6 +668,7 @@ treenode* param()
 			return newnode;
 		}
 	}
+	movenowtoken();
 	return newnode;
 }
 
@@ -815,6 +823,7 @@ treenode* conditionalStm()
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
+			movenowtoken();
 			; // 输出错误信息 ???
 		}
 		addChild(newnode, exp());
@@ -844,6 +853,7 @@ treenode* loopStm()
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
+			movenowtoken();
 			; // 输出错误信息 ???
 		}
 		addChild(newnode, exp());

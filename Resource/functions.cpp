@@ -10,7 +10,7 @@
 extern const char* Non_symbol[NonNum]; // 全局变量的使用，得加上 extern 关键字
 extern const char* Reserved_word[ReserveNum]; // 全局变量的使用，得加上 extern 关键字
 extern production Productions[ProductNum]; // 全局变量的使用，得加上 extern 关键字
-int LL1table[NonNum][ReserveNum];//LL1分析表
+int LL1table[NonNum][ReserveNum];//LL1分析表，error为-1，synch为-2
 
 first firsts[NonNum];
 follow follows[NonNum];
@@ -255,7 +255,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 
 void cal_predict() // 计算predict集 - LL1文法
 {
-	for (int i = 0; i < NonNum; i++) // 初始化LL1预测分析表为-1
+	for (int i = 0; i < NonNum; i++) // 初始化LL1预测分析表为-1，都是error
 		for (int j = 0; j < ReserveNum; j++)
 			LL1table[i][j] = -1;
 	for (int i = 0; i < ProductNum; i++)
@@ -298,6 +298,16 @@ void cal_predict() // 计算predict集 - LL1文法
 				LL1table[leftindex][getReIndex(follows[leftindex].ptr[j])] = i;
 		}
 	}
+
+	for (int i = 0; i < NonNum; i++) // 将同步词法单元synch加入到predict集中
+	{
+		for (int j = 0; j < follows[i].num; j++)
+		{
+			
+			LL1table[i][]
+		}
+	}
+
 }
 
 void out_predict() //输出LL1预测分析表到本地
