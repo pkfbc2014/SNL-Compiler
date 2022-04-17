@@ -37,6 +37,9 @@ word reservedWords1[42] = {//保留字
 	{"UNDERANGE",UNDERANGE}
 };	
 
+
+
+
 extern word2 Words[42];
 
 void init_S_stack() {
@@ -119,7 +122,7 @@ int nPredict(const char* str, int times)//完成非终结符节点创建，赋值，连接，压语
 {
 	newnode = createNode();
 	strcpy(newnode->str, str);
-	printf("\n            生成语法树非叶节点:%s", str);
+	//printf("\n            生成语法树非叶节点:%s", str);
 	G_pointer = G_pop();
 	G_pointer->child[G_pointer->childnum++] = newnode;
 	for (int i = 0; i < times; i++) 
@@ -461,7 +464,7 @@ void predict(int a)
 		nPredict("ConditionalStm", 7);
 		break;
 	case 71:
-		S_push("EDNWH");
+		S_push("ENDWH");
 		S_push("StmList");
 		S_push("DO");
 		S_push("RelExp");
@@ -487,9 +490,6 @@ void predict(int a)
 		nPredict("OutputStm", 4);
 		break;
 	case 75:
-		S_push("RPAREN");
-		S_push("Exp");
-		S_push("LPAREN");
 		S_push("RETURN");
 		nPredict("ReturnStm", 1);
 		break;
@@ -682,7 +682,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 			if (strcmp(S_stack[S_ptr], LexToStr(nowtoken->Lex)) == 0) 
 			{
 				newnode = createNode();//为终极符创建语法树节点
-				printf("\n            生成语法树叶子节点:%s", S_stack[S_ptr]);
+				//printf("\n            生成语法树叶子节点:%s", S_stack[S_ptr]);
 				newnode->token = nowtoken;
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
@@ -707,7 +707,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 			{
 				newnode = createNode();//为终极符创建语法树节点
 				strcpy(newnode->str, S_stack[S_ptr]);
-				printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
+				//printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
 				S_pop();
@@ -726,6 +726,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 	else
 	{
 		//prePrint(LL1_treeROOT);
+		printf("\nLL1语法分析成功！");
 		return LL1_treeROOT;
 	}
 
