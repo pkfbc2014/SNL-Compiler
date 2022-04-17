@@ -5,16 +5,16 @@
 #include <string.h>
 #include "RD_head.h"
 
-token* nowtoken = NULL; // 当前指向的token节点
+token* nowtoken_RD = NULL; // 当前指向的token节点
 
 treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
-	nowtoken = tokenhead; // 指向token序列的头
+	nowtoken_RD = tokenhead; // 指向token序列的头
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
 	return RD_treeROOT; // 返回总根节点，以便语义分析
 }
 
-void initnode(treenode* temp) // 初始化节点
+void initnode_RD(treenode* temp) // 初始化节点
 {
 	strcpy(temp->str, "\0");
 	temp->token = NULL;
@@ -25,29 +25,29 @@ void initnode(treenode* temp) // 初始化节点
 
 treenode* ReadmatchToken(LexType tok) // 匹配当前token与终结符，之后移动指针
 {
-	if (tok == nowtoken->Lex) // 终结符匹配上了
+	if (tok == nowtoken_RD->Lex) // 终结符匹配上了
 	{
 		treenode* newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
-			newnode->token = nowtoken;
-			nowtoken = nowtoken->next; // token指针后移
+			initnode_RD(newnode);
+			newnode->token = nowtoken_RD;
+			nowtoken_RD = nowtoken_RD->next; // token指针后移
 			return newnode;
 		}
 	}
 	else
 	{
-		nowtoken = nowtoken->next; // token指针后移
+		nowtoken_RD = nowtoken_RD->next; // token指针后移
 		return NULL;
 	}
 }
 
 void movenowtoken() // 指针单纯后移
 {
-	nowtoken = nowtoken->next;
+	nowtoken_RD = nowtoken_RD->next;
 }
 
 void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
@@ -69,7 +69,7 @@ treenode* program()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Program");
 		addChild(newnode, programHead());
 		addChild(newnode, declarePart());
@@ -85,7 +85,7 @@ treenode* programHead()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ProgramHead");
 		addChild(newnode, ReadmatchToken(PROGRAM));
 		addChild(newnode, ReadmatchToken(ID));
@@ -100,7 +100,7 @@ treenode* declarePart()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "DeclarePart");
 		addChild(newnode, typeDecPart());
 		addChild(newnode, varDecPart());
@@ -116,7 +116,7 @@ treenode* programBody()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ProgramBody");
 		addChild(newnode,ReadmatchToken(BEGIN));
 		addChild(newnode,stmList());
@@ -128,14 +128,14 @@ treenode* programBody()
 treenode* typeDecPart()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == TYPE)
+	if (nowtoken_RD->Lex == TYPE)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "TypeDecPart");
 			addChild(newnode, typeDec());
 		}
@@ -146,14 +146,14 @@ treenode* typeDecPart()
 treenode* varDecPart()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == VAR)
+	if (nowtoken_RD->Lex == VAR)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "VarDecPart");
 			addChild(newnode, varDec());
 		}
@@ -164,14 +164,14 @@ treenode* varDecPart()
 treenode* procDecpart()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == PROCEDURE)
+	if (nowtoken_RD->Lex == PROCEDURE)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "ProcDecPart");
 			addChild(newnode, procDec());
 		}
@@ -186,7 +186,7 @@ treenode* typeDec()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "TypeDec");
 		addChild(newnode, ReadmatchToken(TYPE));
 		addChild(newnode, typeDecList());
@@ -201,7 +201,7 @@ treenode* typeDecList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "TypeDecList");
 		addChild(newnode,ReadmatchToken(ID));
 		addChild(newnode,ReadmatchToken(EQ));
@@ -219,7 +219,7 @@ treenode* typeID()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "TypeID");
 		addChild(newnode, ReadmatchToken(ID));
 		return newnode;
@@ -233,14 +233,14 @@ treenode* typeDef()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "TypeDef");
-		if ((nowtoken->Lex == INTEGER) || (nowtoken->Lex == CHAR))
+		if ((nowtoken_RD->Lex == INTEGER) || (nowtoken_RD->Lex == CHAR))
 		{
 			addChild(newnode, baseType());
 			return newnode;
 		}
-		else if ((nowtoken->Lex == ARRAY) || (nowtoken->Lex == RECORD))
+		else if ((nowtoken_RD->Lex == ARRAY) || (nowtoken_RD->Lex == RECORD))
 		{
 			addChild(newnode, structureType());
 			return newnode;
@@ -256,14 +256,14 @@ treenode* typeDef()
 treenode* typeDecMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == ID)
+	if (nowtoken_RD->Lex == ID)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "TypeDecMore");
 			addChild(newnode, typeDecList());
 		}
@@ -274,27 +274,27 @@ treenode* typeDecMore()
 treenode* baseType()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER)
+	if (nowtoken_RD->Lex == INTEGER)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "BaseType");
 			addChild(newnode, ReadmatchToken(INTEGER));
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == CHAR)
+	else if (nowtoken_RD->Lex == CHAR)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "BaseType");
 			addChild(newnode, ReadmatchToken(CHAR));
 			return newnode;
@@ -307,27 +307,27 @@ treenode* baseType()
 treenode* structureType()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == ARRAY)
+	if (nowtoken_RD->Lex == ARRAY)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "StructureType");
 			addChild(newnode, arrayType());
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == RECORD)
+	else if (nowtoken_RD->Lex == RECORD)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "StructureType");
 			addChild(newnode, recType());
 			return newnode;
@@ -343,7 +343,7 @@ treenode* arrayType()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ArrayType");
 		addChild(newnode, ReadmatchToken(ARRAY));
 		addChild(newnode, ReadmatchToken(LMIDPAREN));
@@ -364,7 +364,7 @@ treenode* recType()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "RecType");
 		addChild(newnode,ReadmatchToken(RECORD));
 		addChild(newnode,fieldDecList());
@@ -376,14 +376,14 @@ treenode* recType()
 treenode* fieldDecList()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER || nowtoken->Lex == CHAR)
+	if (nowtoken_RD->Lex == INTEGER || nowtoken_RD->Lex == CHAR)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "FieldDecList");
 			addChild(newnode, baseType());
 			addChild(newnode, IDList());
@@ -392,14 +392,14 @@ treenode* fieldDecList()
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == ARRAY)
+	else if (nowtoken_RD->Lex == ARRAY)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "FieldDecList");
 			addChild(newnode, arrayType());
 			addChild(newnode, IDList());
@@ -419,7 +419,7 @@ treenode* IDList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "IDList");
 		addChild(newnode, ReadmatchToken(ID));
 		addChild(newnode, IDMore());
@@ -430,14 +430,14 @@ treenode* IDList()
 treenode* fieldDecMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER || nowtoken->Lex == CHAR || nowtoken->Lex == ARRAY)
+	if (nowtoken_RD->Lex == INTEGER || nowtoken_RD->Lex == CHAR || nowtoken_RD->Lex == ARRAY)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "FieldDecMore");
 			addChild(newnode, fieldDecList());
 			return newnode;
@@ -449,14 +449,14 @@ treenode* fieldDecMore()
 treenode* IDMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == COMMA)
+	if (nowtoken_RD->Lex == COMMA)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "IDMore");
 			addChild(newnode, ReadmatchToken(COMMA));
 			addChild(newnode, IDList());
@@ -473,7 +473,7 @@ treenode* varDec()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "VarDec");
 		addChild(newnode, ReadmatchToken(VAR));
 		addChild(newnode, varDecList());
@@ -488,7 +488,7 @@ treenode* varDecList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "VarDecList");
 		addChild(newnode, typeDef());
 		addChild(newnode, varIDList());
@@ -505,7 +505,7 @@ treenode* varIDList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "VarIDList");
 		addChild(newnode, ReadmatchToken(ID));
 		addChild(newnode, varIDMore());
@@ -516,14 +516,14 @@ treenode* varIDList()
 treenode* varDecMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER ||nowtoken->Lex == CHAR ||nowtoken->Lex == ARRAY ||nowtoken->Lex == RECORD ||nowtoken->Lex == ID)
+	if (nowtoken_RD->Lex == INTEGER ||nowtoken_RD->Lex == CHAR ||nowtoken_RD->Lex == ARRAY ||nowtoken_RD->Lex == RECORD ||nowtoken_RD->Lex == ID)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "VarDecMore");
 			addChild(newnode, varDecList());
 			return newnode;
@@ -535,14 +535,14 @@ treenode* varDecMore()
 treenode* varIDMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == COMMA)
+	if (nowtoken_RD->Lex == COMMA)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "VarIDMore");
 			addChild(newnode, ReadmatchToken(COMMA));
 			addChild(newnode, varIDList());
@@ -559,7 +559,7 @@ treenode* procDec()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ProcDec");
 		addChild(newnode, ReadmatchToken(PROCEDURE));
 		addChild(newnode, ReadmatchToken(ID));
@@ -577,14 +577,14 @@ treenode* procDec()
 treenode* paramList()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER ||nowtoken->Lex == CHAR ||nowtoken->Lex == ARRAY ||nowtoken->Lex == RECORD ||nowtoken->Lex == VAR ||nowtoken->Lex == ID)
+	if (nowtoken_RD->Lex == INTEGER ||nowtoken_RD->Lex == CHAR ||nowtoken_RD->Lex == ARRAY ||nowtoken_RD->Lex == RECORD ||nowtoken_RD->Lex == VAR ||nowtoken_RD->Lex == ID)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "ParamList");
 			addChild(newnode, paramDecList());
 			return newnode;
@@ -600,7 +600,7 @@ treenode* procDecPart()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ProcDecPart");
 		addChild(newnode, declarePart());
 	}
@@ -614,7 +614,7 @@ treenode* procBody()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ProcBody");
 		addChild(newnode, programBody());
 	}
@@ -628,7 +628,7 @@ treenode* paramDecList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ParamDecList");
 		addChild(newnode, param());
 		addChild(newnode, paramMore());
@@ -639,28 +639,28 @@ treenode* paramDecList()
 treenode* param()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == INTEGER ||nowtoken->Lex == CHAR ||nowtoken->Lex == ARRAY ||nowtoken->Lex == RECORD ||nowtoken->Lex == ID)
+	if (nowtoken_RD->Lex == INTEGER ||nowtoken_RD->Lex == CHAR ||nowtoken_RD->Lex == ARRAY ||nowtoken_RD->Lex == RECORD ||nowtoken_RD->Lex == ID)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "Param");
 			addChild(newnode, typeDef());
 			addChild(newnode, formList());
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == VAR)
+	else if (nowtoken_RD->Lex == VAR)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "Param");
 			addChild(newnode, ReadmatchToken(VAR));
 			addChild(newnode, typeDef());
@@ -675,14 +675,14 @@ treenode* param()
 treenode* paramMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == SEMI)
+	if (nowtoken_RD->Lex == SEMI)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "ParamMore");
 			addChild(newnode, ReadmatchToken(SEMI));
 			addChild(newnode, paramDecList());
@@ -699,7 +699,7 @@ treenode* formList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "FormList");
 		addChild(newnode, ReadmatchToken(ID));
 		addChild(newnode, fidMore());
@@ -710,14 +710,14 @@ treenode* formList()
 treenode* fidMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == COMMA)
+	if (nowtoken_RD->Lex == COMMA)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "FidMore");
 			addChild(newnode, ReadmatchToken(COMMA));
 			addChild(newnode, formList());
@@ -734,7 +734,7 @@ treenode* stmList()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "StmList");
 		addChild(newnode, stm());
 		addChild(newnode, stmMore());
@@ -749,34 +749,34 @@ treenode* stm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Stm");
-		if (nowtoken->Lex == IF)
+		if (nowtoken_RD->Lex == IF)
 		{
 			addChild(newnode, conditionalStm());
 			return newnode;
 		}
-		else if (nowtoken->Lex == WHILE)
+		else if (nowtoken_RD->Lex == WHILE)
 		{
 			addChild(newnode, loopStm());
 			return newnode;
 		}
-		else if (nowtoken->Lex == READ)
+		else if (nowtoken_RD->Lex == READ)
 		{
 			addChild(newnode, inputStm());
 			return newnode;
 		}
-		else if (nowtoken->Lex == WRITE)
+		else if (nowtoken_RD->Lex == WRITE)
 		{
 			addChild(newnode, outputStm());
 			return newnode;
 		}
-		else if (nowtoken->Lex == RETURN)
+		else if (nowtoken_RD->Lex == RETURN)
 		{
 			addChild(newnode, returnStm());
 			return newnode;
 		}
-		else if (nowtoken->Lex == ID)
+		else if (nowtoken_RD->Lex == ID)
 		{
 			addChild(newnode, ReadmatchToken(ID));
 			addChild(newnode, assCall());
@@ -789,14 +789,14 @@ treenode* stm()
 treenode* stmMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == SEMI)
+	if (nowtoken_RD->Lex == SEMI)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "StmMore");
 			addChild(newnode, ReadmatchToken(SEMI));
 			addChild(newnode, stmList());
@@ -813,13 +813,13 @@ treenode* conditionalStm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ConditionalStm");
 		addChild(newnode, ReadmatchToken(IF));
 		addChild(newnode, exp());
-		if (nowtoken->Lex == LT)
+		if (nowtoken_RD->Lex == LT)
 			addChild(newnode, ReadmatchToken(LT));
-		else if (nowtoken->Lex == EQ)
+		else if (nowtoken_RD->Lex == EQ)
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
@@ -843,13 +843,13 @@ treenode* loopStm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "LoopStm");
 		addChild(newnode, ReadmatchToken(WHILE));
 		addChild(newnode, exp());
-		if (nowtoken->Lex == LT)
+		if (nowtoken_RD->Lex == LT)
 			addChild(newnode, ReadmatchToken(LT));
-		else if(nowtoken->Lex == EQ)
+		else if(nowtoken_RD->Lex == EQ)
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
@@ -871,7 +871,7 @@ treenode* inputStm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "InputStm");
 		addChild(newnode, ReadmatchToken(READ));
 		addChild(newnode, ReadmatchToken(LPAREN));
@@ -888,7 +888,7 @@ treenode* outputStm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "OutputStm");
 		addChild(newnode, ReadmatchToken(WRITE));
 		addChild(newnode, ReadmatchToken(LPAREN));
@@ -905,7 +905,7 @@ treenode* returnStm()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ReturnStm");
 		addChild(newnode, ReadmatchToken(RETURN));
 	}
@@ -915,27 +915,27 @@ treenode* returnStm()
 treenode* assCall()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == LMIDPAREN ||nowtoken->Lex == DOT ||nowtoken->Lex == ASSIGN)
+	if (nowtoken_RD->Lex == LMIDPAREN ||nowtoken_RD->Lex == DOT ||nowtoken_RD->Lex == ASSIGN)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "AssCall");
 			addChild(newnode, assignmentRest());
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == LPAREN)
+	else if (nowtoken_RD->Lex == LPAREN)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "AssCall");
 			addChild(newnode, callStmRest());
 			return newnode;
@@ -951,9 +951,9 @@ treenode* assignmentRest()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "AssignmentRest");
-		if (nowtoken->Lex == LMIDPAREN || nowtoken->Lex == DOT)
+		if (nowtoken_RD->Lex == LMIDPAREN || nowtoken_RD->Lex == DOT)
 			addChild(newnode, variMore());
 		addChild(newnode, ReadmatchToken(COLON));
 		addChild(newnode, exp());
@@ -968,7 +968,7 @@ treenode* callStmRest()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "CallStmRest");
 		addChild(newnode, ReadmatchToken(LPAREN));
 		addChild(newnode, actparamList());
@@ -980,28 +980,28 @@ treenode* callStmRest()
 treenode* variMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == LMIDPAREN)
+	if (nowtoken_RD->Lex == LMIDPAREN)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "VariMore");
 			addChild(newnode, ReadmatchToken(LMIDPAREN));
 			addChild(newnode, exp());
 			addChild(newnode, ReadmatchToken(RMIDPAREN));
 		}
 	}
-	else if (nowtoken->Lex == DOT)
+	else if (nowtoken_RD->Lex == DOT)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "VariMore");
 			addChild(newnode, ReadmatchToken(DOT));
 			addChild(newnode, fieldVar());
@@ -1017,7 +1017,7 @@ treenode* exp()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Exp");
 		addChild(newnode, term());
 		addChild(newnode, otherTerm());
@@ -1028,10 +1028,10 @@ treenode* exp()
 treenode* actparamList()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == LPAREN || nowtoken->Lex == INTC || nowtoken->Lex == ID)
+	if (nowtoken_RD->Lex == LPAREN || nowtoken_RD->Lex == INTC || nowtoken_RD->Lex == ID)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ActParamList");
 		addChild(newnode, exp());
 		addChild(newnode, actparamMore());
@@ -1042,10 +1042,10 @@ treenode* actparamList()
 treenode* actparamMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == COMMA)
+	if (nowtoken_RD->Lex == COMMA)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "ActParamMore");
 		addChild(newnode, ReadmatchToken(COMMA));
 		addChild(newnode, actparamList());
@@ -1060,7 +1060,7 @@ treenode* term()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Term");
 		addChild(newnode, factor());
 		addChild(newnode, otherFactor());
@@ -1071,10 +1071,10 @@ treenode* term()
 treenode* otherTerm()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == PLUS || nowtoken->Lex == MINUS)
+	if (nowtoken_RD->Lex == PLUS || nowtoken_RD->Lex == MINUS)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "OtherTerm");
 		addChild(newnode, addOp());
 		addChild(newnode, exp());
@@ -1085,27 +1085,27 @@ treenode* otherTerm()
 treenode* addOp() // 回头看
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == PLUS)
+	if (nowtoken_RD->Lex == PLUS)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "AddOp");
 			addChild(newnode, ReadmatchToken(PLUS));
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == MINUS)
+	else if (nowtoken_RD->Lex == MINUS)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "AddOp");
 			addChild(newnode, ReadmatchToken(MINUS));
 			return newnode;
@@ -1121,22 +1121,22 @@ treenode* factor()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Factor");
 	}
-	if (nowtoken->Lex == INTC)
+	if (nowtoken_RD->Lex == INTC)
 	{
 		addChild(newnode, ReadmatchToken(INTC));
 		return newnode;
 	}
-	else if (nowtoken->Lex == LPAREN)
+	else if (nowtoken_RD->Lex == LPAREN)
 	{
 		addChild(newnode, ReadmatchToken(LPAREN));
 		addChild(newnode, exp());
 		addChild(newnode, ReadmatchToken(RPAREN));
 		return newnode;
 	}
-	else if (nowtoken->Lex == ID)
+	else if (nowtoken_RD->Lex == ID)
 	{
 		addChild(newnode, variable());
 		return newnode;
@@ -1147,14 +1147,14 @@ treenode* factor()
 treenode* otherFactor()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == TIMES || nowtoken->Lex == OVER)
+	if (nowtoken_RD->Lex == TIMES || nowtoken_RD->Lex == OVER)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "OtherFactor");
 			addChild(newnode, multOp());
 			addChild(newnode, term());
@@ -1166,27 +1166,27 @@ treenode* otherFactor()
 treenode* multOp()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == TIMES)
+	if (nowtoken_RD->Lex == TIMES)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "MultOp");
 			addChild(newnode, ReadmatchToken(TIMES));
 			return newnode;
 		}
 	}
-	else if (nowtoken->Lex == OVER)
+	else if (nowtoken_RD->Lex == OVER)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "MultOp");
 			addChild(newnode, ReadmatchToken(OVER));
 			return newnode;
@@ -1202,7 +1202,7 @@ treenode* variable()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "Variable");
 		addChild(newnode, ReadmatchToken(ID));
 		addChild(newnode, variMore());
@@ -1217,7 +1217,7 @@ treenode* fieldVar()
 		return NULL;
 	else
 	{
-		initnode(newnode);
+		initnode_RD(newnode);
 		strcpy(newnode->str, "FieldVar");
 		addChild(newnode, ReadmatchToken(ID));
 		addChild(newnode, fieldVarMore());
@@ -1228,14 +1228,14 @@ treenode* fieldVar()
 treenode* fieldVarMore()
 {
 	treenode* newnode = NULL;
-	if (nowtoken->Lex == LMIDPAREN)
+	if (nowtoken_RD->Lex == LMIDPAREN)
 	{
 		newnode = (treenode*)malloc(sizeof(treenode));
 		if (newnode == NULL)
 			return NULL;
 		else
 		{
-			initnode(newnode);
+			initnode_RD(newnode);
 			strcpy(newnode->str, "FieldVarMore");
 			addChild(newnode, ReadmatchToken(LMIDPAREN));
 			addChild(newnode, exp());

@@ -48,7 +48,8 @@ void init_S_stack() {
 	}
 }
 
-void initnode(treenode* temp) {
+void initnode(treenode* temp) 
+{
 	if (temp == NULL)
 	{
 		printf("ERROR:initnode()!");
@@ -634,7 +635,7 @@ int prePrint(treenode* root)
 	else
 		printf("%s\n", root->token->Sem);
 
-	for (int k = 0; k < root->childnum; k--)
+	for (int k = 0; k < root->childnum; k++)
 		prePrint(root->child[k]);
 	return 0;
 }

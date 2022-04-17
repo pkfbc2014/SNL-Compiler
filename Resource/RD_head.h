@@ -3,7 +3,7 @@
 #include "treenode_var.h"
 
 treenode* RD_analysis(token* tokenhead); // 递归下降分析法，接收token序列头
-void initnode(treenode* temp); // 初始化节点
+void initnode_RD(treenode* temp); // 初始化节点
 treenode* ReadmatchToken(LexType tok); // 匹配当前token与终结符，之后移动指针
 void addChild(treenode* root, treenode* child); // 为根节点root增加孩子节点child
 void printerror(char* message); // 语法分析错误信息输出

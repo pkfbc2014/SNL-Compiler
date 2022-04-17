@@ -300,14 +300,8 @@ void cal_predict() // 计算predict集 - LL1文法
 	}
 
 	for (int i = 0; i < NonNum; i++) // 将同步词法单元synch加入到predict集中
-	{
 		for (int j = 0; j < follows[i].num; j++)
-		{
-			
-			LL1table[i][]
-		}
-	}
-
+			LL1table[i][getReIndex(follows[i].ptr[j])] = -2;
 }
 
 void out_predict() //输出LL1预测分析表到本地
