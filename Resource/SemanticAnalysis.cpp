@@ -645,7 +645,7 @@ struct TypeIR* fieldVarParsing(treenode* RD_ROOT, vector< vector<SymbTable> > sc
         else {//域成员是AyyarType
             //RD_ROOT->child[1]: fieldVarMore()
             if (body->unitType->Typekind == ARRAYTY) {
-                fieldVarMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, sym, RD_ROOT->child[0]->token, body->unitType);
+                return fieldVarMoreParsing(RD_ROOT->child[1], scope, exit_region, TypeList, sym, RD_ROOT->child[0]->token, body->unitType);
             }
             else {//如果不是数组类型，则相当于访问了非法区域
                 Error_RecordFieldNotArrayType(RD_ROOT->child[0]->token->Lineshow, tok->Sem, RD_ROOT->child[0]->token->Sem);
