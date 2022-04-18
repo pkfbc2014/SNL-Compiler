@@ -862,17 +862,22 @@ void callStmRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, ve
 //VarSym是指被赋值的变量的符号表信息，IDtok是指被赋值的变量的token信息，目的是传递行数
 void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, SymbTable* VarSym, token* IDTok) {//根节点名称为"AssignmentRest"，对应RD中的"assignmentRest函数"
     if (RD_ROOT == NULL) { return; }
-    struct TypeIR* TypeP = NULL;
-    if (RD_ROOT->child[0]->token == NULL) {//variMore()
+    struct TypeIR* TypeP1 = NULL;
+    struct TypeIR* TypeP2 = NULL;
+    if ( 0 == strcmp(RD_ROOT->child[0]->str, "VariMore") ) {//variMore()
         //RD_ROOT->child[0]: variMore()
-        TypeP = variMoreParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDTok);
+        TypeP1 = variMoreParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDTok);
+        //RD_ROOT->child[1]: ASSIGN，无操作
+        //RD_ROOT->child[2]: exp()
+        TypeP2 = expParsing(RD_ROOT->child[2], scope, exit_region, TypeList);
     }
     else {
-        //RD_ROOT->child[0]: COLON，无操作
+        //RD_ROOT->child[0]: ASSIGN，无操作
+        TypeP1 = VarSym->attrIR.idtype;
         //RD_ROOT->child[1]: exp()
-        TypeP = expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
+        TypeP2 = expParsing(RD_ROOT->child[1], scope, exit_region, TypeList);
     }
-    if (WhetherResaultValid(VarSym->attrIR.idtype, TypeP, RD_ROOT->child[0]->token) == NULL) {//说明赋值语句两边类型不相容
+    if (WhetherResaultValid(TypeP1, TypeP2, RD_ROOT->child[0]->token) == NULL) {//说明赋值语句两边类型不相容
         Error_AssignContentIncompatible(IDTok->Lineshow, IDTok->Sem);
     }
 }
