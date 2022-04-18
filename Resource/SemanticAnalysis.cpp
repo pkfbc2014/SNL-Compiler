@@ -330,6 +330,15 @@ void Error_IdentifierUndeclared(int line, string sem) {// 3.无声明的标识符，对应
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
+void Error_IdentifierUndeclaredVar(int line, string sem) {// 4.无声明的变量标识符
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   未声明\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"变量标识符\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
 /***数组***/
 void Error_ArraySubscriptLessThanZero(int line, string sem) {// 1. 数组声明时下标小于0（这是冗余情况，词法分析不允许数组声明时下标小于0）
     string ErrorMessage = "Line:";
@@ -663,8 +672,8 @@ struct TypeIR* variableParsing(treenode* RD_ROOT, vector< vector<SymbTable> > sc
     if (RD_ROOT == NULL) { return NULL; }
     //RD_ROOT->child[0]: ID，变量的ID
     SymbTable* sym = FindEntry(RD_ROOT->child[0]->token->Sem, true, scope, exit_region, VARKIND, -1);
-    if (sym == NULL) {//未找到此标识符
-        Error_IdentifierUndeclared(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
+    if (sym == NULL) {//未找到此标识符，变量标识符未声明
+        Error_IdentifierUndeclaredVar(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
         return NULL;
     }
     else {
@@ -927,8 +936,16 @@ void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vect
     //RD_ROOT->child[3]: RPAREN，无操作
 }
 
-void inputStmParsing() {//根节点名称为"InputStm"，对应RD中的"inputStm函数"
+void inputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList) {//根节点名称为"InputStm"，对应RD中的"inputStm函数"
     //inputStm中都是token，无函数，只有语法错误，不会出现语义错误，不需要检测错误
+    //RD_ROOT->child[0]: READ
+    //RD_ROOT->child[1]: LPAREN
+    //RD_ROOT->child[2]: ID
+    if (FindEntry(RD_ROOT->child[2]->token->Sem, true, scope, exit_region, VARKIND, -1) == NULL) {
+        Error_IdentifierUndeclaredVar(RD_ROOT->child[2]->token->Lineshow, RD_ROOT->child[2]->token->Sem);//变量标识符未声明
+    }
+    //RD_ROOT->child[3]: RPAREN
+
 }
 
 void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为""，对应RD中的"loopStm函数"********************************************
@@ -977,7 +994,7 @@ void stmMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector
 void stmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"Stm"，对应RD中的"stm函数"
     if (RD_ROOT == NULL) { return; }
     if(0 == strcmp(RD_ROOT->child[0]->str, "InputStm")){
-        inputStmParsing();
+        inputStmParsing(RD_ROOT->child[0], scope, exit_region, TypeList);
     }
     else if (0 == strcmp(RD_ROOT->child[0]->str, "OutputStm")) {
         outputStmParsing(RD_ROOT->child[0], scope, exit_region, TypeList);

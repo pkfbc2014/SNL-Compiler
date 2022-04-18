@@ -176,7 +176,7 @@ void returnStmParsing(); //根节点名称为"ReturnStm"，对应RD中的"returnStm函数"
 
 void outputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"OutputStm"，对应RD中的"outputStm函数"
 
-void inputStmParsing(); //根节点名称为"InputStm"，对应RD中的"inputStm函数"
+void inputStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList); //根节点名称为"InputStm"，对应RD中的"inputStm函数"
 
 void loopStmParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount); //根节点名称为""，对应RD中的"loopStm函数"********************************************
 
