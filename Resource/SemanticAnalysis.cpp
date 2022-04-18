@@ -119,7 +119,7 @@ int FindProc(const char* id, bool flag, vector< vector<SymbTable> >& scope, vect
     * 从p5开始向上寻找，只能按照p5 -> p4 -> p1的顺序寻找，因为p5不能调用p3或p2
     */
     int level = exit_region.size() - 1;//表示第几层，level == 0相当于scope栈中无元素。使用 n = level-1 访问scope[n][x]或者exit_region[n]，
-    int level_last = exit_region.size() - 1;
+    int level_last = ValidTableCount;
     for (; level >= 1; level--) {//第一个符号表内区内没有定义Proc标识符
         //level小于等于1时，scope[level][0]表示此标志符为此符号表的过程标识符
         if (scope[level].size() >= 1) {
@@ -1036,15 +1036,28 @@ struct ParamTable* paramMoreParsing(treenode* RD_ROOT, vector< vector<SymbTable>
 //此函数返回一个过程参数链表，因为需要考虑到程序体的过程调用时参数个数的匹配，所以如果此处的Type为非法，也会压入符号表，Type处设置为NULL，但是这些标识符不显示在符号表中
 struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, const int ValidTableCount) {//根节点名称为"Param"，对应RD中的"param函数"
     if (RD_ROOT == NULL) { return NULL; }
-    //RD_ROOT->child[0]: typeDef()
-    AttributeIR* tempAttr = typeDefParsing(RD_ROOT->child[0], scope, exit_region, TypeList);//找到所需要的属性
+    unsigned int VarExist = 0;
+    if (0 == strcmp(RD_ROOT->child[0]->str,"TypeDef")) {
+        VarExist = 0;
+    }
+    else {
+        VarExist = 1;
+    }
+    //RD_ROOT->child[0+ VarExist]: typeDef()
+    AttributeIR* tempAttr = typeDefParsing(RD_ROOT->child[0 + VarExist], scope, exit_region, TypeList);//找到所需要的属性
     if (tempAttr == NULL) {//如果没有找到对应标识符，则创建一个Type为NULL的属性
         tempAttr = new AttributeIR;
         tempAttr->idtype = NULL;
     }
     tempAttr->kind = VARKIND;
     tempAttr->More.VarAttr.level = ValidTableCount;
-    tempAttr->More.VarAttr.access = DIR;
+    if (VarExist == 0) {
+        tempAttr->More.VarAttr.access = DIR;
+    }
+    else {
+        tempAttr->More.VarAttr.access = INDIR;
+    }
+    
     SymbTable* Symtemp = FindEntry("*", false, scope, exit_region, VARKIND, -1);//找到当前符号表最新的一个变量标识符用作偏移计算
     
     int Off = 0;//计算当前符号表内的总偏移，参数相对于过程的偏移=自身size+总偏移
@@ -1065,8 +1078,8 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     struct ParamTable* rear = NULL;
     vector<token*> token;//存储formList中所有token
 
-    //RD_ROOT->child[1]: formList()
-    formListParsing(RD_ROOT->child[1], token);//token.size()一定大于0，否则不可能通过语法分析
+    //RD_ROOT->child[1 + VarExist]: formList()
+    formListParsing(RD_ROOT->child[1 + VarExist], token);//token.size()一定大于0，否则不可能通过语法分析
     const int size_origion = scope[scope.size() - 1].size();
     const int token_size = token.size();
     int token_Off = 0;//token数组中的偏移

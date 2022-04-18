@@ -43,5 +43,6 @@ int main()
     freetoken(tokenlisthead); // 释放token序列
 
     printf("\n程序成功执行，即将退出！\n");
+    system("pause");
 	return 0;
 } 
