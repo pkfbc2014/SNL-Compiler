@@ -720,8 +720,6 @@ treenode* LL1_analysis(token* head) // LL1分析法
 	}
 	else
 	{
-		//prePrint(LL1_treeROOT);
-		printf("\nLL1语法分析成功！");
 		return LL1_treeROOT;
 	}
 }

@@ -257,10 +257,6 @@ void programHeadParsing(treenode* RD_ROOT); //¸ù½ÚµãÃû³ÆÎª"ProgramHead"£¬¶ÔÓ¦RDÖ
 
 void RDTreeParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector<bool>& exit_region, vector<struct TypeIR*>& TypeList, int& ValidTableCount); //½âÎöÓï·¨Ê÷,¸ù½ÚµãÃû³ÆÎª"Program"
 
-
-
-
-void semantic_analysis(treenode* RD_ROOT); //ÓïÒå·ÖÎö
-
+int semantic_analysis(treenode* RD_ROOT); //ÓïÒå·ÖÎö
 
 //2022_4_17

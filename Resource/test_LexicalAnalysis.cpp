@@ -129,7 +129,7 @@ LexType classify2(char* ptr) {//ID分类函数
 int print_Lex(LexType a){//打印输出词法信息
     for (int i = 0; i < 42; i++) {
         if (Words[i].tok==a) {
-            printf("%-15s\t", Words[i].Sem);
+            //printf("%-15s\t", Words[i].Sem);
             fprintf(w_fp, "%-15s\t", Words[i].Sem);
             return 0;
         }
@@ -139,7 +139,7 @@ int print_Lex(LexType a){//打印输出词法信息
 //未处理:添加空字符的token处理?课本中处理并无空token
 token* getTokenList() {//未完成：在状态转移过程中的token同时生成;有错误的处理方法
     if (fp == nullptr) {
-        printf("文件打开失败！\n");
+        printf("词法分析相关文件打开失败！\n");
         return nullptr;
     }
     //链表结点处理
@@ -357,24 +357,24 @@ int printToken(token* head)
         //将token信息同时输出到界面和文件中
     if (error0 == INRANGE_ERROR) 
     {//token识别正常的处理
-        printf("\n行数\t词法信息\t语义信息\t");
-        fprintf(w_fp, "\n行数\t词法信息\t\t语义信息\t");
+        //printf("行数\t词法信息\t语义信息\t");
+        fprintf(w_fp, "行数\t词法信息\t\t语义信息\t");
         while (head->next != NULL) {
-            printf("\n%d\t", head->Lineshow);
+            //printf("\n%d\t", head->Lineshow);
             fprintf(w_fp,"\n%d\t", head->Lineshow);
 
             print_Lex(head->Lex);
 
-            printf("%-15s", head->Sem);
+            //printf("%-15s", head->Sem);
             fprintf(w_fp, "%-15s", head->Sem);
             head = head->next;
         }
-        printf("\n%d\t", head->Lineshow);
+        //printf("\n%d\t", head->Lineshow);
         fprintf(w_fp, "\n%d\t", head->Lineshow);
 
         print_Lex(head->Lex);
 
-        printf("%-15s", head->Sem);
+        //printf("%-15s", head->Sem);
         fprintf(w_fp, "%-15s", head->Sem);
         head = head->next;
     }

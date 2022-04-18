@@ -37,7 +37,7 @@ void initvar() // 全局变量初始化
 	queuenum = 0;
 }
 
-void choosePrint(treenode* root, int treetype)
+int choosePrint(treenode* root, int treetype)
 {
 	initvar();
 	if (treetype == 0) // 打印RD树
@@ -45,7 +45,7 @@ void choosePrint(treenode* root, int treetype)
 		if ((treefp = fopen("RDtree.dot", "w")) == NULL)
 		{
 			printf("cannot open the RDtree.dot file\n");
-			return;
+			return 0;
 		}
 
 		fprintf(treefp, "digraph graphRD{\n");
@@ -60,7 +60,7 @@ void choosePrint(treenode* root, int treetype)
 		if ((treefp = fopen("LL1tree.dot", "w")) == NULL)
 		{
 			printf("cannot open the LL1tree.dot file\n");
-			return;
+			return 0;
 		}
 
 		fprintf(treefp, "digraph graphLL1{\n");
@@ -71,6 +71,7 @@ void choosePrint(treenode* root, int treetype)
 		system("dot -Tpng LL1Tree.dot -o LL1Tree.png"); // 运行脚本
 	}
 	free(head); // 释放哨兵节点
+	return 1;
 }
 
 void printRDTree(treenode* root) // 语法树根节点、树的类型（RD树 - 0，LL1树 - 1）

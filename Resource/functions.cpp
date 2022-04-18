@@ -203,7 +203,7 @@ void cal_follow(const char* s, bool* flag) // 计算follow集
 	}
 }
 
-void out_fitstfollow() //输出first集和follow集到本地
+int out_fitstfollow() //输出first集和follow集到本地
 {
 	for (int i = 0; i < NonNum; i++) // 初始化
 	{
@@ -227,7 +227,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	if ((fp = fopen("Data\\first.txt", "w")) == NULL)
 	{
 		printf("cannot open the first assemble file\n");
-		return;
+		return 0;
 	}
 	for (int i = 0; i < NonNum; i++)
 	{
@@ -241,7 +241,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 	if ((fp = fopen("Data\\follow.txt", "w")) == NULL)
 	{
 		printf("cannot open the follow assemble file\n");
-		return;
+		return 0;
 	}
 	for (int i = 0; i < NonNum; i++)
 	{
@@ -251,6 +251,7 @@ void out_fitstfollow() //输出first集和follow集到本地
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
+	return 1;
 }
 
 void cal_predict() // 计算predict集 - LL1文法

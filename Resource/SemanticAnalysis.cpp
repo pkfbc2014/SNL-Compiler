@@ -1625,7 +1625,8 @@ void RDTreeParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vector
 
 //token中只有ID, INTC, CHARC含有语义信息，分别为标识符名称、整数、字符，且都是字符数组形式
 
-void semantic_analysis(treenode* RD_ROOT) {
+int semantic_analysis(treenode* RD_ROOT) 
+{
     //定义变量
     vector< vector<SymbTable> > scope;//使用vector数组表示scope栈
     vector<bool> exit_region;//对应局部化区是否已经退出，true:已经退出，false:未退出
@@ -1643,7 +1644,7 @@ void semantic_analysis(treenode* RD_ROOT) {
     //打印类型表和符号表到文件
     //PrintTable(scope, TypeList, TABLE_FILE_XLS);
     PrintTable(scope, TypeList, TABLE_FILE_CSV);
-    return;
+    return 1;
 }
 
 //2022_4_17
