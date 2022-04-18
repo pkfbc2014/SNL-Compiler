@@ -35,10 +35,7 @@ word reservedWords1[42] = {//保留字
 	{"TIMES",TIMES},{"OVER",OVER},{"LPAREN",LPAREN},{"RPAREN",RPAREN},{"DOT",DOT},
 	{"COLON",COLON},{"SEMI",SEMI},{"COMMA",COMMA},{"LMIDPAREN",LMIDPAREN},{"RMIDPAREN",RMIDPAREN},
 	{"UNDERANGE",UNDERANGE}
-};	
-
-
-
+};
 
 extern word2 Words[42];
 
@@ -55,9 +52,7 @@ void init_S_stack() {
 
 void initnode_LL1(treenode* temp) {
 	if (temp == NULL)
-	{
 		printf("ERROR:initnode_LL1()!");
-	}
 	temp->childnum = 0;
 	temp->token = NULL;
 	temp->index = totalnum_LL1;
@@ -729,10 +724,4 @@ treenode* LL1_analysis(token* head) // LL1分析法
 		printf("\nLL1语法分析成功！");
 		return LL1_treeROOT;
 	}
-
 }
-
-//int main() {
-//	LL1_analysis();
-//	return 0;
-//}

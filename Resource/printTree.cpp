@@ -26,6 +26,11 @@ void initvar() // 全局变量初始化
 {
 	treefp = NULL;
 	head = (Queue*)malloc(sizeof(Queue)); // 建立哨兵节点
+	if (head == NULL)
+	{
+		printf("哨兵节点申请空间失败\n");
+		return;
+	}
 	head->node = NULL;
 	head->next = NULL;
 	tail = head;
@@ -65,26 +70,36 @@ void choosePrint(treenode* root, int treetype)
 
 		system("dot -Tpng LL1Tree.dot -o LL1Tree.png"); // 运行脚本
 	}
+	free(head); // 释放哨兵节点
 }
 
 void printRDTree(treenode* root) // 语法树根节点、树的类型（RD树 - 0，LL1树 - 1）
 {
+	int numnull = 0; // 空孩子节点编号，每次++
+
 	push(root); // 根节点入队
 
 	while (queuenum != 0) // 循环直到队列为空
 	{
 		treenode* temp = pop();
+		if (temp == NULL) // 空节点不读取，直接跳过
+			continue;
 		for (int i = 0; i < temp->childnum; i++)
 		{
-			if (temp->child[i]->token == NULL) // 非终结符，输出str
+			if (temp->child[i] == NULL) // 空孩子，也输出
+			{
+				fprintf(treefp, "%s_%d->NULL_%d\n", temp->str, temp->index, numnull);
+				numnull++;
+			}
+			else if (temp->child[i]->token == NULL) // 非终结符，输出str
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str, temp->child[i]->index);
 			else // 终结符，输出token->Lex
 			{
-				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC)
+				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC) // 直接输出Sem
 					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
-				else if (temp->child[i]->token->Lex == INTC)
-					fprintf(treefp, "%s_%d->INT%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
-				else
+				else if (temp->child[i]->token->Lex == INTC) // 数字要加上int前缀，因为dot语言不允许数字开头
+					fprintf(treefp, "%s_%d->int%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else // 是分号、括号这种的，dot语言不允许输出，输出对应的终结符即可
 					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex], temp->child[i]->index);
 			}
 			push(temp->child[i]);
@@ -105,11 +120,11 @@ void printLL1Tree(treenode* root)
 				fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->str,temp->child[i]->index);
 			else // 终结符，输出token->Lex
 			{
-				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC)
+				if (temp->child[i]->token->Lex == ID || temp->child[i]->token->Lex == CHARC) // 直接输出Sem
 					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
-				else if(temp->child[i]->token->Lex == INTC)
-					fprintf(treefp, "%s_%d->INT%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
-				else
+				else if (temp->child[i]->token->Lex == INTC) // 数字要加上int前缀，因为dot语言不允许数字开头
+					fprintf(treefp, "%s_%d->int%s_%d\n", temp->str, temp->index, temp->child[i]->token->Sem, temp->child[i]->index);
+				else // 是分号、括号这种的，dot语言不允许输出，输出对应的终结符即可
 					fprintf(treefp, "%s_%d->%s_%d\n", temp->str, temp->index, Reserved_word[temp->child[i]->token->Lex], temp->child[i]->index);
 			}
 			push(temp->child[i]);

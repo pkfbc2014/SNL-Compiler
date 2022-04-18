@@ -40,23 +40,22 @@ struct token//链表结点定义
 	token* next;
 };
 
-
 typedef struct first
 {
 	int num; // 该非终结符的first集中元素个数
-	const char* ptr[20]; // 指向各个终结符
-	bool flag[43 + 1]; // 保证集合无重复元素（多一个$的位）
+	const char* ptr[maxlen]; // 指向各个终结符
+	bool flag[ReserveNum + 1]; // 保证集合无重复元素（多一个$的位）
 }first;
 
 typedef struct follow
 {
 	int num; // 该非终结符的follow集中元素个数
-	const char* ptr[20]; // 指向各个终结符
-	bool flag[43 + 1]; // 保证集合无重复元素（多一个$的位）
+	const char* ptr[maxlen]; // 指向各个终结符
+	bool flag[ReserveNum + 1]; // 保证集合无重复元素（多一个$的位）
 }follow;
 
 typedef struct production // 产生式类型
 {
-	const char left[20]; // 产生式左部
+	const char left[maxlen]; // 产生式左部
 	const char* right[10]; // 产生式右部
 }production;
