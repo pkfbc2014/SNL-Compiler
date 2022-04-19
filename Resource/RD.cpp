@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "RD_head.h"
+#include "func_statement.h"
 
 token* nowtoken_RD = NULL; // 当前指向的token节点
 int totalnum_RD = 0; // RD树的各节点编号，每次创建节点时累加
@@ -13,6 +14,11 @@ treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
 	nowtoken_RD = tokenhead; // 指向token序列的头
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
+	if (exitflag == 1) // 存在语法错误
+	{
+		freetree(RD_treeROOT);
+		exit(0);
+	}
 	return RD_treeROOT; // 返回总根节点，下一步进行语义分析
 }
 
