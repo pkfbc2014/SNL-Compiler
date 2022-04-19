@@ -14,7 +14,7 @@ treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 	if ((RD_ErrorMessage = fopen("RD_ErrorMessage.txt", "w")) == NULL)
 	{
 		printf("cannot open the RD_errorMessage file\n");
-		return;
+		return NULL;
 	}
 	nowtoken_RD = tokenhead; // 指向token序列的头
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
