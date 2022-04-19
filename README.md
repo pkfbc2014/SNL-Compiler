@@ -76,7 +76,7 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
 
    Data：需自行创建，存放token序列，first、follow、predict集，符号表
 
-   Error_Message：需自行创建，存放语义分析错误信息
+   Error_Message：需自行创建，存放语义分析错误信息（注：语法分析的错误信息不会输出到本地文件，而是直接在编译器exe中报错，并停机）
 
 2. 关于脚本作图：
 
@@ -84,7 +84,7 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
 
 3. 参考资料：
 
-   《编译程序的设计与实现》刘磊 金英 张晶 张荷花 单郸；高等教育出版社，ISBN 978-7-04-014620-7.
+   《编译程序的设计与实现》刘磊 金英 张晶 张荷花 单郸；高等教育出版社，ISBN 978-7-04-014620-7
 
    《编译原理课程设计》课程PPT
 
