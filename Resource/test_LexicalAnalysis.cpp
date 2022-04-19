@@ -297,6 +297,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
             }
             else {
                 state0 = START;
+                printf("INCHAR_ERROR:ÐÐÊý:%d\n", Line);
                 error0 = INCHAR_ERROR;
             }
             break;
@@ -309,6 +310,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ý³ÌÖÐµÄtokenÍ¬Ê±Éú³É;ÓÐ´íÎóµÄ´¦Àí·½·
                     error0 = INCHAR_ERROR;
                     state0 = START;
                 }
+                ch = getNextChar();
             }
             else {//µ¥·Ö½ç·û
                 receiver[num] = '\0';
