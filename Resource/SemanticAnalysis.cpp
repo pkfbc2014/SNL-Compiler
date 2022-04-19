@@ -330,12 +330,21 @@ void Error_IdentifierUndeclared(int line, string sem) {// 3.无声明的标识符，对应
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
-void Error_IdentifierUndeclaredVar(int line, string sem) {// 4.无声明的变量标识符
+void Error_IdentifierUndeclaredVar(int line, string sem) {// 4.无声明的变量标识符，对于书中语义错误(3)
     string ErrorMessage = "Line:";
     ErrorMessage += to_string(line);
     ErrorMessage += ",   未声明\"";
     ErrorMessage += sem;
     ErrorMessage += "\"变量标识符\n";
+    PrintFile(ErrorMessage, ERROR_FILE);
+}
+
+void Error_IdentifierUndeclaredType(int line, string sem) {// 5.无声明的类型标识符，对于书中语义错误(3)
+    string ErrorMessage = "Line:";
+    ErrorMessage += to_string(line);
+    ErrorMessage += ",   标识符\"";
+    ErrorMessage += sem;
+    ErrorMessage += "\"不是类型标识符\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
@@ -897,26 +906,38 @@ void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope,
 void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token* IDtok, const int ValidTableCount) {//根节点名称为"AssCall"，对应RD中的"assCall函数"
     if (RD_ROOT == NULL) { return ; }
     if ( 0 == strcmp(RD_ROOT->child[0]->str, "CallStmRest") ){//过程调用callStmRest()
-        int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//找此名称的过程标识符，找不到则返回0，后续使用scope[level][0]表示此过程标识符
-        if (ProcPosition == 0) {
-            Error_ProcNotProcIdentifier(IDtok->Lineshow, IDtok->Sem);//不是过程标识符
+        if (FindEntry(IDtok->Sem, true, scope, exit_region, '*', -1) == NULL) {
+            Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//未声明标识符
             return;
         }
         else {
-            callStmRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ProcPosition, IDtok);
+            int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//找此名称的过程标识符，找不到则返回0，后续使用scope[level][0]表示此过程标识符
+            if (ProcPosition == 0) {
+                Error_ProcNotProcIdentifier(IDtok->Lineshow, IDtok->Sem);//不是过程标识符
+                return;
+            }
+            else {
+                callStmRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ProcPosition, IDtok);
+            }
         }
-        
     }
     else if( 0 == strcmp(RD_ROOT->child[0]->str, "AssignmentRest") ){//赋值assignmentRest()
-        SymbTable* VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, VARKIND, -1);//找此名称的变量标识符，找不到则返回空
+        SymbTable* VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, '*', -1);//找此名称的标识符，找不到则返回空
         if (VarSym == NULL) {
-            Error_AssignNotVarIdentifier(IDtok->Lineshow, IDtok->Sem);//不是变量标识符
+            Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//未声明标识符
             return;
         }
         else {
-            assignmentRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDtok);
+            VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, VARKIND, -1);//找此名称的变量标识符，找不到则返回空
+            if (VarSym == NULL)
+            {
+                Error_AssignNotVarIdentifier(IDtok->Lineshow, IDtok->Sem);//不是变量标识符
+                return;
+            }
+            else {
+                assignmentRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, VarSym, IDtok);
+            }
         }
-        
     }
     
 }
@@ -1551,7 +1572,12 @@ AttributeIR* typeDefParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope
     else {
         SymbTable* Sym = FindEntry(RD_ROOT->child[0]->token->Sem, true, scope, exit_region, TYPEKIND, -1);
         if (Sym == NULL) {//如果未找到此标识符
-            Error_IdentifierUndeclared(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
+            if (FindEntry(RD_ROOT->child[0]->token->Sem, true, scope, exit_region, '*', -1) == NULL) {//未声明标识符
+                Error_IdentifierUndeclared(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);
+            }
+            else {
+                Error_IdentifierUndeclaredType(RD_ROOT->child[0]->token->Lineshow, RD_ROOT->child[0]->token->Sem);//未声明类型标识符
+            }
         }
         else {
             temp = new AttributeIR;

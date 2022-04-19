@@ -1,0 +1,57 @@
+{1.标识符的重复定义}
+{2.无声明的标识符}
+{3.标识符为非期望的标识符}
+program  example
+    type
+        t1 = integer;
+        t2 = char;
+        t3 = array [0..6] of integer;
+        t4 = record
+                integer  x;
+                char     y,z,m;
+                array [0..5] of integer array1;
+                end;
+        t5 = t4;
+
+        t1 = char;{1.标识符的重复定义, Type}
+        t5 = t4;{1.标识符的重复定义, Type}
+    var
+        integer i1;
+        t1 i2;
+        char c1;
+        t2 c2;
+        array [0..6] of integer a1;
+        t3 a2;
+        t4 r1;
+        t5 r2;
+        integer i2;{1.标识符的重复定义, Var}
+        t1 i1;{1.标识符的重复定义, Var}
+        t5 r1;{1.标识符的重复定义, Var}
+
+    procedure p1(integer s1;var integer s2);
+        type
+            t1 = integer;
+        var
+            t1  x;
+            integer y,z;
+            typeTest test;{2.无声明的标识符,Type}
+            x test;{3.标识符为非期望的标识符,Type}
+        procedure p2(t1 y);
+        begin
+        end
+    begin
+        x := 1;
+        y := x;
+        vartest := x;{2.无声明的标识符,Var}
+        t1 := 1;{3.标识符为非期望的标识符,Var}
+        ProcTest();{2.无声明的标识符,Proc}
+        x(){3.标识符为非期望的标识符,Proc}
+    end
+
+    procedure p1();{1.标识符的重复定义, Proc}
+    begin
+    end
+begin
+
+end.
+

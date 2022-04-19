@@ -1,0 +1,22 @@
+{4.数组类型下标越界错误}
+{5.数组成员变量和域变量的引用不合法}
+program  example
+    type
+        t1 = array [2..1] of integer;{4.数组类型下标越界错误}
+        t2 = array [0..1] of integer;
+        t3 = record
+                integer  x;
+                char     y,z,m;
+                array [0..5] of integer array1;
+             end;
+    var
+        t2 array1;
+        t3 record1;
+begin
+    array1[0] := 1;
+    array1[record1] := 1;{5.数组成员变量的引用不合法}
+    record1.x := 1;
+    record1.array1[0] := 1;
+    record1 := 1;{5.域变量的引用不合法};
+    record1.array1 := 1{5.域变量的引用不合法}
+end.
