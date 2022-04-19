@@ -7,19 +7,13 @@
 
 token* nowtoken_RD = NULL; // 当前指向的token节点
 int totalnum_RD = 0; // RD树的各节点编号，每次创建节点时累加
-FILE* RD_ErrorMessage = NULL;
+int exitflag = 0; // RD语法分析过程停机标志，当有错误时置1
 
 treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 {
-	if ((RD_ErrorMessage = fopen("RD_ErrorMessage.txt", "w")) == NULL)
-	{
-		printf("cannot open the RD_errorMessage file\n");
-		return NULL;
-	}
 	nowtoken_RD = tokenhead; // 指向token序列的头
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
-	fclose(RD_ErrorMessage);
-	return RD_treeROOT; // 返回总根节点，以便语义分析
+	return RD_treeROOT; // 返回总根节点，下一步进行语义分析
 }
 
 void initnode_RD(treenode* temp) // 初始化节点
@@ -310,7 +304,8 @@ treenode* baseType()
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s BaseType Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s BaseType Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	movenowtoken();
 	return newnode;
 }
@@ -419,7 +414,8 @@ treenode* fieldDecList()
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: FieldDeclareList Error.\n", nowtoken_RD->Lineshow);
+	printf("Line %d: FieldDeclareList Error.\n", nowtoken_RD->Lineshow);
+	exitflag = 1;
 	movenowtoken();
 	return newnode;
 }
@@ -680,7 +676,8 @@ treenode* param()
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s Param Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s Param Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	movenowtoken();
 	return newnode;
 }
@@ -836,7 +833,8 @@ treenode* conditionalStm()
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
-			fprintf(RD_ErrorMessage, "Line %d: %s ConditionalStm Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+			printf("Line %d: %s ConditionalStm Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+			exitflag = 1;
 			movenowtoken();
 		}
 		addChild(newnode, exp());
@@ -866,7 +864,8 @@ treenode* loopStm()
 			addChild(newnode, ReadmatchToken(EQ));
 		else
 		{
-			fprintf(RD_ErrorMessage, "Line %d: %s LoopStm Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+			printf("Line %d: %s LoopStm Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+			exitflag = 1;
 			movenowtoken();
 		}
 		addChild(newnode, exp());
@@ -954,7 +953,8 @@ treenode* assCall()
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s Asscall Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s Asscall Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	return newnode;
 }
 
@@ -1125,7 +1125,8 @@ treenode* addOp() // 回头看
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s CompareOp Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s CompareOp Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	return newnode;
 }
 
@@ -1156,7 +1157,8 @@ treenode* factor()
 		addChild(newnode, variable());
 		return newnode;
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s Factor Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s Factor Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	return NULL;
 }
 
@@ -1208,7 +1210,8 @@ treenode* multOp()
 			return newnode;
 		}
 	}
-	fprintf(RD_ErrorMessage, "Line %d: %s CompareOp Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	printf("Line %d: %s CompareOp Error.\n", nowtoken_RD->Lineshow, nowtoken_RD->Sem);
+	exitflag = 1;
 	return newnode;
 }
 
