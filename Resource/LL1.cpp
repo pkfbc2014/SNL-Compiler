@@ -10,6 +10,7 @@
 extern int LL1table[NonNum][ReserveNum];
 
 token* nowtoken; // 当前指向的token节点
+token* testtoken;
 char* S_stack[256];//符号栈
 treenode* G_stack[256];//语法树栈
 int S_ptr;//符号栈栈顶指针
@@ -686,7 +687,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 				lineno = nowtoken->Lineshow;
 			}
 			else {
-				printf("\nError:LL1终极符匹配出错，位置：行 %d",lineno);
+				//printf("\nError:LL1终极符匹配出错，位置：行 %d",lineno);
 				exit(0);
 			}
 		}
@@ -713,6 +714,23 @@ treenode* LL1_analysis(token* head) // LL1分析法
 			}
 
 		}
+		//printf("\n\n	符号栈信息：\n");
+		//for (int i = 0; i <= S_ptr; i++) {
+		//	printf("S_stack[%d]:%s   ", i, S_stack[i]);
+		//}
+		//printf("\n	语法栈信息：\n");
+		//for (int i = 0; i <= G_ptr; i++) {
+		//	printf("S_stack[%d]:%s   ", i, G_stack[i]);
+		//}
+		//printf("\n	token信息：\n");
+		//testtoken = nowtoken;
+		//while (testtoken->Lex != ENDFILE) 
+		//{
+		//	printf("%s    ", testtoken->Sem);
+		//	testtoken = testtoken->next;
+		//}
+		//printf("\n\n\n");
+
 	}
 	if (nowtoken->Lex != ENDFILE) {
 		printf("\nERROR:语法分析中，文件提前结束");
