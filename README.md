@@ -65,3 +65,41 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
 
 ## 实例
 ![词法分析和语法分析实例](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8C%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%AE%9E%E4%BE%8B.png "词法分析和语法分析实例")
+
+## 其他说明
+
+1. 文件目录：
+
+   Resource：源代码.cpp和头文件.h
+
+   Sample：较为全面地包含了各种错误检测样例，答辩时需成员各自再创建对应的错误检测样例
+
+   Data：需自行创建，存放token序列，first、follow、predict集，符号表
+
+   Error_Message：需自行创建，存放语义分析错误信息
+
+2. 关于脚本作图：
+
+   需要安装GraphViz才可运行自动作图命令，详见printTree.cpp内介绍
+
+3. 参考资料：
+
+   《编译程序的设计与实现》刘磊 金英 张晶 张荷花 单郸；高等教育出版社，ISBN 978-7-04-014620-7.
+
+   《编译原理课程设计》课程PPT
+
+4. 勘误：
+
+   教材第 10 页，产生式 (43) 应为：`ProcDecMore -> ProcDec`. (而不是 ProcDeclare)
+
+   教材第 63 页，产生式 (67) Predict 集应为 `[` (左中括号), `.` (句点), `:=` (赋值号).
+
+   教材第 64 页，产生式 (93) Predict 集应包含 `]` (右中括号).
+
+   教材第 55 页，例子中 `v2:='a';` 只能通过词法分析，而**不能通过语法分析**，因为按照给定的产生式(`Exp`)不能推出字符型。
+
+   教材第 10 页，产生式 (42), (43) 完全多余。可以去掉，并且把产生式 (41) 右部的 `ProcDecMore` 改为 `ProcDecpart`.
+
+   教材第 10 页，产生式 (48), 预测符集应为 `)` (右括号)，而不是左括号。(第 62 页)
+
+   PPT中，第74条产生式RETURN按照书上来，RETURN语句不能携带运算式Exp
