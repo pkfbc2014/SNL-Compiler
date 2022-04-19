@@ -16,6 +16,7 @@ treenode* RD_analysis(token* tokenhead) // 递归下降分析法主程序，接收token序列头
 	treenode* RD_treeROOT = program(); // 递归下降分析，获得总根节点
 	if (exitflag == 1) // 存在语法错误
 	{
+		printf("RD语法分析失败，编译器已停机，错误信息详见上方！");
 		freetree(RD_treeROOT);
 		exit(0);
 	}
