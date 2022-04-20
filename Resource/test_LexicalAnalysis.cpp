@@ -11,9 +11,10 @@ state a;
 error error0;//´Ê·¨´íÎó
 char ch;//È¡×Ö·ûºó·ÅÕâÀï
 int Line;//tokenËùÔÚµÄĞĞÊı
+extern int LexicalErrorNum;
 
 FILE* fp = fopen("Code\\code.txt", "r");// ´úÂëÎÄ¼ş¶ÁĞ´Ö¸Õë
-FILE* w_fp = fopen("Output\\token.txt", "w");// token¶ÁĞ´ÎÄ¼ş
+FILE* w_fp = fopen("Data\\token.txt", "w");// token¶ÁĞ´ÎÄ¼ş
 
 word reservedWords[21] = { {"program",PROGRAM},{"type",TYPE},{"var",VAR},
 {"procedure",PROCEDURE},{"begin",BEGIN},{"end",END},{"array",ARRAY},
@@ -139,8 +140,8 @@ int print_Lex(LexType a){//´òÓ¡Êä³ö´Ê·¨ĞÅÏ¢
 //Î´´¦Àí:Ìí¼Ó¿Õ×Ö·ûµÄtoken´¦Àí?¿Î±¾ÖĞ´¦Àí²¢ÎŞ¿Õtoken
 token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·¨
     if (fp == nullptr) {
-        printf("´Ê·¨·ÖÎöÏà¹ØÎÄ¼ş´ò¿ªÊ§°Ü£¡\n");
-        return nullptr;
+        printf("´Ê·¨Ïà¹Ø£ºÊäÈëÔ´´úÂëÎÄ¼ş´ò¿ªÊ§°Ü£¡\n");
+        return NULL;
     }
     //Á´±í½áµã´¦Àí
 
@@ -149,6 +150,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
     a = START;
     error0 = NORMAL;//´Ê·¨´íÎó
     Line = 1;
+    int signal_error = 0;//ÊÇ·ñÒÑ¾­Êä³ö¡°´Ê·¨·ÖÎö¼ì²âµ½´Ê·¨´íÎó¡±
 
     token* head = (token*)malloc(sizeof(token)),*current=head,*next= (token*)malloc(sizeof(token));
     init_node(head); init_node(next);
@@ -161,13 +163,14 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
     //DFA×Ö·û½ÓÊÕÆ÷
     char receiver[100]=" ";
     int num = 0;
+    LexicalErrorNum = 0;
 
     //Î´Ìí¼Ó¶ÁĞÂ×Ö·ûµÄÑ­»·
     //Ìí¼Ó³ö¿Ú:¶ÁÍêÕû¸ö³ÌĞòÎÄ¼şµÄ³ö¿Ú->INRANGE_ERROR
     //Î´Ìí¼ÓĞĞÊıµÄÊ¶±ğ
-    while (error0 == NORMAL) {//Î´·¢Éú´íÎóÇÒÎ´Ê¶±ğµ½³ÌĞò½áÊø
-        switch (state0) {//´¦ÀíÂß¼­£ºÏÈ¿´×´Ì¬£¬ÔÙ¿´ÊäÈë
-        case START:
+    while (error0 == NORMAL) {
+        switch (state0) {
+        case START://³õÊ¼×´Ì¬£»´íÎóÀàĞÍ£ºINASSIGN_ERROR£¬
             num = 0; receiver[0] = '\0';
             switch (classify(ch)) {
             case 1:
@@ -176,16 +179,45 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                 state0 = INNUM; receiver[num++] = ch; break;
             case 3:
                 state0 = DONE; receiver[num++] = ch; break;
-            case 4:
+            case 4://INASSIGN_ERROR
                 receiver[num++] = ch;
                 ch = getNextChar();
-                if (ch == '=') {
+                if (ch == '=')
+                {
                     state0 = INASSIGN;
                     receiver[num++] = ch;
                     break;
                 }
-                else {
-                    state0 = START;  error0 = INASSIGN_ERROR; break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖĞ':'ºóËù¸ú²¢·Ç'='
+                else 
+                {//½øÈë¿Ö»ÅÄ£Ê½
+                    if (signal_error == 0)
+                    {
+                        printf("´Ê·¨Ïà¹Ø£º¼ì²âµ½´Ê·¨´íÎó£º\n");
+                        signal_error = 1;
+                    }
+                    LexicalErrorNum++;
+                    printf("        ERROR%d:ĞĞ%d,¸³Öµ·ûºÅ\":=\"Æ´Ğ´ÓĞÎó¡£\n", LexicalErrorNum, Line);
+            
+                    //´íÎó´¦Àí
+                    while (ch != ENDFILE && ch != '=')
+                    {
+                        ch = getNextChar();
+                    }
+                    if (ch == ENDFILE)//ÖÁÎÄ¼ş½áÊøÎ´¶Áµ½ÕıÈ·ÊäÈë
+                    {
+                        current->Lex = ENDFILE; strcpy(current->Sem, "ENDFILE"); current->next = NULL;
+                        current->Lineshow = Line;
+                        error0 = INRANGE_ERROR;
+                        printf("´Ê·¨Ïà¹Ø£º´Ê·¨·ÖÎö³É¹¦½áÊø£¡¼ì²âµ½´Ê·¨´íÎóÊıÁ¿£º%d\n", LexicalErrorNum);
+                        fclose(fp);//¹Ø±ÕÎÄ¼şÖ¸Õë
+                        return head;
+                    }
+                    else
+                    {
+                        state0 = INASSIGN;
+                        receiver[num++] = ch;
+                    }
+                    break;
                 }
             case 5:state0 = INCOMMENT; receiver[num++] = ch; break;//×¢ÊÍ×´Ì¬
             case 6:
@@ -198,7 +230,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                     current->Lex = DOT;  strcpy(current->Sem, "."); current->Lineshow = Line;
                     current = next; next = next->next;//ĞÂcurrentµÄÖ¸ÕëĞÅÏ¢ÊÇÍêÕûµÄ
                     next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëĞÅÏ¢
-                    state0 = START;break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖĞ':'ºóËù¸ú²¢·Ç'='
+                    state0 = START; break;//´Ë´¦´íÎóÎª¸³Öµ":="ÖĞ':'ºóËù¸ú²¢·Ç'='
                 }
             case 7://ÎŞĞèÂ¼Èë
                 state0 = INCHAR; break;
@@ -213,12 +245,36 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                 current->Lex = ENDFILE; strcpy(current->Sem, "ENDFILE"); current->next = NULL;
                 current->Lineshow = Line;
                 error0 = INRANGE_ERROR;
+                if (LexicalErrorNum == 0)
+                {
+                    printf("´Ê·¨Ïà¹Ø£º´Ê·¨·ÖÎö³É¹¦½áÊø£¡\n");
+                    fclose(fp);//¹Ø±ÕÎÄ¼şÖ¸Õë
+                    return head;
+                }
+                else
+                {
+                    printf("´Ê·¨Ïà¹Ø£º´Ê·¨·ÖÎö³É¹¦½áÊø£¡¼ì²âµ½´Ê·¨´íÎóÊıÁ¿£º%d\n",LexicalErrorNum);
+                    fclose(fp);//¹Ø±ÕÎÄ¼şÖ¸Õë
+                    return head;
+                }
+
                 break;
             default://ÊäÈëÎŞ·¨Ê¶±ğ
-                error0 = ERROR1; receiver[num++] = ch; break;
+                error0 = ERROR1; 
+                LexicalErrorNum++;
+                if (signal_error == 0)
+                {
+                    printf("´Ê·¨Ïà¹Ø£º¼ì²âµ½´Ê·¨´íÎó£º\n");
+                    signal_error = 1;
+                }
+                printf("        ERROR%d:ĞĞ%d,º¬ÓĞ´Ê·¨Î´¶¨Òå×Ö·û,Îª:%c¡£\n", LexicalErrorNum, Line, ch);
+                ch = getNextChar();
+                state0 = START;
+                error0 = NORMAL;
+                break;
             }
             break;
-        case INID://ID×´Ì¬¿ÉÒÔÊ¶±ğ³ö±£Áô×ÖºÍÀàĞÍ
+        case INID://ID×´Ì¬¿ÉÒÔÊ¶±ğ³ö±£Áô×ÖºÍÀàĞÍ;´íÎóÀàĞÍ£ºÎŞ
             ch = getNextChar();
             while (classify(ch) == 1 || classify(ch) == 2)
             {
@@ -227,7 +283,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             }
             receiver[num] = '\0';
             //token½ÚµãÄÚÈİ¹¹½¨
-            current->Lex = classify2(receiver); 
+            current->Lex = classify2(receiver);
             strcpy(current->Sem, receiver);
             current->Lineshow = Line;
             //if (current->Lex == ID) {
@@ -242,7 +298,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             //ungetNextChar();//´Ë´¦ÓĞÎÊÌâ
             state0 = START;
             break;
-        case INNUM:
+        case INNUM://Êı×Ö×´Ì¬£»´íÎóÀàĞÍ£ºÎŞ
             ch = getNextChar();
             while (classify(ch) == 2) {
                 receiver[num++] = ch;
@@ -258,7 +314,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             //±êÊ¶·ûÊ¶±ğ£¬Token½¨Á¢
             state0 = START;
             break;
-        case INASSIGN:
+        case INASSIGN://¸³Öµ×´Ì¬£»´íÎóÀàĞÍ£ºÎŞ
             current->Lex = ASSIGN; strcpy(current->Sem, ":="); current->Lineshow = Line;
             current = next; next = next->next;//ĞÂcurrentµÄÖ¸ÕëĞÅÏ¢ÊÇÍêÕûµÄ
             next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëĞÅÏ¢
@@ -284,7 +340,8 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             break;
         case INCHAR:
             ch = getNextChar();
-            if (classify(ch) == 1 || classify(ch) == 2) {
+            if (classify(ch) == 1 || classify(ch) == 2) 
+            {
                 state0 = DONE;
                 //¹¹½¨token
                 current->Lex = CHARC; current->Lineshow = Line;
@@ -295,22 +352,64 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                 next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëĞÅÏ¢
                 //printf("Ê¶±ğ×Ö·û£º%c\n",ch);
             }
-            else {
+            else 
+            {//½øÈë¿Ö»ÅÄ£Ê½
                 state0 = START;
-                printf("INCHAR_ERROR:ĞĞÊı:%d\n", Line);
-                error0 = INCHAR_ERROR;
+                if (signal_error == 0)
+                {
+                    printf("´Ê·¨Ïà¹Ø£º¼ì²âµ½´Ê·¨´íÎó£º\n");
+                    signal_error = 1;
+                }
+                LexicalErrorNum++;
+                printf("        ERROR%d:ĞĞ%d,µ¥×Ö·ûÊäÈë´íÎó£¬½öÄÜ½ÓÊÕ×ÖÄ¸»òÊı×Ö¡£\n", LexicalErrorNum, Line);
+                while (classify(ch) != 1 && classify(ch) != 2)
+                {
+                    ch = getNextChar();
+                }
+                state0 = DONE;
+                //¹¹½¨token
+                current->Lex = CHARC; current->Lineshow = Line;
+                receiver[num++] = ch;
+                receiver[num] = '\0';
+                strcpy(current->Sem, receiver);
+                current = next; next = next->next;//ĞÂcurrentµÄÖ¸ÕëĞÅÏ¢ÊÇÍêÕûµÄ
+                next->pre = current; next->next = (token*)malloc(sizeof(token));//ÍêÉÆnextµÄÖ¸ÕëĞÅÏ¢
+                //printf("Ê¶±ğ×Ö·û£º%c\n",ch);
             }
             break;
         case DONE:
-            if (classify(ch) == 1 || classify(ch) == 2) {//µ¥×Ö·ûÊ¶±ğ
+            if (classify(ch) == 1 || classify(ch) == 2) 
+            {//µ¥×Ö·ûÊ¶±ğ
                 ch = getNextChar();
                 if (ch == '\'')
+                {
                     state0 = START;
-                else {
-                    error0 = INCHAR_ERROR;
-                    state0 = START;
+                    ch = getNextChar();
                 }
-                ch = getNextChar();
+                else 
+                {
+                    LexicalErrorNum++;
+                    printf("        ERROR%d:ĞĞ%d,µ¥×Ö·ûÊäÈë´íÎó£¬Ó¦ÒÔ'½áÎ²¡£\n", LexicalErrorNum, Line);
+                    while (ch != '\''&&ch!=ENDFILE)
+                    {
+                        ch = getNextChar();
+                    }
+                    if (ch == ENDFILE)//ÖÁÎÄ¼ş½áÊøÎ´¶Áµ½ÕıÈ·ÊäÈë
+                    {
+                        current->Lex = ENDFILE; strcpy(current->Sem, "ENDFILE"); current->next = NULL;
+                        current->Lineshow = Line;
+                        error0 = INRANGE_ERROR;
+                        printf("´Ê·¨Ïà¹Ø£º´Ê·¨·ÖÎö³É¹¦½áÊø£¡¼ì²âµ½´Ê·¨´íÎóÊıÁ¿£º%d\n", LexicalErrorNum);
+                        fclose(fp);//¹Ø±ÕÎÄ¼şÖ¸Õë
+                        return head;
+                    }
+                    else//¶Áµ½ÁËÕıÈ·ÊäÈë
+                    {
+                        state0 = START;
+                        error0 = NORMAL;
+                        ch = getNextChar();
+                    }
+                }
             }
             else {//µ¥·Ö½ç·û
                 receiver[num] = '\0';
@@ -324,38 +423,17 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
             break;
         default:
             break;
-        } 
+        }
     }
-    switch (error0) {
-    case NORMAL:
-        printf("NORMAL:tokenĞòÁĞÎ´Ê¶±ğµ½ÎÄ¼ş½áÊø·û\n");
-        exit(0);
-        break;
-    case INASSIGN_ERROR:
-        printf("INASSIGN_ERROR:¸³Öµ·ûºÅÊéĞ´´íÎó\n");
-        exit(0);
-        break;
-    case INRANGE_ERROR:
-        printf("INRANGE_ERROR:tokenÊ¶±ğ³ÌĞòÕı³£Ê¶±ğµ½ÎÄ¼ş½áÊø·û½áÊø\n");
-        return head;
-        break;
-    case INCHAR_ERROR:
-        printf("INCHAR_ERROR:×Ö·ûÊéĞ´³ö´í\n");
-        exit(0);
-        break;
-    case ERROR1:
-        printf("ERROR1:¶ÁÈëÎŞ·¨Ê¶±ğµÄ×Ö·û,×Ö·ûÎª:%c\n",ch);
-        exit(0);
-        break;
-    default:
-        printf("tokenÊ¶±ğ³ÌĞòÒì³£ÍË³ö\n");
-        exit(0);
-    }
-    return head;
 }
 
 int printToken(token* head)
 {
+    if (w_fp == NULL) 
+    {
+        printf("\n´Ê·¨Ïà¹Ø£ºtoken.txtÎÄ¼şÎŞ·¨´ò¿ª,ÎŞ·¨Êä³ötokenĞÅÏ¢µ½ÎÄ¼ş!\n");
+        return 0;
+    }
         //½«tokenĞÅÏ¢Í¬Ê±Êä³öµ½½çÃæºÍÎÄ¼şÖĞ
     if (error0 == INRANGE_ERROR) 
     {//tokenÊ¶±ğÕı³£µÄ´¦Àí
@@ -379,8 +457,7 @@ int printToken(token* head)
         //printf("%-15s", head->Sem);
         fprintf(w_fp, "%-15s", head->Sem);
         head = head->next;
-    }
-    fclose(fp); // ¹ØÎÄ¼şÖ¸Õë
+    }   
     fclose(w_fp); // ¹ØÎÄ¼şÖ¸Õë
     return 0;
 }

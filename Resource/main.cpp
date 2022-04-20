@@ -9,6 +9,8 @@
 #include "SemanticAnalysis.h"
 #include "printTree.h"
 
+extern int LexicalErrorNum;
+
 int main()
 {
     /*======================================================================*/// 词法分析部分
@@ -17,6 +19,12 @@ int main()
     int error_message = printToken(tokenlisthead); // 将tokenlist输出到本地
     if (!error_message)
         printf("\n词法相关：输出token序列到本地成功！\n");
+    if (LexicalErrorNum != 0)
+    {
+        freetoken(tokenlisthead); // 释放token序列
+        return 0;
+    }
+
 
     /*======================================================================*/// 语法分析部分
     error_message = out_fitstfollow(); // 计算三个集合并输出到本地，LL1分析表存储在运行内存中（全局变量）

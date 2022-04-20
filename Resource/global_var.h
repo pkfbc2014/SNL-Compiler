@@ -9,6 +9,7 @@ constexpr int ProductNum = 104; // 产生式数量
 constexpr int maxloop = 40; // 求follow集的最大循环次数
 constexpr int maxlen = 20; // 一个字符的最大长度
 
+
 typedef enum//词法类型定义
 {	//簿记单词符
 	ENDFILE, ERROR,

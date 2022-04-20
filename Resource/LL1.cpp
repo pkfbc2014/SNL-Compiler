@@ -23,6 +23,7 @@ treenode* LL1_treeROOT; // LL1分析法语法分析数根节点
 treenode* newnode;//产生式处理函数使用
 
 int totalnum_LL1 = 0;
+FILE* LL1Error_fp = fopen("Data\\LexicalError.txt", "w");// token读写文件
 
 word reservedWords1[42] = {//保留字
 	{"ENDFILE",ENDFILE},{"ERROR",ERROR},
@@ -645,6 +646,7 @@ int prePrint(treenode* root)
 
 treenode* LL1_analysis(token* head) // LL1分析法
 {
+	int ErrorNum = 0;
 	cal_predict(); // 计算predict集并构造LL1预测分析表,生成LL1分析表
 	out_predict(); // 输出LL1预测分析表到本地
 	S_ptr = -1;//符号栈指针
@@ -661,7 +663,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 	LL1_treeROOT = (treenode*)malloc(sizeof(treenode));
 	if (LL1_treeROOT == NULL)
 	{
-		printf("ERROR:LL1_treeROOT内存申请失败");
+		printf("语法相关：ERROR:LL1_treeROOT内存申请失败！");
 		exit(0);
 	}
 	initnode_LL1(LL1_treeROOT);
@@ -708,7 +710,7 @@ treenode* LL1_analysis(token* head) // LL1分析法
 				G_pointer->child[G_pointer->childnum++] = newnode;
 				S_pop();
 				//exit(0);
-			}else{
+			}else{//无匹配项
 				printf("\n            LL1查表错误");
 				exit(0);
 			}
@@ -733,7 +735,14 @@ treenode* LL1_analysis(token* head) // LL1分析法
 
 	}
 	if (nowtoken->Lex != ENDFILE) {
-		printf("\nERROR:语法分析中，文件提前结束");
+		if (ErrorNum == 0)
+		{
+			ErrorNum++;
+			printf("语法相关：LL1分析检测到语法错误：\n");
+		}
+		else
+			ErrorNum++;
+		printf("        ERROR%d:行%d,发现程序之外的语法成分。\n", ErrorNum, nowtoken->Lineshow);
 		return LL1_treeROOT;
 	}
 	else

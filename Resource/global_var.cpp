@@ -5,6 +5,7 @@
 #include "global_var.h"
 
 extern int LL1table[NonNum][ReserveNum]; // LL1分析预测表，初始化都为-1
+int LexicalErrorNum=0;// 词法错误数量
 
 // 67个非终结符
 const char* Non_symbol[NonNum] = {
