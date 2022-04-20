@@ -1,0 +1,37 @@
+{11.if和while语句的条件部分不是bool类型}
+{12.表达式中运算符的分量的类型不相容}
+program p
+
+var
+    integer i1;
+    array [0..5] of integer a1;
+
+begin
+    while i1<a1 do{11.if和while语句的条件部分不是bool类型}
+     	i1:= i1+1;
+ 	endwh;
+
+   	while i1<a1[0] do
+     	i1:= i1+1;
+ 	endwh;
+
+
+
+	if i1<a1{11.if和while语句的条件部分不是bool类型}
+	then
+		i1:=i1+1;
+	else
+		i1:=i1-1;
+	fi;
+
+    if i1<a1[0]
+	then
+		i1:=i1+1;
+	else
+		i1:=i1-1;
+	fi;
+
+	i1 := 1 / a1 * 1 + a1 - 1;{12.表达式中运算符的分量的类型不相容}
+	i1 := 1 / a1[0] * 1 + a1[0] - 1
+end.
+

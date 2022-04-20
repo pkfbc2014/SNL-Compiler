@@ -440,7 +440,7 @@ void Error_ProcParamType(int line, int ParamSerial, string ProcName) {// 1.¹ı³Ìµ
     ErrorMessage += ProcName;
     ErrorMessage += "\"ÖĞ, µÚ ";
     ErrorMessage += to_string(ParamSerial);
-    ErrorMessage += " ¸ö²ÎÊıÀàĞÍ²»Æ¥Åä";
+    ErrorMessage += " ¸ö²ÎÊıÀàĞÍ²»Æ¥Åä\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
@@ -449,7 +449,7 @@ void Error_ProcParamAmount(int line, string sem) {// 2.¹ı³Ìµ÷ÓÃÓï¾äÖĞ£¬ĞÎÊµ²Î¸öÊ
     ErrorMessage += to_string(line);
     ErrorMessage += ",   ¹ı³Ìµ÷ÓÃ\"";
     ErrorMessage += sem;
-    ErrorMessage += "\"ĞÎÊµ²Î¸öÊı²»Æ¥Åä\n";
+    ErrorMessage += "\"ĞÎÊµ²Î¸öÊı²»ÏàÍ¬\n";
     PrintFile(ErrorMessage, ERROR_FILE);
 }
 
@@ -906,26 +906,32 @@ void assignmentRestParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope,
 void assCallParsing(treenode* RD_ROOT, vector< vector<SymbTable> > scope, vector<bool> exit_region, vector<struct TypeIR*>& TypeList, token* IDtok, const int ValidTableCount) {//¸ù½ÚµãÃû³ÆÎª"AssCall"£¬¶ÔÓ¦RDÖĞµÄ"assCallº¯Êı"
     if (RD_ROOT == NULL) { return ; }
     if ( 0 == strcmp(RD_ROOT->child[0]->str, "CallStmRest") ){//¹ı³Ìµ÷ÓÃcallStmRest()
-        if (FindEntry(IDtok->Sem, true, scope, exit_region, '*', -1) == NULL) {
-            Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//Î´ÉùÃ÷±êÊ¶·û
-            return;
-        }
-        else {
-            int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//ÕÒ´ËÃû³ÆµÄ¹ı³Ì±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø0£¬ºóĞøÊ¹ÓÃscope[level][0]±íÊ¾´Ë¹ı³Ì±êÊ¶·û
-            if (ProcPosition == 0) {
+        int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//ÕÒ´ËÃû³ÆµÄ¹ı³Ì±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø0£¬ºóĞøÊ¹ÓÃscope[level][0]±íÊ¾´Ë¹ı³Ì±êÊ¶·û
+        if (ProcPosition == 0) {
+            if (FindEntry(IDtok->Sem, true, scope, exit_region, '*', -1) == NULL) {
+                Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//Î´ÉùÃ÷±êÊ¶·û
+                return;
+            }else{
                 Error_ProcNotProcIdentifier(IDtok->Lineshow, IDtok->Sem);//²»ÊÇ¹ı³Ì±êÊ¶·û
                 return;
             }
-            else {
-                callStmRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ProcPosition, IDtok);
-            }
+        }
+        else {
+            callStmRestParsing(RD_ROOT->child[0], scope, exit_region, TypeList, ProcPosition, IDtok);
         }
     }
     else if( 0 == strcmp(RD_ROOT->child[0]->str, "AssignmentRest") ){//¸³ÖµassignmentRest()
         SymbTable* VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, '*', -1);//ÕÒ´ËÃû³ÆµÄ±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø¿Õ
         if (VarSym == NULL) {
-            Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//Î´ÉùÃ÷±êÊ¶·û
-            return;
+            int ProcPosition = FindProc(IDtok->Sem, true, scope, exit_region, ValidTableCount);//ÕÒ´ËÃû³ÆµÄ¹ı³Ì±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø0
+            if (ProcPosition == 0) {
+                Error_IdentifierUndeclared(IDtok->Lineshow, IDtok->Sem);//Î´ÉùÃ÷±êÊ¶·û
+                return;
+            }
+            else {
+                Error_AssignNotVarIdentifier(IDtok->Lineshow, IDtok->Sem);//²»ÊÇ±äÁ¿±êÊ¶·û
+                return;
+            }
         }
         else {
             VarSym = FindEntry(IDtok->Sem, true, scope, exit_region, VARKIND, -1);//ÕÒ´ËÃû³ÆµÄ±äÁ¿±êÊ¶·û£¬ÕÒ²»µ½Ôò·µ»Ø¿Õ

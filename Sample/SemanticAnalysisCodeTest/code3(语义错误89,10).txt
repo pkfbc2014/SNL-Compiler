@@ -1,0 +1,44 @@
+{8.过程调用中，形实参类型不匹配}
+{9.过程调用中，形实参个数不相同}
+{10.过程调用语句中，标识符不是过程标识符}
+program  example
+    type
+        t1 = integer;
+        t2 = char;
+        t3 = array [0..6] of integer;
+    var
+        integer i1;
+        t1 i2;
+        char c1;
+        t2 c2;
+        array [0..6] of integer a1;
+        t3 a2;
+
+    procedure p1(integer s1;var t3 s2);
+        type
+            t1 = integer;
+        var
+            t1  x;
+            integer y,z;
+
+        procedure p2(t1 y);
+        begin
+        end
+    begin
+    end
+
+
+begin
+    p1(i1,a1);
+    p1(i2,a2);
+    p1(c1,c1);{8.过程调用中，形实参类型不匹配}
+    p1(i2,c1);{8.过程调用中，形实参类型不匹配}
+    p1(c1,i2);{8.过程调用中，形实参类型不匹配}
+    p1();{9.过程调用中，形实参个数不相同}
+    p1(1);{9.过程调用中，形实参个数不相同}
+    p1(1,2);{8.过程调用中，形实参类型不匹配}
+    p1(1,2,3);{9.过程调用中，形实参个数不相同}
+    t1();{10.过程调用语句中，标识符不是过程标识符}
+    i1(){10.过程调用语句中，标识符不是过程标识符}
+end.
+

@@ -1,0 +1,30 @@
+{4.数组类型下标越界错误}
+{5.数组成员变量和域变量的引用不合法}
+{6.赋值语句的左右两边类型不相容}
+{7.赋值语句左端不是变量标识符}
+program  example
+    type
+        type1 = array [2..1] of integer;{4.数组类型下标越界错误}
+        type2 = array [0..1] of integer;
+        type3 = record
+                integer  x;
+                char     y,z,m;
+                array [0..5] of integer array1;
+             end;
+    var
+        type2 array1;
+        type3 record1;
+    procedure p();
+
+begin
+    array1[0] := 1;
+    array1[record1] := 1;{5.数组成员变量的引用不合法}
+    array1 := 1;{6.赋值语句的左右两边类型不相容}
+    record1.x := 1;
+    record1.array1[0] := 1;
+    record1.array1 := 1;{6.赋值语句的左右两边类型不相容}
+    record1 := 1;{6.赋值语句的左右两边类型不相容}
+    record1.test := 1;{5.域变量的引用不合法}
+    type2 := 1;{7.赋值语句左端不是变量标识符}
+    p:= 1{7.赋值语句左端不是变量标识符}
+end.
