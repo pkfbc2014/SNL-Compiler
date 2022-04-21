@@ -1082,10 +1082,10 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     if (RD_ROOT == NULL) { return NULL; }
     unsigned int VarExist = 0;
     if (0 == strcmp(RD_ROOT->child[0]->str,"TypeDef")) {
-        VarExist = 0;
+        VarExist = 0;//DIR
     }
     else {
-        VarExist = 1;
+        VarExist = 1;//INDIR
     }
     //RD_ROOT->child[0+ VarExist]: typeDef()
     AttributeIR* tempAttr = typeDefParsing(RD_ROOT->child[0 + VarExist], scope, exit_region, TypeList);//找到所需要的属性
@@ -1108,7 +1108,12 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     if (Symtemp != NULL) {
         unsigned int size = 0;
         if (Symtemp->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
-            size = Symtemp->attrIR.idtype->size;
+            if (VarExist == 0) {
+                size = Symtemp->attrIR.idtype->size;
+            }
+            else {
+                size = TypeList[INTTY - '0']->size;//间参的大小固定为整形类型大小
+            }
         }
         else {
             size = 0;
