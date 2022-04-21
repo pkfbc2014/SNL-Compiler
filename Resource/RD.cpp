@@ -5,6 +5,7 @@
 #include <string.h>
 #include "RD_head.h"
 #include "func_statement.h"
+#include "global_var.h"
 
 token* nowtoken_RD = NULL; // 当前指向的token节点
 int totalnum_RD = 0; // RD树的各节点编号，每次创建节点时累加
@@ -1103,7 +1104,7 @@ treenode* otherTerm()
 	return newnode;
 }
 
-treenode* addOp() // 回头看
+treenode* addOp()
 {
 	treenode* newnode = NULL;
 	if (nowtoken_RD->Lex == PLUS)
