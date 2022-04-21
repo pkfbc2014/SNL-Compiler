@@ -1082,10 +1082,10 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     if (RD_ROOT == NULL) { return NULL; }
     unsigned int VarExist = 0;
     if (0 == strcmp(RD_ROOT->child[0]->str,"TypeDef")) {
-        VarExist = 0;
+        VarExist = 0;//DIR
     }
     else {
-        VarExist = 1;
+        VarExist = 1;//INDIR
     }
     //RD_ROOT->child[0+ VarExist]: typeDef()
     AttributeIR* tempAttr = typeDefParsing(RD_ROOT->child[0 + VarExist], scope, exit_region, TypeList);//找到所需要的属性
@@ -1108,7 +1108,12 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     if (Symtemp != NULL) {
         unsigned int size = 0;
         if (Symtemp->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
-            size = Symtemp->attrIR.idtype->size;
+            if (Symtemp->attrIR.More.VarAttr.access == DIR) {
+                size = Symtemp->attrIR.idtype->size;
+            }
+            else {
+                size = TypeList[INTTY - '0']->size;//过程的间参大小固定为整形类型大小
+            }
         }
         else {
             size = 0;
@@ -1129,7 +1134,13 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     int token_Off = 0;//token数组中的偏移
     int VarSize = 0;//此类标识符的size
     if (tempAttr->idtype != NULL) {
-        VarSize = tempAttr->idtype->size;
+        if (VarExist == 0) {
+            VarSize = tempAttr->idtype->size;
+        }
+        else {
+            VarSize = TypeList[INTTY - '0']->size;//过程的间参大小固定为整形类型大小
+        }
+       
     }
     for (int ix = 0; ix < token_size; ix++) {
         tempAttr->More.VarAttr.off = Off + token_Off;//符号表总偏移加上标识符在token数组中的偏移
