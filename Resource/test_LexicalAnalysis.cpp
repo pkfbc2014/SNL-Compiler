@@ -192,7 +192,7 @@ token* getTokenList() {//Î´Íê³É£ºÔÚ×´Ì¬×ªÒÆ¹ı³ÌÖĞµÄtokenÍ¬Ê±Éú³É;ÓĞ´íÎóµÄ´¦Àí·½·
                 {//½øÈë¿Ö»ÅÄ£Ê½
                     if (signal_error == 0)
                     {
-                        printf("´Ê·¨Ïà¹Ø£º¼ì²âµ½´Ê·¨´íÎó£º\n");
+                        printf("\n´Ê·¨Ïà¹Ø£º¼ì²âµ½´Ê·¨´íÎó£º\n");
                         signal_error = 1;
                     }
                     LexicalErrorNum++;

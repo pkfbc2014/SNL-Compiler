@@ -23,7 +23,7 @@ treenode* LL1_treeROOT; // LL1分析法语法分析数根节点
 treenode* newnode;//产生式处理函数使用
 
 int totalnum_LL1 = 0;
-FILE* LL1Error_fp = fopen("Data\\LexicalError.txt", "w");// token读写文件
+FILE* LL1Error_fp = fopen("Data\\LL1Error.txt", "w");// token读写文件
 
 word reservedWords1[42] = {//保留字
 	{"ENDFILE",ENDFILE},{"ERROR",ERROR},
@@ -46,7 +46,7 @@ void init_S_stack() {
 		S_stack[i] = (char*)malloc(sizeof(char) * 20);
 		if (S_stack[i] == NULL)
 		{
-			printf("ERROR:init_S_stack()出错");
+			printf("语法相关：ERROR:init_S_stack()出错");
 			exit(0);
 		}
 	}
@@ -54,7 +54,7 @@ void init_S_stack() {
 
 void initnode_LL1(treenode* temp) {
 	if (temp == NULL)
-		printf("ERROR:initnode_LL1()!");
+		printf("语法相关：LL1ERROR:initnode_LL1()!");
 	temp->childnum = 0;
 	temp->token = NULL;
 	temp->index = totalnum_LL1;
@@ -75,14 +75,14 @@ void S_push(const char* str) {
 	if (S_ptr<255 && S_ptr>-2)
 		strcpy(S_stack[++S_ptr], str);
 	else
-		printf("S_stack数组下标越界");
+		printf("语法相关：LL1语法分析中S_stack数组下标越界");
 }
 
 void G_push(treenode* temp) {
 	if (G_ptr<255 && G_ptr>-2)
 		G_stack[++G_ptr] = temp;
 	else
-		printf("G_stack数组下标越界");
+		printf("语法相关：LL1语法分析中G_stack数组下标越界");
 }
 
 void S_pop()
@@ -94,7 +94,7 @@ treenode* G_pop()
 {
 	if (G_ptr > -1)
 		return G_stack[G_ptr--];
-	printf("ERROE:G_pop()出错！");
+	printf("语法相关：LL1ERROE:G_pop()出错！");
 	return NULL;
 }
 
@@ -104,7 +104,7 @@ char* LexToStr(LexType temp) {//终极符转为字符串
 			return Words[i].Sem;
 		}
 	}
-	printf("Error:LexToStr");
+	printf("语法相关：LL1Error:LexToStr");
 }
 
 int getReIndex2(LexType temp) // 返回终结符s在终结符集合中的下标
@@ -666,6 +666,12 @@ treenode* LL1_analysis(token* head) // LL1分析法
 		printf("语法相关：ERROR:LL1_treeROOT内存申请失败！");
 		exit(0);
 	}
+	if (LL1Error_fp == NULL)
+	{
+		printf("语法相关：ERROR:文件LL1Error.txt打开失败！");
+		exit(0);
+	}
+
 	initnode_LL1(LL1_treeROOT);
 	strcpy(LL1_treeROOT->str, "Program");
 	G_push(LL1_treeROOT);
@@ -688,31 +694,122 @@ treenode* LL1_analysis(token* head) // LL1分析法
 				nowtoken = nowtoken->next;
 				lineno = nowtoken->Lineshow;
 			}
-			else {
+			else 
+			{
 				//printf("\nError:LL1终极符匹配出错，位置：行 %d",lineno);
-				exit(0);
+				if (ErrorNum == 0)
+				{
+					printf("\n语法相关：LL1分析检测到语法错误：\n");
+					ErrorNum++;
+					printf("        ERROR%d:行%d,输入%s不是合法的语法成分,此处应为%s。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem, S_stack[S_ptr]);
+					fprintf(LL1Error_fp, "ERROR%d:行%d,输入%s不是合法的语法成分,此处应为%s。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem, S_stack[S_ptr]);
+					S_pop();
+				}
+				else
+				{
+					ErrorNum++;
+					printf("        ERROR%d:行%d,输入%s不是合法的语法成分,此处应为%s。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem,S_stack[S_ptr]);
+					fprintf(LL1Error_fp, "ERROR%d:行%d,输入%s不是合法的语法成分,此处应为%s。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem, S_stack[S_ptr]);
+					S_pop();
+				}
 			}
 		}
 		else {
 			pnum = LL1table[getNonIndex(S_stack[S_ptr])][getReIndex2(nowtoken->Lex)];
-			if (pnum != -2 and pnum != -1)//LL1分析表查表为-1
+			if (pnum != -2 and pnum != -1)//LL1分析表查表正常（-2表示终极符不在predict集中，但是在follow集中）
 			{
 				S_pop();
 				predict(pnum + 1);
 
 			}
-			else if (pnum == -2)
+			else if (pnum == -2)//查表为follow集内容，即检测到语法同步单元
 			{
-				newnode = createNode();//为终极符创建语法树节点
+				if (ErrorNum == 0)
+				{
+					if (strcmp(S_stack[S_ptr], "StmList") == 0 && strcmp(S_stack[S_ptr - 1], LexToStr(nowtoken->Lex)) == 0)
+					{
+						//特殊情形，不报错
+					}
+					else 
+					{
+						printf("\n语法相关：LL1分析检测到语法错误：\n");
+						ErrorNum++;
+						printf("        ERROR%d:行%d,存在语法成分的丢失，非终极符%s与输入%s无匹配的语法规则。\n", ErrorNum, nowtoken->Lineshow, S_stack[S_ptr], nowtoken->Sem);
+						fprintf(LL1Error_fp, "ERROR%d:行%d,存在语法成分的丢失，非终极符%s与输入%s无匹配的语法规则。\n", ErrorNum, nowtoken->Lineshow, S_stack[S_ptr], nowtoken->Sem);
+						
+					}
+				}
+				else
+				{
+					if (strcmp(S_stack[S_ptr], "StmList") == 0 && strcmp(S_stack[S_ptr - 1], LexToStr(nowtoken->Lex)) == 0)
+					{
+						//特殊情形，不报错
+					}
+					else
+					{
+						ErrorNum++;
+						printf("        ERROR%d:行%d,存在语法成分的丢失，非终极符%s与输入%s无匹配的语法规则。\n", ErrorNum, nowtoken->Lineshow, S_stack[S_ptr], nowtoken->Sem);
+						fprintf(LL1Error_fp, "ERROR%d:行%d,存在语法成分的丢失，非终极符%s与输入%s无匹配的语法规则。\n", ErrorNum, nowtoken->Lineshow, S_stack[S_ptr], nowtoken->Sem);
+
+					}
+				}
+
+				newnode = createNode();//为非终极符创建语法树节点
 				strcpy(newnode->str, S_stack[S_ptr]);
 				//printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
 				G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
 				G_pointer->child[G_pointer->childnum++] = newnode;
 				S_pop();
 				//exit(0);
-			}else{//无匹配项
-				printf("\n            LL1查表错误");
-				exit(0);
+			}else
+			{//错误处理
+				if (ErrorNum == 0)
+				{
+					if (strcmp(S_stack[S_ptr], "StmList") == 0 &&strcmp(S_stack[S_ptr - 1], LexToStr(nowtoken->Lex)) == 0)
+					{
+						//特殊情形，不报错
+					}
+					else
+					{
+						printf("\n语法相关：LL1分析检测到语法错误：\n");
+						ErrorNum++;
+						printf("        ERROR%d:行%d,%s无匹配的语法成分。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem);
+						fprintf(LL1Error_fp, "ERROR%d:行%d,%s无匹配的语法成分。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem);
+					}
+				}
+				else
+				{
+					if (strcmp(S_stack[S_ptr], "StmList") == 0 && strcmp(S_stack[S_ptr - 1], LexToStr(nowtoken->Lex)) == 0)
+					{
+						//特殊情形，不报错
+					}
+					else
+					{
+						ErrorNum++;
+						printf("        ERROR%d:行%d,%s无匹配的语法成分。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem);
+						fprintf(LL1Error_fp, "ERROR%d:行%d,%s无匹配的语法成分。\n", ErrorNum, nowtoken->Lineshow, nowtoken->Sem);
+
+					}
+				}
+				//进入恐慌模式
+				while (pnum != -2&&nowtoken->Lex!=ENDFILE)
+				{
+					nowtoken = nowtoken->next;
+					pnum = LL1table[getNonIndex(S_stack[S_ptr])][getReIndex2(nowtoken->Lex)];
+				}
+				if (nowtoken->Lex == ENDFILE)
+				{
+					break;
+				}
+				else
+				{
+					newnode = createNode();//为非终极符创建语法树节点
+					strcpy(newnode->str, S_stack[S_ptr]);
+					//printf("\n            生成语法树特殊叶子节点:%s", S_stack[S_ptr]);
+					G_pointer = G_pop();//将新节点作为叶子节点添加到语法树上
+					G_pointer->child[G_pointer->childnum++] = newnode;
+					S_pop();
+				}
 			}
 
 		}
@@ -738,15 +835,22 @@ treenode* LL1_analysis(token* head) // LL1分析法
 		if (ErrorNum == 0)
 		{
 			ErrorNum++;
-			printf("语法相关：LL1分析检测到语法错误：\n");
+			printf("\n语法相关：LL1分析检测到语法错误：\n");
 		}
 		else
 			ErrorNum++;
-		printf("        ERROR%d:行%d,发现程序之外的语法成分。\n", ErrorNum, nowtoken->Lineshow);
+		printf("        ERROR%d:行%d,发现程序结构之外的语法成分。\n", ErrorNum, nowtoken->Lineshow);
+		fprintf(LL1Error_fp, "ERROR%d:行%d,发现程序结构之外的语法成分。\n", ErrorNum, nowtoken->Lineshow);
+		printf("\n语法相关：语法分析成功结束！检测到语法错误数量：%d\n", ErrorNum);
+		fprintf(LL1Error_fp, "\n语法相关：语法分析成功结束！检测到语法错误数量：%d\n", ErrorNum);
+		fclose(LL1Error_fp);//关闭文件指针
 		return LL1_treeROOT;
 	}
 	else
 	{
+		printf("\n语法相关：语法分析成功结束！检测到语法错误数量：%d\n", ErrorNum);
+		fprintf(LL1Error_fp, "\n语法相关：语法分析成功结束！检测到语法错误数量：%d\n", ErrorNum);
+		fclose(LL1Error_fp);//关闭文件指针
 		return LL1_treeROOT;
 	}
 }
