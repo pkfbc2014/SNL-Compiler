@@ -1108,11 +1108,11 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     if (Symtemp != NULL) {
         unsigned int size = 0;
         if (Symtemp->attrIR.idtype != NULL) {//如果idtype为NULL， 则理解为size为0
-            if (VarExist == 0) {
+            if (Symtemp->attrIR.More.VarAttr.access == DIR) {
                 size = Symtemp->attrIR.idtype->size;
             }
             else {
-                size = TypeList[INTTY - '0']->size;//间参的大小固定为整形类型大小
+                size = TypeList[INTTY - '0']->size;//过程的间参大小固定为整形类型大小
             }
         }
         else {
@@ -1134,7 +1134,13 @@ struct ParamTable* paramParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& 
     int token_Off = 0;//token数组中的偏移
     int VarSize = 0;//此类标识符的size
     if (tempAttr->idtype != NULL) {
-        VarSize = tempAttr->idtype->size;
+        if (VarExist == 0) {
+            VarSize = tempAttr->idtype->size;
+        }
+        else {
+            VarSize = TypeList[INTTY - '0']->size;//过程的间参大小固定为整形类型大小
+        }
+       
     }
     for (int ix = 0; ix < token_size; ix++) {
         tempAttr->More.VarAttr.off = Off + token_Off;//符号表总偏移加上标识符在token数组中的偏移
