@@ -148,9 +148,3 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
    教材第 10 页，产生式 (48), 预测符集应为 `)` (右括号)，而不是左括号。(第 62 页)
 
    PPT中，第74条产生式RETURN按照书上来，RETURN语句不能携带运算式Exp
-
-5. 开发日志：
-
-
-[1]: 开发日志.md
-
