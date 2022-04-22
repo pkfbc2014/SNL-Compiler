@@ -151,4 +151,6 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
 
 5. 开发日志：
 
-   开发日志.md
+
+[1]: 开发日志.md
+
