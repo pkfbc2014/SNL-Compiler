@@ -4,7 +4,7 @@
 ## 词法分析
 
 ## 语法分析
-![语法树图示](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/语法树图示.png "语法树图示")
+![语法树图示](Image/语法树图示.png "语法树图示")
 
 在实际编写程序时并未严格按照以上结构创建语法树，事实上可以随便创建，只要语义分析方便就行。
 
@@ -28,7 +28,11 @@
 
 2. LL1分析法能检测出来的错误：
 
-   
+   基本上所有的都能检测出来，但是定位可能不是那么精准。
+
+3. 
+
+   有关恐慌模式和同步词法单元，参考龙书。
 
 ## 语义分析
 ### SNL符号表信息项
@@ -37,9 +41,9 @@
 ```C++
 Kind = {typeKind, varKind, procKind}
 ```
-![语义分析标识符种类](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/语义分析标识符种类.png "语义分析标识符种类")
+![语义分析标识符种类](Image/语义分析标识符种类.png "语义分析标识符种类")
 2. 类型标识符内部表示
- ![类型内部表示](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/类型内部表示.png "类型内部表示")
+ ![类型内部表示](Image/类型内部表示.png "类型内部表示")
 
 ```C++
 intPtr{size, kind}
@@ -64,7 +68,7 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
 ```
 
 ## 实例
-![词法分析和语法分析实例](https://github.com/pkfbc2014/SNL-Compiler/blob/main/Image/%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8C%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%AE%9E%E4%BE%8B.png "词法分析和语法分析实例")
+![词法分析和语法分析实例](/Image/%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8C%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%AE%9E%E4%BE%8B.png "词法分析和语法分析实例")
 
 ## 其他说明
 
@@ -87,6 +91,8 @@ TypeKind = {intTy, charTy, arrayTy, recordTy, boolTy}
    《编译程序的设计与实现》刘磊 金英 张晶 张荷花 单郸；高等教育出版社，ISBN 978-7-04-014620-7
 
    《编译原理课程设计》课程PPT
+
+   《Compilers: Principles, Techniques, and Tools》Alfred V. Aho, Jeffrey D. Ullman
 
 4. 勘误：
 
