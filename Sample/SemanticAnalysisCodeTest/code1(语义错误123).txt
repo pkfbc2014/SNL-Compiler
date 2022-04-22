@@ -12,9 +12,10 @@ program  example
                 array [0..5] of integer array1;
                 end;
         t5 = t4;
+        t5 = t4;{1.标识符的重复定义, Type}
 
         t1 = char;{1.标识符的重复定义, Type}
-        t5 = t4;{1.标识符的重复定义, Type}
+
     var
         integer i1;
         t1 i2;

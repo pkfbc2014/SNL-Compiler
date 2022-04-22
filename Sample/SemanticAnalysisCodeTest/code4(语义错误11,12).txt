@@ -17,14 +17,14 @@ begin
 
 
 
-	if i1<a1{11.if和while语句的条件部分不是bool类型}
+	if i1=a1{11.if和while语句的条件部分不是bool类型}
 	then
 		i1:=i1+1;
 	else
 		i1:=i1-1;
 	fi;
 
-    if i1<a1[0]
+	if i1=a1[0]
 	then
 		i1:=i1+1;
 	else

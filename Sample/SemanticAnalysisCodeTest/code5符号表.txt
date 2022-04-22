@@ -4,7 +4,7 @@ program  example
         t2 = record
                 integer  x;
                 char     y,z,m;
-                array [0..5] of integer array1;
+                array [0..5] of char array1;
                 end;
     var
         integer i1;
@@ -13,10 +13,12 @@ program  example
         t2 r1;
 
     procedure p1(char s1;var char s2; t1 s3; t2 s4);
-        type
         var
             integer i1;
-        procedure p2(t1 y);
+        procedure p2();
+            procedure p3(char c);
+            begin
+            end
         begin
         end
 
@@ -24,7 +26,6 @@ program  example
     end
 
 begin
-    p1(c1, c1, a1,r1);
-    p2(a1);
+
 end.
 
