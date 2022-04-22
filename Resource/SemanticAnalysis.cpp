@@ -1217,8 +1217,13 @@ void procDecParsing(treenode* RD_ROOT, vector< vector<SymbTable> >& scope, vecto
     if (Enter(temp.idname, temp.attrIR, scope, exit_region, PROCKIND, temp.attrIR.More.ProcAttr.level) == false) {//压入符号栈，需考虑过程的Level
         Error_IdentifierDuplicateDec(RD_ROOT->child[1]->token->Lineshow, RD_ROOT->child[1]->token->Sem);//标识符重命名
         const int scope_origin_size = scope.size() - 1;//因为此前已经创建了此过程的符号表，所以scope原本的size等于现在的size-1
+        //先检测过程定义中的中的语义错误，再移除局部化区
+        //RD_ROOT->child[6]: procDecPart()
+        procDecPartParsing(RD_ROOT->child[6], scope, exit_region, TypeList, ValidTableCount);
         //RD_ROOT->child[7]: procBody()
-        procBodyParsing(RD_ROOT->child[7], scope, exit_region, TypeList, ValidTableCount);//先检测body中的语义错误，再移除此局部化区
+        procBodyParsing(RD_ROOT->child[7], scope, exit_region, TypeList, ValidTableCount);
+        //RD_ROOT->child[8]: procDecpart()
+        procDecpartParsing(RD_ROOT->child[8], scope, exit_region, TypeList, ValidTableCount);
         //如果过程标志符，而最新的局部化区为这个过程的标识符，所以此过程的局部化区以及其body中定义的全部局部化区应该全部被删除
         const int times = scope.size() - scope_origin_size;//通过scope原本的size来将scope栈还原回加入此局部化区原本的样子，需要弹scope栈的次数
         for (int ix = 0; ix < times; ix++) {
