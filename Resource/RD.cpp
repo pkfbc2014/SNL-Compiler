@@ -68,11 +68,6 @@ void addChild(treenode* root, treenode* child) // 为根节点root增加孩子节点child
 	root->childnum++;
 }
 
-void printerror(char* message) // 语法分析错误信息输出
-{
-	printf("%s\n", message);
-}
-
 // 每个非终结符是一个函数，以下共58个函数（参考书上只给出了58个，虽然有67个非终结符）
 treenode* program()
 {
